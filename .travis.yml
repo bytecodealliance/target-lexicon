@@ -1,0 +1,15 @@
+language: rust
+rust:
+    - stable
+    - beta
+    - nightly
+matrix:
+    allow_failures:
+        - rust: nightly
+dist: trusty
+sudo: false
+install:
+    - travis_wait ./check-rustfmt.sh --install
+script: cargo test
+cache:
+    cargo: true

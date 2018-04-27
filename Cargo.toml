@@ -1,0 +1,22 @@
+[package]
+name = "targeting"
+version = "0.0.0"
+authors = ["Dan Gohman <sunfish@mozilla.com>"]
+description = "Targeting utilities for compilers and related tools"
+license = "Apache-2.0 WITH LLVM-exception"
+keywords = ["target", "host", "triple", "compiler", "jit"]
+documentation = "https://docs.rs/targeting/"
+repository = "https://github.com/cretonne/targeting"
+readme = "README.md"
+
+[dependencies]
+failure = { version = "0.1.1", default-features = false, features = ["derive"] }
+failure_derive = { version = "0.1.1", default-features = false }
+
+[features]
+default = ["std"]
+std = []
+
+[badges]
+maintenance = { status = "passively-maintained" }
+travis-ci = { repository = "cretonne/targeting" }
