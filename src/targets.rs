@@ -195,13 +195,12 @@ pub fn default_binary_format(triple: &Triple) -> BinaryFormat {
     match triple.operating_system {
         OperatingSystem::Darwin | OperatingSystem::Ios => BinaryFormat::Macho,
         OperatingSystem::Windows => BinaryFormat::Coff,
-        OperatingSystem::Nebulet | OperatingSystem::Unknown => {
+        OperatingSystem::Nebulet |
+        OperatingSystem::Emscripten |
+        OperatingSystem::Unknown => {
             match triple.architecture {
                 Architecture::Wasm32 => BinaryFormat::Wasm,
-                Architecture::Unknown |
-                Architecture::Asmjs |
-                Architecture::Msp430 => BinaryFormat::Unknown,
-                _ => BinaryFormat::Elf,
+                _ => BinaryFormat::Unknown,
             }
         }
         _ => BinaryFormat::Elf,
