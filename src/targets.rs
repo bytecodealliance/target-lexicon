@@ -71,6 +71,7 @@ pub enum OperatingSystem {
     Ios,
     L4re,
     Linux,
+    Nebulet,
     Netbsd,
     Openbsd,
     Redox,
@@ -194,7 +195,7 @@ pub fn default_binary_format(triple: &Triple) -> BinaryFormat {
     match triple.operating_system {
         OperatingSystem::Darwin | OperatingSystem::Ios => BinaryFormat::Macho,
         OperatingSystem::Windows => BinaryFormat::Coff,
-        OperatingSystem::Unknown => {
+        OperatingSystem::Nebulet | OperatingSystem::Unknown => {
             match triple.architecture {
                 Architecture::Wasm32 => BinaryFormat::Wasm,
                 Architecture::Unknown |
@@ -330,6 +331,7 @@ impl fmt::Display for OperatingSystem {
             OperatingSystem::Ios => "ios",
             OperatingSystem::L4re => "l4re",
             OperatingSystem::Linux => "linux",
+            OperatingSystem::Nebulet => "nebulet",
             OperatingSystem::Netbsd => "netbsd",
             OperatingSystem::Openbsd => "openbsd",
             OperatingSystem::Redox => "redox",
@@ -357,6 +359,7 @@ impl FromStr for OperatingSystem {
             "ios" => OperatingSystem::Ios,
             "l4re" => OperatingSystem::L4re,
             "linux" => OperatingSystem::Linux,
+            "nebulet" => OperatingSystem::Nebulet,
             "netbsd" => OperatingSystem::Netbsd,
             "openbsd" => OperatingSystem::Openbsd,
             "redox" => OperatingSystem::Redox,
