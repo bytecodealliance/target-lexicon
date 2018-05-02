@@ -245,7 +245,7 @@ impl FromStr for Triple {
 #[macro_export]
 macro_rules! triple {
     ($str: tt) => (
-        targeting::Triple::from_str($str).expect("invalid triple literal")
+        target_lexicon::Triple::from_str($str).expect("invalid triple literal")
     );
 }
 

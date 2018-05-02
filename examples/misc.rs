@@ -1,6 +1,6 @@
-extern crate targeting;
+extern crate target_lexicon;
 
-use targeting::{Triple, HOST};
+use target_lexicon::{Triple, HOST};
 use std::str::FromStr;
 
 fn main() {
