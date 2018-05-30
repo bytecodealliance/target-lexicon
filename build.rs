@@ -48,7 +48,10 @@ fn main() {
         let mut json = String::new();
         file.read_to_string(&mut json).expect("Could not read target file");
         let v: Value = serde_json::from_str(&json).expect("Could not parse target file as json");
-        Triple::from_str(v["llvm-target"].as_str().expect("Could not parse \"llvm-target\" as a string."))
+        Triple::from_str(v["llvm-target"]
+                             .as_str()
+                             .expect("could not parse \"llvm-target\" as a string."))
+            .expect("can't parse host target")
     });
     
     assert_eq!(target, triple.to_string(), "host is unrecognized");
