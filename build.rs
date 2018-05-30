@@ -5,9 +5,12 @@
 
 use std::env;
 use std::fs::File;
-use std::io::{self, Write};
+use std::io::{self, prelude::*, Write};
 use std::path::PathBuf;
 use std::str::FromStr;
+use serde_json::Value;
+
+extern crate serde_json;
 
 // Include triple.rs and targets.rs so we can parse the TARGET environment variable.
 mod triple {
@@ -39,7 +42,15 @@ fn main() {
     ));
 
     let target = env::var("TARGET").expect("The TARGET environment variable must be set");
-    let triple = Triple::from_str(&target).expect("can't parse host target");
+    
+    let triple = Triple::from_str(&target).unwrap_or_else(|_| {
+        let mut file = File::open(&target).expect("Could not open target file.");
+        let mut json = String::new();
+        file.read_to_string(&mut json).expect("Could not read target file");
+        let v: Value = serde_json::from_str(&json).expect("Could not parse target file as json");
+        Triple::from_str(v["llvm-target"].as_str().expect("Could not parse \"llvm-target\" as a string."))
+    });
+    
     assert_eq!(target, triple.to_string(), "host is unrecognized");
 
     let out = File::create(out_dir.join("host.rs")).expect("error creating host.rs");
