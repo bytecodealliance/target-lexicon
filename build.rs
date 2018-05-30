@@ -43,18 +43,25 @@ fn main() {
 
     let target = env::var("TARGET").expect("The TARGET environment variable must be set");
     
-    let triple = Triple::from_str(&target).unwrap_or_else(|_| {
-        let mut file = File::open(&target).expect("Could not open target file.");
-        let mut json = String::new();
-        file.read_to_string(&mut json).expect("Could not read target file");
-        let v: Value = serde_json::from_str(&json).expect("Could not parse target file as json");
-        Triple::from_str(v["llvm-target"]
+    let triple = match Triple::from_str(&target) {
+        Ok(triple) => {
+            assert_eq!(target, triple.to_string(), "host is unrecognized");
+            triple
+        }
+        Err(_) => {
+            let mut file = File::open(&target).expect("error opening target file");
+            let mut json = String::new();
+            file.read_to_string(&mut json).expect("error reading target file");
+            let v: Value = serde_json::from_str(&json).expect("error parsing target file as json");
+            let target = v["llvm-target"]
                              .as_str()
-                             .expect("could not parse \"llvm-target\" as a string."))
-            .expect("can't parse host target")
-    });
-    
-    assert_eq!(target, triple.to_string(), "host is unrecognized");
+                             .expect("error parsing \"llvm-target\" as a string");
+            let triple = Triple::from_str(target).expect("error parsing host target");
+            assert_eq!(target, triple.to_string(),
+                       "host is unrecognized (as defined in target json file)");
+            triple
+        }
+    };
 
     let out = File::create(out_dir.join("host.rs")).expect("error creating host.rs");
     write_host_rs(out, triple).expect("error writing host.rs");
