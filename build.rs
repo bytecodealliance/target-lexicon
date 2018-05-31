@@ -34,7 +34,7 @@ mod parse_error {
     }
 }
 
-use triple::Triple;
+use triple::{Endianness, PointerWidth, Triple};
 
 fn main() {
     let out_dir =
@@ -62,6 +62,34 @@ fn main() {
                 triple.to_string(),
                 "host is unrecognized (as defined in target json file)"
             );
+
+            // Check that the JSON describes a known target configuration.
+            //
+            // Unfortunately, none of Rust's "arch", "os", "env", nor "vendor"
+            // fields directly correspond to triple fields, so we can't easily
+            // check them.
+            if let Some(endian) = v["target-endian"].as_str() {
+                assert_eq!(
+                    endian,
+                    match triple.endianness().unwrap() {
+                        Endianness::Little => "little",
+                        Endianness::Big => "big",
+                    },
+                    "\"target-endian\" field disagrees with the target triple"
+                );
+            }
+            if let Some(pointer_width) = v["target-pointer-width"].as_str() {
+                assert_eq!(
+                    pointer_width,
+                    match triple.pointer_width().unwrap() {
+                        PointerWidth::U16 => "16",
+                        PointerWidth::U32 => "32",
+                        PointerWidth::U64 => "64",
+                    },
+                    "\"target-pointer-width\" field disagrees with the target triple"
+                );
+            }
+
             triple
         }
     };
