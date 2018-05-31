@@ -5,11 +5,20 @@ rust:
     - nightly
 matrix:
     allow_failures:
+        - rust: beta
         - rust: nightly
 dist: trusty
 sudo: false
-install:
-    - travis_wait ./check-rustfmt.sh --install
+before_script:
+    - cargo uninstall rustfmt || true
+    - cargo install --list
+    - rustup toolchain install stable
+    - rustup component add --toolchain=stable rustfmt-preview
+    - rustup component list --toolchain=stable
+    - rustup show
+    - rustfmt +stable --version || echo fail
+    - rustup update
+    - rustfmt +stable --version
 script: cargo test
 cache:
     cargo: true
