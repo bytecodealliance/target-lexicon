@@ -1,11 +1,11 @@
 // This file defines the `Triple` type and support code shared by all targets.
 
-use std::borrow::ToOwned;
-use std::str::FromStr;
-use std::fmt;
 use parse_error::ParseError;
-use targets::{Architecture, Vendor, OperatingSystem, Environment, BinaryFormat,
-              default_binary_format};
+use std::borrow::ToOwned;
+use std::fmt;
+use std::str::FromStr;
+use targets::{default_binary_format, Architecture, BinaryFormat, Environment, OperatingSystem,
+              Vendor};
 
 /// The target memory endianness.
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
@@ -121,15 +121,15 @@ impl fmt::Display for Triple {
         let implied_binary_format = default_binary_format(&self);
 
         write!(f, "{}", self.architecture)?;
-        if self.vendor == Vendor::Unknown && self.operating_system == OperatingSystem::Unknown &&
-            (self.environment != Environment::Unknown ||
-                 self.binary_format != implied_binary_format)
+        if self.vendor == Vendor::Unknown && self.operating_system == OperatingSystem::Unknown
+            && (self.environment != Environment::Unknown
+                || self.binary_format != implied_binary_format)
         {
             // "none" is special-case shorthand for unknown vendor and unknown operating system.
             f.write_str("-none")?;
-        } else if self.operating_system == OperatingSystem::Linux &&
-                   (self.environment == Environment::Android ||
-                        self.environment == Environment::Androideabi)
+        } else if self.operating_system == OperatingSystem::Linux
+            && (self.environment == Environment::Android
+                || self.environment == Environment::Androideabi)
         {
             // As a special case, omit the vendor for Android targets.
             write!(f, "-{}", self.operating_system)?;
@@ -244,9 +244,9 @@ impl FromStr for Triple {
 /// or so to report errors at compile time instead.
 #[macro_export]
 macro_rules! triple {
-    ($str: tt) => (
+    ($str:tt) => {
         target_lexicon::Triple::from_str($str).expect("invalid triple literal")
-    );
+    };
 }
 
 #[cfg(test)]

@@ -1,8 +1,8 @@
 // This file defines all the identifier enums and target-aware logic.
 
-use std::str::FromStr;
 use std::fmt;
-use triple::{Triple, PointerWidth, Endianness};
+use std::str::FromStr;
+use triple::{Endianness, PointerWidth, Triple};
 
 /// The "architecture" field, which in some cases also specifies a specific
 /// subarchitecture.
@@ -120,35 +120,35 @@ impl Architecture {
     pub fn endianness(&self) -> Result<Endianness, ()> {
         match *self {
             Architecture::Unknown => Err(()),
-            Architecture::Aarch64 |
-            Architecture::Arm |
-            Architecture::Armv4t |
-            Architecture::Armv5te |
-            Architecture::Armv7 |
-            Architecture::Armv7s |
-            Architecture::Asmjs |
-            Architecture::I386 |
-            Architecture::I586 |
-            Architecture::I686 |
-            Architecture::Mips64el |
-            Architecture::Mipsel |
-            Architecture::Msp430 |
-            Architecture::Powerpc64le |
-            Architecture::Riscv32 |
-            Architecture::Riscv64 |
-            Architecture::Thumbv6m |
-            Architecture::Thumbv7em |
-            Architecture::Thumbv7m |
-            Architecture::Wasm32 |
-            Architecture::X86_64 => Ok(Endianness::Little),
-            Architecture::Mips |
-            Architecture::Mips64 |
-            Architecture::Powerpc |
-            Architecture::Powerpc64 |
-            Architecture::S390x |
-            Architecture::Sparc |
-            Architecture::Sparc64 |
-            Architecture::Sparcv9 => Ok(Endianness::Big),
+            Architecture::Aarch64
+            | Architecture::Arm
+            | Architecture::Armv4t
+            | Architecture::Armv5te
+            | Architecture::Armv7
+            | Architecture::Armv7s
+            | Architecture::Asmjs
+            | Architecture::I386
+            | Architecture::I586
+            | Architecture::I686
+            | Architecture::Mips64el
+            | Architecture::Mipsel
+            | Architecture::Msp430
+            | Architecture::Powerpc64le
+            | Architecture::Riscv32
+            | Architecture::Riscv64
+            | Architecture::Thumbv6m
+            | Architecture::Thumbv7em
+            | Architecture::Thumbv7m
+            | Architecture::Wasm32
+            | Architecture::X86_64 => Ok(Endianness::Little),
+            Architecture::Mips
+            | Architecture::Mips64
+            | Architecture::Powerpc
+            | Architecture::Powerpc64
+            | Architecture::S390x
+            | Architecture::Sparc
+            | Architecture::Sparc64
+            | Architecture::Sparcv9 => Ok(Endianness::Big),
         }
     }
 
@@ -157,34 +157,34 @@ impl Architecture {
         match *self {
             Architecture::Unknown => Err(()),
             Architecture::Msp430 => Ok(PointerWidth::U16),
-            Architecture::Arm |
-            Architecture::Armv4t |
-            Architecture::Armv5te |
-            Architecture::Armv7 |
-            Architecture::Armv7s |
-            Architecture::Asmjs |
-            Architecture::I386 |
-            Architecture::I586 |
-            Architecture::I686 |
-            Architecture::Mipsel |
-            Architecture::Riscv32 |
-            Architecture::Sparc |
-            Architecture::Thumbv6m |
-            Architecture::Thumbv7em |
-            Architecture::Thumbv7m |
-            Architecture::Wasm32 |
-            Architecture::Mips |
-            Architecture::Powerpc => Ok(PointerWidth::U32),
-            Architecture::Aarch64 |
-            Architecture::Mips64el |
-            Architecture::Powerpc64le |
-            Architecture::Riscv64 |
-            Architecture::X86_64 |
-            Architecture::Mips64 |
-            Architecture::Powerpc64 |
-            Architecture::S390x |
-            Architecture::Sparc64 |
-            Architecture::Sparcv9 => Ok(PointerWidth::U64),
+            Architecture::Arm
+            | Architecture::Armv4t
+            | Architecture::Armv5te
+            | Architecture::Armv7
+            | Architecture::Armv7s
+            | Architecture::Asmjs
+            | Architecture::I386
+            | Architecture::I586
+            | Architecture::I686
+            | Architecture::Mipsel
+            | Architecture::Riscv32
+            | Architecture::Sparc
+            | Architecture::Thumbv6m
+            | Architecture::Thumbv7em
+            | Architecture::Thumbv7m
+            | Architecture::Wasm32
+            | Architecture::Mips
+            | Architecture::Powerpc => Ok(PointerWidth::U32),
+            Architecture::Aarch64
+            | Architecture::Mips64el
+            | Architecture::Powerpc64le
+            | Architecture::Riscv64
+            | Architecture::X86_64
+            | Architecture::Mips64
+            | Architecture::Powerpc64
+            | Architecture::S390x
+            | Architecture::Sparc64
+            | Architecture::Sparcv9 => Ok(PointerWidth::U64),
         }
     }
 }
@@ -195,9 +195,7 @@ pub fn default_binary_format(triple: &Triple) -> BinaryFormat {
     match triple.operating_system {
         OperatingSystem::Darwin | OperatingSystem::Ios => BinaryFormat::Macho,
         OperatingSystem::Windows => BinaryFormat::Coff,
-        OperatingSystem::Nebulet |
-        OperatingSystem::Emscripten |
-        OperatingSystem::Unknown => {
+        OperatingSystem::Nebulet | OperatingSystem::Emscripten | OperatingSystem::Unknown => {
             match triple.architecture {
                 Architecture::Wasm32 => BinaryFormat::Wasm,
                 _ => BinaryFormat::Unknown,

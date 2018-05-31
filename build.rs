@@ -3,12 +3,12 @@
 // Allow dead code in triple.rs and targets.rs for our purposes here.
 #![allow(dead_code)]
 
+use serde_json::Value;
 use std::env;
 use std::fs::File;
 use std::io::{self, prelude::*, Write};
 use std::path::PathBuf;
 use std::str::FromStr;
-use serde_json::Value;
 
 extern crate serde_json;
 
@@ -37,12 +37,11 @@ mod parse_error {
 use triple::Triple;
 
 fn main() {
-    let out_dir = PathBuf::from(env::var("OUT_DIR").expect(
-        "The OUT_DIR environment variable must be set",
-    ));
+    let out_dir =
+        PathBuf::from(env::var("OUT_DIR").expect("The OUT_DIR environment variable must be set"));
 
     let target = env::var("TARGET").expect("The TARGET environment variable must be set");
-    
+
     let triple = match Triple::from_str(&target) {
         Ok(triple) => {
             assert_eq!(target, triple.to_string(), "host is unrecognized");
@@ -51,14 +50,18 @@ fn main() {
         Err(_) => {
             let mut file = File::open(&target).expect("error opening target file");
             let mut json = String::new();
-            file.read_to_string(&mut json).expect("error reading target file");
+            file.read_to_string(&mut json)
+                .expect("error reading target file");
             let v: Value = serde_json::from_str(&json).expect("error parsing target file as json");
             let target = v["llvm-target"]
-                             .as_str()
-                             .expect("error parsing \"llvm-target\" as a string");
+                .as_str()
+                .expect("error parsing \"llvm-target\" as a string");
             let triple = Triple::from_str(target).expect("error parsing host target");
-            assert_eq!(target, triple.to_string(),
-                       "host is unrecognized (as defined in target json file)");
+            assert_eq!(
+                target,
+                triple.to_string(),
+                "host is unrecognized (as defined in target json file)"
+            );
             triple
         }
     };

@@ -1,7 +1,7 @@
 extern crate target_lexicon;
 
-use target_lexicon::{Triple, HOST};
 use std::str::FromStr;
+use target_lexicon::{Triple, HOST};
 
 fn main() {
     println!("The host triple is {}.", HOST);
