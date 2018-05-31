@@ -6,6 +6,7 @@ description = "Targeting utilities for compilers and related tools"
 documentation = "https://docs.rs/target-lexicon/"
 readme = "README.md"
 keywords = ["target", "host", "triple", "compiler", "jit"]
+categories = ["no-std"]
 # When cargo is updated to support SPDX 3.1, we can uncomment this.
 #license = "Apache-2.0 WITH LLVM-exception"
 license-file = "LICENSE"
