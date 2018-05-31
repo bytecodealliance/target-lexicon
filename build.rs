@@ -5,9 +5,12 @@
 
 use std::env;
 use std::fs::File;
-use std::io::{self, Write};
+use std::io::{self, prelude::*, Write};
 use std::path::PathBuf;
 use std::str::FromStr;
+use serde_json::Value;
+
+extern crate serde_json;
 
 // Include triple.rs and targets.rs so we can parse the TARGET environment variable.
 mod triple {
@@ -39,8 +42,26 @@ fn main() {
     ));
 
     let target = env::var("TARGET").expect("The TARGET environment variable must be set");
-    let triple = Triple::from_str(&target).expect("can't parse host target");
-    assert_eq!(target, triple.to_string(), "host is unrecognized");
+    
+    let triple = match Triple::from_str(&target) {
+        Ok(triple) => {
+            assert_eq!(target, triple.to_string(), "host is unrecognized");
+            triple
+        }
+        Err(_) => {
+            let mut file = File::open(&target).expect("error opening target file");
+            let mut json = String::new();
+            file.read_to_string(&mut json).expect("error reading target file");
+            let v: Value = serde_json::from_str(&json).expect("error parsing target file as json");
+            let target = v["llvm-target"]
+                             .as_str()
+                             .expect("error parsing \"llvm-target\" as a string");
+            let triple = Triple::from_str(target).expect("error parsing host target");
+            assert_eq!(target, triple.to_string(),
+                       "host is unrecognized (as defined in target json file)");
+            triple
+        }
+    };
 
     let out = File::create(out_dir.join("host.rs")).expect("error creating host.rs");
     write_host_rs(out, triple).expect("error writing host.rs");
