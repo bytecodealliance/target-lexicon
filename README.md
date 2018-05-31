@@ -13,3 +13,6 @@ And, `Triple` and the enum types have `host()` constructors, for targeting
 the host.
 
 It supports all triples currently used by rustc and rustup.
+
+It does not support reading JSON target files itself. To use it with a JSON
+target file, construct a `Triple` using the value of the "llvm-target" field.
