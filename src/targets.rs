@@ -61,6 +61,7 @@ pub enum Vendor {
 pub enum OperatingSystem {
     Unknown,
     Bitrig,
+    Cervus,
     Cloudabi,
     Darwin,
     Dragonfly,
@@ -195,7 +196,7 @@ pub fn default_binary_format(triple: &Triple) -> BinaryFormat {
     match triple.operating_system {
         OperatingSystem::Darwin | OperatingSystem::Ios => BinaryFormat::Macho,
         OperatingSystem::Windows => BinaryFormat::Coff,
-        OperatingSystem::Nebulet | OperatingSystem::Emscripten | OperatingSystem::Unknown => {
+        OperatingSystem::Cervus | OperatingSystem::Nebulet | OperatingSystem::Emscripten | OperatingSystem::Unknown => {
             match triple.architecture {
                 Architecture::Wasm32 => BinaryFormat::Wasm,
                 _ => BinaryFormat::Unknown,
@@ -318,6 +319,7 @@ impl fmt::Display for OperatingSystem {
         let s = match *self {
             OperatingSystem::Unknown => "unknown",
             OperatingSystem::Bitrig => "bitrig",
+            OperatingSystem::Cervus => "cervus",
             OperatingSystem::Cloudabi => "cloudabi",
             OperatingSystem::Darwin => "darwin",
             OperatingSystem::Dragonfly => "dragonfly",
@@ -346,6 +348,7 @@ impl FromStr for OperatingSystem {
         Ok(match s {
             "unknown" => OperatingSystem::Unknown,
             "bitrig" => OperatingSystem::Bitrig,
+            "cervus" => OperatingSystem::Cervus,
             "cloudabi" => OperatingSystem::Cloudabi,
             "darwin" => OperatingSystem::Darwin,
             "dragonfly" => OperatingSystem::Dragonfly,
