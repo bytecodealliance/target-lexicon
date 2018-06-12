@@ -6,7 +6,8 @@
 use serde_json::Value;
 use std::env;
 use std::fs::File;
-use std::io::{self, prelude::*, Write};
+use std::io::prelude::*;
+use std::io::{self, Write};
 use std::path::PathBuf;
 use std::str::FromStr;
 
