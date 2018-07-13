@@ -1,15 +1,13 @@
 [package]
 name = "target-lexicon"
-version = "0.0.2"
+version = "0.0.3"
 authors = ["Dan Gohman <sunfish@mozilla.com>"]
 description = "Targeting utilities for compilers and related tools"
 documentation = "https://docs.rs/target-lexicon/"
 readme = "README.md"
 keywords = ["target", "host", "triple", "compiler", "jit"]
 categories = ["no-std"]
-# When cargo is updated to support SPDX 3.1, we can uncomment this.
-#license = "Apache-2.0 WITH LLVM-exception"
-license-file = "LICENSE"
+license = "Apache-2.0 WITH LLVM-exception"
 repository = "https://github.com/cretonne/target-lexicon"
 
 [dependencies]
