@@ -46,6 +46,15 @@ impl PointerWidth {
     }
 }
 
+/// The calling convention, which specifies things like which registers are
+/// used for passing arguments, which registers are callee-saved, and so on.
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
+#[allow(missing_docs)]
+pub enum CallingConvention {
+    SystemV,
+    WindowsFastcall,
+}
+
 /// A target "triple", because historically such things had three fields, though
 /// they've grown more features over time.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
@@ -71,6 +80,29 @@ impl Triple {
     /// Return the pointer width of this target's architecture.
     pub fn pointer_width(&self) -> Result<PointerWidth, ()> {
         self.architecture.pointer_width()
+    }
+
+    /// Return the default calling convention for the given target triple.
+    pub fn default_calling_convention(&self) -> Result<CallingConvention, ()> {
+        Ok(match self.operating_system {
+            OperatingSystem::Bitrig
+            | OperatingSystem::Cloudabi
+            | OperatingSystem::Darwin
+            | OperatingSystem::Dragonfly
+            | OperatingSystem::Freebsd
+            | OperatingSystem::Fuchsia
+            | OperatingSystem::Haiku
+            | OperatingSystem::Ios
+            | OperatingSystem::L4re
+            | OperatingSystem::Linux
+            | OperatingSystem::Nebulet
+            | OperatingSystem::Netbsd
+            | OperatingSystem::Openbsd
+            | OperatingSystem::Redox
+            | OperatingSystem::Solaris => CallingConvention::SystemV,
+            OperatingSystem::Windows => CallingConvention::WindowsFastcall,
+            _ => return Err(()),
+        })
     }
 }
 
@@ -305,5 +337,6 @@ mod tests {
     fn unknown_properties() {
         assert_eq!(Triple::default().endianness(), Err(()));
         assert_eq!(Triple::default().pointer_width(), Err(()));
+        assert_eq!(Triple::default().default_calling_convention(), Err(()));
     }
 }
