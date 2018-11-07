@@ -27,8 +27,8 @@ pub enum PointerWidth {
 
 impl PointerWidth {
     /// Return the number of bits in a pointer.
-    pub fn bits(&self) -> u8 {
-        match *self {
+    pub fn bits(self) -> u8 {
+        match self {
             PointerWidth::U16 => 16,
             PointerWidth::U32 => 32,
             PointerWidth::U64 => 64,
@@ -38,8 +38,8 @@ impl PointerWidth {
     /// Return the number of bytes in a pointer.
     ///
     /// For these purposes, there are 8 bits in a byte.
-    pub fn bytes(&self) -> u8 {
-        match *self {
+    pub fn bytes(self) -> u8 {
+        match self {
             PointerWidth::U16 => 2,
             PointerWidth::U32 => 4,
             PointerWidth::U64 => 8,
@@ -186,7 +186,7 @@ impl FromStr for Triple {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut parts = s.split('-');
-        let mut result = Triple::default();
+        let mut result = Self::default();
         let mut current_part;
 
         current_part = parts.next();
