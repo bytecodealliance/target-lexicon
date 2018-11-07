@@ -4,8 +4,9 @@ use parse_error::ParseError;
 use std::borrow::ToOwned;
 use std::fmt;
 use std::str::FromStr;
-use targets::{default_binary_format, Architecture, BinaryFormat, Environment, OperatingSystem,
-              Vendor};
+use targets::{
+    default_binary_format, Architecture, BinaryFormat, Environment, OperatingSystem, Vendor,
+};
 
 /// The target memory endianness.
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
@@ -153,7 +154,8 @@ impl fmt::Display for Triple {
         let implied_binary_format = default_binary_format(&self);
 
         write!(f, "{}", self.architecture)?;
-        if self.vendor == Vendor::Unknown && self.operating_system == OperatingSystem::Unknown
+        if self.vendor == Vendor::Unknown
+            && self.operating_system == OperatingSystem::Unknown
             && (self.environment != Environment::Unknown
                 || self.binary_format != implied_binary_format)
         {
