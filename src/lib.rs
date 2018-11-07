@@ -40,4 +40,4 @@ mod triple;
 pub use host::HOST;
 pub use parse_error::ParseError;
 pub use targets::{Architecture, BinaryFormat, Environment, OperatingSystem, Vendor};
-pub use triple::{Endianness, PointerWidth, Triple};
+pub use triple::{CallingConvention, Endianness, PointerWidth, Triple};
