@@ -1,8 +1,8 @@
 // This file defines all the identifier enums and target-aware logic.
 
-use std::fmt;
-use std::str::FromStr;
-use triple::{Endianness, PointerWidth, Triple};
+use crate::triple::{Endianness, PointerWidth, Triple};
+use core::fmt;
+use core::str::FromStr;
 
 /// The "architecture" field, which in some cases also specifies a specific
 /// subarchitecture.

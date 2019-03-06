@@ -1,12 +1,12 @@
 // This file defines the `Triple` type and support code shared by all targets.
 
-use parse_error::ParseError;
-use std::borrow::ToOwned;
-use std::fmt;
-use std::str::FromStr;
-use targets::{
+use crate::parse_error::ParseError;
+use crate::targets::{
     default_binary_format, Architecture, BinaryFormat, Environment, OperatingSystem, Vendor,
 };
+use core::fmt;
+use core::str::FromStr;
+use std::borrow::ToOwned;
 
 /// The target memory endianness.
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
