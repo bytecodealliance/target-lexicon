@@ -32,7 +32,7 @@ mod targets;
 #[macro_use]
 mod triple;
 
-pub use host::HOST;
-pub use parse_error::ParseError;
-pub use targets::{Architecture, BinaryFormat, Environment, OperatingSystem, Vendor};
-pub use triple::{CallingConvention, Endianness, PointerWidth, Triple};
+pub use self::host::HOST;
+pub use self::parse_error::ParseError;
+pub use self::targets::{Architecture, BinaryFormat, Environment, OperatingSystem, Vendor};
+pub use self::triple::{CallingConvention, Endianness, PointerWidth, Triple};
