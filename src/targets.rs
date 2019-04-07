@@ -19,6 +19,7 @@ pub enum Architecture {
     Armv7,
     Armv7r,
     Armv7s,
+    Armv7ve,
     Asmjs,
     I386,
     I586,
@@ -142,6 +143,7 @@ impl Architecture {
             | Architecture::Armv7
             | Architecture::Armv7r
             | Architecture::Armv7s
+            | Architecture::Armv7ve
             | Architecture::Asmjs
             | Architecture::I386
             | Architecture::I586
@@ -188,6 +190,7 @@ impl Architecture {
             | Architecture::Armv7
             | Architecture::Armv7r
             | Architecture::Armv7s
+            | Architecture::Armv7ve
             | Architecture::Asmjs
             | Architecture::I386
             | Architecture::I586
@@ -251,6 +254,7 @@ impl fmt::Display for Architecture {
             Architecture::Armv7 => "armv7",
             Architecture::Armv7r => "armv7r",
             Architecture::Armv7s => "armv7s",
+            Architecture::Armv7ve => "armv7ve",
             Architecture::Asmjs => "asmjs",
             Architecture::I386 => "i386",
             Architecture::I586 => "i586",
@@ -300,6 +304,7 @@ impl FromStr for Architecture {
             "armv7" => Architecture::Armv7,
             "armv7r" => Architecture::Armv7r,
             "armv7s" => Architecture::Armv7s,
+            "armv7ve" => Architecture::Armv7ve,
             "asmjs" => Architecture::Asmjs,
             "i386" => Architecture::I386,
             "i586" => Architecture::I586,
