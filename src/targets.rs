@@ -10,16 +10,7 @@ use core::str::FromStr;
 #[allow(missing_docs)]
 pub enum Architecture {
     Unknown,
-    Aarch64,
-    Arm,
-    Armebv7r,
-    Armv4t,
-    Armv5te,
-    Armv6,
-    Armv7,
-    Armv7r,
-    Armv7s,
-    Armv7ve,
+    Arm(ArmArchitecture),
     Asmjs,
     I386,
     I586,
@@ -40,6 +31,47 @@ pub enum Architecture {
     Sparc,
     Sparc64,
     Sparcv9,
+    Wasm32,
+    X86_64,
+}
+
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
+#[allow(missing_docs)]
+pub enum ArmArchitecture {
+    Arm, // Generic arm
+    Armv4,
+    Armv4t,
+    Armv5t,
+    Armv5te,
+    Armv5tej,
+    Armv6,
+    Armv6j,
+    Armv6k,
+    Armv6z,
+    Armv6kz,
+    Armv6t2,
+    Armv6m,
+    Armv7,
+    Armv7a,
+    Armv7ve,
+    Armv7m,
+    Armv7r,
+    Armv7s,
+    Armv8,
+    Armv8a,
+    Armv8_1a,
+    Armv8_2a,
+    Armv8_3a,
+    Armv8_4a,
+    Armv8_5a,
+    Armv8mBase,
+    Armv8mMain,
+    Armv8r,
+
+    Armebv7r,
+
+    Aarch64,
+
     Thumbv6m,
     Thumbv7a,
     Thumbv7em,
@@ -47,8 +79,163 @@ pub enum Architecture {
     Thumbv7neon,
     Thumbv8mBase,
     Thumbv8mMain,
-    Wasm32,
-    X86_64,
+}
+
+// #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
+// #[allow(missing_docs)]
+// pub enum ArmFpu {
+//     Vfp,
+//     Vfpv2,
+//     Vfpv3,
+//     Vfpv3Fp16,
+//     Vfpv3Xd,
+//     Vfpv3XdFp16,
+//     Neon,
+//     NeonVfpv3,
+//     NeonVfpv4,
+//     Vfpv4,
+//     Vfpv4D16,
+//     Fpv4SpD16,
+//     Fpv5SpD16,
+//     Fpv5D16,
+//     FpArmv8,
+//     NeonFpArmv8,
+//     CryptoNeonFpArmv8,
+// }
+
+impl ArmArchitecture {
+    pub fn is_thumb(self) -> Result<bool, ()> {
+        match self {
+            ArmArchitecture::Arm
+            | ArmArchitecture::Aarch64
+            | ArmArchitecture::Armv4
+            | ArmArchitecture::Armv4t
+            | ArmArchitecture::Armv5t
+            | ArmArchitecture::Armv5te
+            | ArmArchitecture::Armv5tej
+            | ArmArchitecture::Armv6
+            | ArmArchitecture::Armv6j
+            | ArmArchitecture::Armv6k
+            | ArmArchitecture::Armv6z
+            | ArmArchitecture::Armv6kz
+            | ArmArchitecture::Armv6t2
+            | ArmArchitecture::Armv6m
+            | ArmArchitecture::Armv7
+            | ArmArchitecture::Armv7a
+            | ArmArchitecture::Armv7ve
+            | ArmArchitecture::Armv7m
+            | ArmArchitecture::Armv7r
+            | ArmArchitecture::Armv7s
+            | ArmArchitecture::Armv8
+            | ArmArchitecture::Armv8a
+            | ArmArchitecture::Armv8_1a
+            | ArmArchitecture::Armv8_2a
+            | ArmArchitecture::Armv8_3a
+            | ArmArchitecture::Armv8_4a
+            | ArmArchitecture::Armv8_5a
+            | ArmArchitecture::Armv8mBase
+            | ArmArchitecture::Armv8mMain
+            | ArmArchitecture::Armv8r
+            | ArmArchitecture::Armebv7r => Ok(false),
+            ArmArchitecture::Thumbv6m
+            | ArmArchitecture::Thumbv7a
+            | ArmArchitecture::Thumbv7em
+            | ArmArchitecture::Thumbv7m
+            | ArmArchitecture::Thumbv7neon
+            | ArmArchitecture::Thumbv8mBase
+            | ArmArchitecture::Thumbv8mMain => Ok(true),
+        }
+    }
+
+    // pub fn has_fpu(self) -> Result<&'static [ArmFpu], ()> {
+
+    // }
+
+    pub fn pointer_width(self) -> Result<PointerWidth, ()> {
+        match self {
+            ArmArchitecture::Aarch64 => Ok(PointerWidth::U64),
+            ArmArchitecture::Arm
+            | ArmArchitecture::Armv4
+            | ArmArchitecture::Armv4t
+            | ArmArchitecture::Armv5t
+            | ArmArchitecture::Armv5te
+            | ArmArchitecture::Armv5tej
+            | ArmArchitecture::Armv6
+            | ArmArchitecture::Armv6j
+            | ArmArchitecture::Armv6k
+            | ArmArchitecture::Armv6z
+            | ArmArchitecture::Armv6kz
+            | ArmArchitecture::Armv6t2
+            | ArmArchitecture::Armv6m
+            | ArmArchitecture::Armv7
+            | ArmArchitecture::Armv7a
+            | ArmArchitecture::Armv7ve
+            | ArmArchitecture::Armv7m
+            | ArmArchitecture::Armv7r
+            | ArmArchitecture::Armv7s
+            | ArmArchitecture::Armv8
+            | ArmArchitecture::Armv8a
+            | ArmArchitecture::Armv8_1a
+            | ArmArchitecture::Armv8_2a
+            | ArmArchitecture::Armv8_3a
+            | ArmArchitecture::Armv8_4a
+            | ArmArchitecture::Armv8_5a
+            | ArmArchitecture::Armv8mBase
+            | ArmArchitecture::Armv8mMain
+            | ArmArchitecture::Armv8r
+            | ArmArchitecture::Armebv7r
+            | ArmArchitecture::Thumbv6m
+            | ArmArchitecture::Thumbv7a
+            | ArmArchitecture::Thumbv7em
+            | ArmArchitecture::Thumbv7m
+            | ArmArchitecture::Thumbv7neon
+            | ArmArchitecture::Thumbv8mBase
+            | ArmArchitecture::Thumbv8mMain => Ok(PointerWidth::U32),
+        }
+    }
+
+    pub fn endianness(self) -> Result<Endianness, ()> {
+        match self {
+            ArmArchitecture::Arm
+            | ArmArchitecture::Aarch64
+            | ArmArchitecture::Armv4
+            | ArmArchitecture::Armv4t
+            | ArmArchitecture::Armv5t
+            | ArmArchitecture::Armv5te
+            | ArmArchitecture::Armv5tej
+            | ArmArchitecture::Armv6
+            | ArmArchitecture::Armv6j
+            | ArmArchitecture::Armv6k
+            | ArmArchitecture::Armv6z
+            | ArmArchitecture::Armv6kz
+            | ArmArchitecture::Armv6t2
+            | ArmArchitecture::Armv6m
+            | ArmArchitecture::Armv7
+            | ArmArchitecture::Armv7a
+            | ArmArchitecture::Armv7ve
+            | ArmArchitecture::Armv7m
+            | ArmArchitecture::Armv7r
+            | ArmArchitecture::Armv7s
+            | ArmArchitecture::Armv8
+            | ArmArchitecture::Armv8a
+            | ArmArchitecture::Armv8_1a
+            | ArmArchitecture::Armv8_2a
+            | ArmArchitecture::Armv8_3a
+            | ArmArchitecture::Armv8_4a
+            | ArmArchitecture::Armv8_5a
+            | ArmArchitecture::Armv8mBase
+            | ArmArchitecture::Armv8mMain
+            | ArmArchitecture::Armv8r
+            | ArmArchitecture::Thumbv6m
+            | ArmArchitecture::Thumbv7a
+            | ArmArchitecture::Thumbv7em
+            | ArmArchitecture::Thumbv7m
+            | ArmArchitecture::Thumbv7neon
+            | ArmArchitecture::Thumbv8mBase
+            | ArmArchitecture::Thumbv8mMain => Ok(Endianness::Little),
+            ArmArchitecture::Armebv7r => Ok(Endianness::Big),
+        }
+    }
 }
 
 /// The "vendor" field, which in practice is little more than an arbitrary
@@ -135,16 +322,8 @@ impl Architecture {
     pub fn endianness(self) -> Result<Endianness, ()> {
         match self {
             Architecture::Unknown => Err(()),
-            Architecture::Aarch64
-            | Architecture::Arm
-            | Architecture::Armv4t
-            | Architecture::Armv5te
-            | Architecture::Armv6
-            | Architecture::Armv7
-            | Architecture::Armv7r
-            | Architecture::Armv7s
-            | Architecture::Armv7ve
-            | Architecture::Asmjs
+            Architecture::Arm(arm) => arm.endianness(),
+            Architecture::Asmjs
             | Architecture::I386
             | Architecture::I586
             | Architecture::I686
@@ -156,16 +335,8 @@ impl Architecture {
             | Architecture::Riscv32imac
             | Architecture::Riscv32imc
             | Architecture::Riscv64
-            | Architecture::Thumbv6m
-            | Architecture::Thumbv7a
-            | Architecture::Thumbv7em
-            | Architecture::Thumbv7m
-            | Architecture::Thumbv7neon
-            | Architecture::Thumbv8mBase
-            | Architecture::Thumbv8mMain
             | Architecture::Wasm32
             | Architecture::X86_64 => Ok(Endianness::Little),
-            Architecture::Armebv7r
             | Architecture::Mips
             | Architecture::Mips64
             | Architecture::Powerpc
@@ -182,16 +353,8 @@ impl Architecture {
         match self {
             Architecture::Unknown => Err(()),
             Architecture::Msp430 => Ok(PointerWidth::U16),
-            Architecture::Arm
-            | Architecture::Armebv7r
-            | Architecture::Armv4t
-            | Architecture::Armv5te
-            | Architecture::Armv6
-            | Architecture::Armv7
-            | Architecture::Armv7r
-            | Architecture::Armv7s
-            | Architecture::Armv7ve
-            | Architecture::Asmjs
+            Architecture::Arm(arm) => arm.pointer_width(),
+            Architecture::Asmjs
             | Architecture::I386
             | Architecture::I586
             | Architecture::I686
@@ -200,18 +363,10 @@ impl Architecture {
             | Architecture::Riscv32imac
             | Architecture::Riscv32imc
             | Architecture::Sparc
-            | Architecture::Thumbv6m
-            | Architecture::Thumbv7a
-            | Architecture::Thumbv7em
-            | Architecture::Thumbv7m
-            | Architecture::Thumbv7neon
-            | Architecture::Thumbv8mBase
-            | Architecture::Thumbv8mMain
             | Architecture::Wasm32
             | Architecture::Mips
             | Architecture::Powerpc => Ok(PointerWidth::U32),
-            Architecture::Aarch64
-            | Architecture::Mips64el
+            Architecture::Mips64el
             | Architecture::Powerpc64le
             | Architecture::Riscv64
             | Architecture::X86_64
@@ -241,51 +396,85 @@ pub fn default_binary_format(triple: &Triple) -> BinaryFormat {
     }
 }
 
-impl fmt::Display for Architecture {
+impl fmt::Display for ArmArchitecture {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let s = match *self {
-            Architecture::Unknown => "unknown",
-            Architecture::Aarch64 => "aarch64",
-            Architecture::Arm => "arm",
-            Architecture::Armebv7r => "armebv7r",
-            Architecture::Armv4t => "armv4t",
-            Architecture::Armv5te => "armv5te",
-            Architecture::Armv6 => "armv6",
-            Architecture::Armv7 => "armv7",
-            Architecture::Armv7r => "armv7r",
-            Architecture::Armv7s => "armv7s",
-            Architecture::Armv7ve => "armv7ve",
-            Architecture::Asmjs => "asmjs",
-            Architecture::I386 => "i386",
-            Architecture::I586 => "i586",
-            Architecture::I686 => "i686",
-            Architecture::Mips => "mips",
-            Architecture::Mips64 => "mips64",
-            Architecture::Mips64el => "mips64el",
-            Architecture::Mipsel => "mipsel",
-            Architecture::Msp430 => "msp430",
-            Architecture::Powerpc => "powerpc",
-            Architecture::Powerpc64 => "powerpc64",
-            Architecture::Powerpc64le => "powerpc64le",
-            Architecture::Riscv32 => "riscv32",
-            Architecture::Riscv32imac => "riscv32imac",
-            Architecture::Riscv32imc => "riscv32imc",
-            Architecture::Riscv64 => "riscv64",
-            Architecture::S390x => "s390x",
-            Architecture::Sparc => "sparc",
-            Architecture::Sparc64 => "sparc64",
-            Architecture::Sparcv9 => "sparcv9",
-            Architecture::Thumbv6m => "thumbv6m",
-            Architecture::Thumbv7a => "thumbv7a",
-            Architecture::Thumbv7em => "thumbv7em",
-            Architecture::Thumbv7m => "thumbv7m",
-            Architecture::Thumbv7neon => "thumbv7neon",
-            Architecture::Thumbv8mBase => "thumbv8m.base",
-            Architecture::Thumbv8mMain => "thumbv8m.main",
-            Architecture::Wasm32 => "wasm32",
-            Architecture::X86_64 => "x86_64",
+            ArmArchitecture::Arm => "arm",
+            ArmArchitecture::Aarch64 => "aarch64",
+            ArmArchitecture::Armv4 => "armv4",
+            ArmArchitecture::Armv4t => "armv4t",
+            ArmArchitecture::Armv5t => "armv5t",
+            ArmArchitecture::Armv5te => "armv5te",
+            ArmArchitecture::Armv5tej => "armv5tej",
+            ArmArchitecture::Armv6 => "armv6",
+            ArmArchitecture::Armv6j => "armv6j",
+            ArmArchitecture::Armv6k => "armv6k",
+            ArmArchitecture::Armv6z => "armv6z",
+            ArmArchitecture::Armv6kz => "armv6kz",
+            ArmArchitecture::Armv6t2 => "armv6t2",
+            ArmArchitecture::Armv6m => "armv6m",
+            ArmArchitecture::Armv7 => "armv7",
+            ArmArchitecture::Armv7a => "armv7a",
+            ArmArchitecture::Armv7ve => "armv7ve",
+            ArmArchitecture::Armv7m => "armv7m",
+            ArmArchitecture::Armv7r => "armv7r",
+            ArmArchitecture::Armv7s => "armv7s",
+            ArmArchitecture::Armv8 => "armv8",
+            ArmArchitecture::Armv8a => "armv8a",
+            ArmArchitecture::Armv8_1a => "armv8.1a",
+            ArmArchitecture::Armv8_2a => "armv8.2a",
+            ArmArchitecture::Armv8_3a => "armv8.3a",
+            ArmArchitecture::Armv8_4a => "armv8.4a",
+            ArmArchitecture::Armv8_5a => "armv8.5a",
+            ArmArchitecture::Armv8mBase => "armv8m.base",
+            ArmArchitecture::Armv8mMain => "armv8m.main",
+            ArmArchitecture::Armv8r => "armv8r",
+            ArmArchitecture::Thumbv6m => "thumbv6m",
+            ArmArchitecture::Thumbv7a => "thumbv7a",
+            ArmArchitecture::Thumbv7em => "thumbv7em",
+            ArmArchitecture::Thumbv7m => "thumbv7m",
+            ArmArchitecture::Thumbv7neon => "thumbv7neon",
+            ArmArchitecture::Thumbv8mBase => "thumbv8m.base",
+            ArmArchitecture::Thumbv8mMain => "thumbv8m.main",
+            ArmArchitecture::Armebv7r => "armebv7r",
         };
         f.write_str(s)
+    }
+}
+
+impl fmt::Display for Architecture {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        if let Architecture::Arm(arm) = *self {
+            arm.fmt(f)
+        } else {
+            let s = match *self {
+                Architecture::Unknown => "unknown",
+                Architecture::Asmjs => "asmjs",
+                Architecture::I386 => "i386",
+                Architecture::I586 => "i586",
+                Architecture::I686 => "i686",
+                Architecture::Mips => "mips",
+                Architecture::Mips64 => "mips64",
+                Architecture::Mips64el => "mips64el",
+                Architecture::Mipsel => "mipsel",
+                Architecture::Msp430 => "msp430",
+                Architecture::Powerpc => "powerpc",
+                Architecture::Powerpc64 => "powerpc64",
+                Architecture::Powerpc64le => "powerpc64le",
+                Architecture::Riscv32 => "riscv32",
+                Architecture::Riscv32imac => "riscv32imac",
+                Architecture::Riscv32imc => "riscv32imc",
+                Architecture::Riscv64 => "riscv64",
+                Architecture::S390x => "s390x",
+                Architecture::Sparc => "sparc",
+                Architecture::Sparc64 => "sparc64",
+                Architecture::Sparcv9 => "sparcv9",
+                Architecture::Wasm32 => "wasm32",
+                Architecture::X86_64 => "x86_64",
+                Architecture::Arm(_) => unreachable!(),
+            };
+            f.write_str(s)
+        }
     }
 }
 
@@ -295,16 +484,44 @@ impl FromStr for Architecture {
     fn from_str(s: &str) -> Result<Self, ()> {
         Ok(match s {
             "unknown" => Architecture::Unknown,
-            "aarch64" => Architecture::Aarch64,
-            "arm" => Architecture::Arm,
-            "armebv7r" => Architecture::Armebv7r,
-            "armv4t" => Architecture::Armv4t,
-            "armv5te" => Architecture::Armv5te,
-            "armv6" => Architecture::Armv6,
-            "armv7" => Architecture::Armv7,
-            "armv7r" => Architecture::Armv7r,
-            "armv7s" => Architecture::Armv7s,
-            "armv7ve" => Architecture::Armv7ve,
+            "arm" => Architecture::Arm(ArmArchitecture::Arm),
+            "aarch64" => Architecture::Arm(ArmArchitecture::Aarch64),
+            "armv4" => Architecture::Arm(ArmArchitecture::Armv4),
+            "armv4t" => Architecture::Arm(ArmArchitecture::Armv4t),
+            "armv5t" => Architecture::Arm(ArmArchitecture::Armv5t),
+            "armv5te" => Architecture::Arm(ArmArchitecture::Armv5te),
+            "armv5tej" => Architecture::Arm(ArmArchitecture::Armv5tej),
+            "armv6" => Architecture::Arm(ArmArchitecture::Armv6),
+            "armv6j" => Architecture::Arm(ArmArchitecture::Armv6j),
+            "armv6k" => Architecture::Arm(ArmArchitecture::Armv6k),
+            "armv6z" => Architecture::Arm(ArmArchitecture::Armv6z),
+            "armv6kz" => Architecture::Arm(ArmArchitecture::Armv6kz),
+            "armv6t2" => Architecture::Arm(ArmArchitecture::Armv6t2),
+            "armv6m" => Architecture::Arm(ArmArchitecture::Armv6m),
+            "armv7" => Architecture::Arm(ArmArchitecture::Armv7),
+            "armv7a" => Architecture::Arm(ArmArchitecture::Armv7a),
+            "armv7ve" => Architecture::Arm(ArmArchitecture::Armv7ve),
+            "armv7m" => Architecture::Arm(ArmArchitecture::Armv7m),
+            "armv7r" => Architecture::Arm(ArmArchitecture::Armv7r),
+            "armv7s" => Architecture::Arm(ArmArchitecture::Armv7s),
+            "armv8" => Architecture::Arm(ArmArchitecture::Armv8),
+            "armv8a" => Architecture::Arm(ArmArchitecture::Armv8a),
+            "armv8.1a" => Architecture::Arm(ArmArchitecture::Armv8_1a),
+            "armv8.2a" => Architecture::Arm(ArmArchitecture::Armv8_2a),
+            "armv8.3a" => Architecture::Arm(ArmArchitecture::Armv8_3a),
+            "armv8.4a" => Architecture::Arm(ArmArchitecture::Armv8_4a),
+            "armv8.5a" => Architecture::Arm(ArmArchitecture::Armv8_5a),
+            "armv8m.base" => Architecture::Arm(ArmArchitecture::Armv8mBase),
+            "armv8m.main" => Architecture::Arm(ArmArchitecture::Armv8mMain),
+            "armv8r" => Architecture::Arm(ArmArchitecture::Armv8r),
+            "thumbv6m" => Architecture::Arm(ArmArchitecture::Thumbv6m),
+            "thumbv7a" => Architecture::Arm(ArmArchitecture::Thumbv7a),
+            "thumbv7em" => Architecture::Arm(ArmArchitecture::Thumbv7em),
+            "thumbv7m" => Architecture::Arm(ArmArchitecture::Thumbv7m),
+            "thumbv7neon" => Architecture::Arm(ArmArchitecture::Thumbv7neon),
+            "thumbv8m.base" => Architecture::Arm(ArmArchitecture::Thumbv8mBase),
+            "thumbv8m.main" => Architecture::Arm(ArmArchitecture::Thumbv8mMain),
+            "armebv7r" => Architecture::Arm(ArmArchitecture::Armebv7r),
             "asmjs" => Architecture::Asmjs,
             "i386" => Architecture::I386,
             "i586" => Architecture::I586,
@@ -325,13 +542,6 @@ impl FromStr for Architecture {
             "sparc" => Architecture::Sparc,
             "sparc64" => Architecture::Sparc64,
             "sparcv9" => Architecture::Sparcv9,
-            "thumbv6m" => Architecture::Thumbv6m,
-            "thumbv7a" => Architecture::Thumbv7a,
-            "thumbv7em" => Architecture::Thumbv7em,
-            "thumbv7m" => Architecture::Thumbv7m,
-            "thumbv7neon" => Architecture::Thumbv7neon,
-            "thumbv8m.base" => Architecture::Thumbv8mBase,
-            "thumbv8m.main" => Architecture::Thumbv8mMain,
             "wasm32" => Architecture::Wasm32,
             "x86_64" => Architecture::X86_64,
             _ => return Err(()),
