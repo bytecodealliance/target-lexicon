@@ -2,7 +2,7 @@
 
 use crate::parse_error::ParseError;
 use crate::targets::{
-    default_binary_format, Architecture, BinaryFormat, Environment, OperatingSystem, Vendor,
+    default_binary_format, Architecture, ArmArchitecture, BinaryFormat, Environment, OperatingSystem, Vendor,
 };
 use core::fmt;
 use core::str::FromStr;
@@ -160,13 +160,13 @@ impl fmt::Display for Triple {
                     || self.environment == Environment::Androideabi))
                 || self.operating_system == OperatingSystem::Fuchsia
                 || (self.operating_system == OperatingSystem::None_
-                    && (self.architecture == Architecture::Armebv7r
-                        || self.architecture == Architecture::Armv7r
-                        || self.architecture == Architecture::Thumbv6m
-                        || self.architecture == Architecture::Thumbv7em
-                        || self.architecture == Architecture::Thumbv7m
-                        || self.architecture == Architecture::Thumbv8mBase
-                        || self.architecture == Architecture::Thumbv8mMain
+                    && (self.architecture == Architecture::Arm(ArmArchitecture::Armebv7r)
+                        || self.architecture == Architecture::Arm(ArmArchitecture::Armv7r)
+                        || self.architecture == Architecture::Arm(ArmArchitecture::Thumbv6m)
+                        || self.architecture == Architecture::Arm(ArmArchitecture::Thumbv7em)
+                        || self.architecture == Architecture::Arm(ArmArchitecture::Thumbv7m)
+                        || self.architecture == Architecture::Arm(ArmArchitecture::Thumbv8mBase)
+                        || self.architecture == Architecture::Arm(ArmArchitecture::Thumbv8mMain)
                         || self.architecture == Architecture::Msp430)))
         {
             // As a special case, omit the vendor for Android, Fuchsia, and sometimes
