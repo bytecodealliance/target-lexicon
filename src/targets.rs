@@ -249,7 +249,6 @@ impl ArmArchitecture {
     }
 }
 
-
 impl Aarch64Architecture {
     pub fn is_thumb(self) -> Result<bool, ()> {
         match self {
