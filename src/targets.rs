@@ -11,6 +11,7 @@ use core::str::FromStr;
 pub enum Architecture {
     Unknown,
     Arm(ArmArchitecture),
+    Aarch64(Aarch64Architecture),
     Asmjs,
     I386,
     I586,
@@ -39,6 +40,7 @@ pub enum Architecture {
 #[allow(missing_docs)]
 pub enum ArmArchitecture {
     Arm, // Generic arm
+    Armeb,
     Armv4,
     Armv4t,
     Armv5t,
@@ -70,8 +72,7 @@ pub enum ArmArchitecture {
 
     Armebv7r,
 
-    Aarch64,
-
+    Thumbeb,
     Thumbv6m,
     Thumbv7a,
     Thumbv7em,
@@ -79,6 +80,13 @@ pub enum ArmArchitecture {
     Thumbv7neon,
     Thumbv8mBase,
     Thumbv8mMain,
+}
+
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
+#[allow(missing_docs)]
+pub enum Aarch64Architecture {
+    Aarch64,
+    Aarch64be,
 }
 
 // #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
@@ -107,7 +115,7 @@ impl ArmArchitecture {
     pub fn is_thumb(self) -> Result<bool, ()> {
         match self {
             ArmArchitecture::Arm
-            | ArmArchitecture::Aarch64
+            | ArmArchitecture::Armeb
             | ArmArchitecture::Armv4
             | ArmArchitecture::Armv4t
             | ArmArchitecture::Armv5t
@@ -137,7 +145,8 @@ impl ArmArchitecture {
             | ArmArchitecture::Armv8mMain
             | ArmArchitecture::Armv8r
             | ArmArchitecture::Armebv7r => Ok(false),
-            ArmArchitecture::Thumbv6m
+            ArmArchitecture::Thumbeb
+            | ArmArchitecture::Thumbv6m
             | ArmArchitecture::Thumbv7a
             | ArmArchitecture::Thumbv7em
             | ArmArchitecture::Thumbv7m
@@ -153,8 +162,8 @@ impl ArmArchitecture {
 
     pub fn pointer_width(self) -> Result<PointerWidth, ()> {
         match self {
-            ArmArchitecture::Aarch64 => Ok(PointerWidth::U64),
             ArmArchitecture::Arm
+            | ArmArchitecture::Armeb
             | ArmArchitecture::Armv4
             | ArmArchitecture::Armv4t
             | ArmArchitecture::Armv5t
@@ -184,6 +193,7 @@ impl ArmArchitecture {
             | ArmArchitecture::Armv8mMain
             | ArmArchitecture::Armv8r
             | ArmArchitecture::Armebv7r
+            | ArmArchitecture::Thumbeb
             | ArmArchitecture::Thumbv6m
             | ArmArchitecture::Thumbv7a
             | ArmArchitecture::Thumbv7em
@@ -197,7 +207,6 @@ impl ArmArchitecture {
     pub fn endianness(self) -> Result<Endianness, ()> {
         match self {
             ArmArchitecture::Arm
-            | ArmArchitecture::Aarch64
             | ArmArchitecture::Armv4
             | ArmArchitecture::Armv4t
             | ArmArchitecture::Armv5t
@@ -233,7 +242,37 @@ impl ArmArchitecture {
             | ArmArchitecture::Thumbv7neon
             | ArmArchitecture::Thumbv8mBase
             | ArmArchitecture::Thumbv8mMain => Ok(Endianness::Little),
-            ArmArchitecture::Armebv7r => Ok(Endianness::Big),
+            ArmArchitecture::Armeb
+            | ArmArchitecture::Armebv7r
+            | ArmArchitecture::Thumbeb => Ok(Endianness::Big),
+        }
+    }
+}
+
+
+impl Aarch64Architecture {
+    pub fn is_thumb(self) -> Result<bool, ()> {
+        match self {
+            Aarch64Architecture::Aarch64
+            | Aarch64Architecture::Aarch64be => Ok(false),
+        }
+    }
+
+    // pub fn has_fpu(self) -> Result<&'static [ArmFpu], ()> {
+
+    // }
+
+    pub fn pointer_width(self) -> Result<PointerWidth, ()> {
+        match self {
+            Aarch64Architecture::Aarch64
+            | Aarch64Architecture::Aarch64be => Ok(PointerWidth::U64),
+        }
+    }
+
+    pub fn endianness(self) -> Result<Endianness, ()> {
+        match self {
+            Aarch64Architecture::Aarch64 => Ok(Endianness::Little),
+            Aarch64Architecture::Aarch64be => Ok(Endianness::Big),
         }
     }
 }
@@ -323,6 +362,7 @@ impl Architecture {
         match self {
             Architecture::Unknown => Err(()),
             Architecture::Arm(arm) => arm.endianness(),
+            Architecture::Aarch64(aarch) => aarch.endianness(),
             Architecture::Asmjs
             | Architecture::I386
             | Architecture::I586
@@ -354,6 +394,7 @@ impl Architecture {
             Architecture::Unknown => Err(()),
             Architecture::Msp430 => Ok(PointerWidth::U16),
             Architecture::Arm(arm) => arm.pointer_width(),
+            Architecture::Aarch64(aarch) => aarch.pointer_width(),
             Architecture::Asmjs
             | Architecture::I386
             | Architecture::I586
@@ -400,7 +441,7 @@ impl fmt::Display for ArmArchitecture {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let s = match *self {
             ArmArchitecture::Arm => "arm",
-            ArmArchitecture::Aarch64 => "aarch64",
+            ArmArchitecture::Armeb => "armeb",
             ArmArchitecture::Armv4 => "armv4",
             ArmArchitecture::Armv4t => "armv4t",
             ArmArchitecture::Armv5t => "armv5t",
@@ -429,6 +470,7 @@ impl fmt::Display for ArmArchitecture {
             ArmArchitecture::Armv8mBase => "armv8m.base",
             ArmArchitecture::Armv8mMain => "armv8m.main",
             ArmArchitecture::Armv8r => "armv8r",
+            ArmArchitecture::Thumbeb => "thumbeb",
             ArmArchitecture::Thumbv6m => "thumbv6m",
             ArmArchitecture::Thumbv7a => "thumbv7a",
             ArmArchitecture::Thumbv7em => "thumbv7em",
@@ -442,38 +484,44 @@ impl fmt::Display for ArmArchitecture {
     }
 }
 
+impl fmt::Display for Aarch64Architecture {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let s = match *self {
+            Aarch64Architecture::Aarch64 => "aarch64",
+            Aarch64Architecture::Aarch64be => "aarch64be",
+        };
+        f.write_str(s)
+    }
+}
+
 impl fmt::Display for Architecture {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        if let Architecture::Arm(arm) = *self {
-            arm.fmt(f)
-        } else {
-            let s = match *self {
-                Architecture::Unknown => "unknown",
-                Architecture::Asmjs => "asmjs",
-                Architecture::I386 => "i386",
-                Architecture::I586 => "i586",
-                Architecture::I686 => "i686",
-                Architecture::Mips => "mips",
-                Architecture::Mips64 => "mips64",
-                Architecture::Mips64el => "mips64el",
-                Architecture::Mipsel => "mipsel",
-                Architecture::Msp430 => "msp430",
-                Architecture::Powerpc => "powerpc",
-                Architecture::Powerpc64 => "powerpc64",
-                Architecture::Powerpc64le => "powerpc64le",
-                Architecture::Riscv32 => "riscv32",
-                Architecture::Riscv32imac => "riscv32imac",
-                Architecture::Riscv32imc => "riscv32imc",
-                Architecture::Riscv64 => "riscv64",
-                Architecture::S390x => "s390x",
-                Architecture::Sparc => "sparc",
-                Architecture::Sparc64 => "sparc64",
-                Architecture::Sparcv9 => "sparcv9",
-                Architecture::Wasm32 => "wasm32",
-                Architecture::X86_64 => "x86_64",
-                Architecture::Arm(_) => unreachable!(),
-            };
-            f.write_str(s)
+        match *self {
+            Architecture::Arm(arm) => arm.fmt(f),
+            Architecture::Aarch64(aarch) => aarch.fmt(f),
+            Architecture::Unknown => f.write_str("unknown"),
+            Architecture::Asmjs => f.write_str("asmjs"),
+            Architecture::I386 => f.write_str("i386"),
+            Architecture::I586 => f.write_str("i586"),
+            Architecture::I686 => f.write_str("i686"),
+            Architecture::Mips => f.write_str("mips"),
+            Architecture::Mips64 => f.write_str("mips64"),
+            Architecture::Mips64el => f.write_str("mips64el"),
+            Architecture::Mipsel => f.write_str("mipsel"),
+            Architecture::Msp430 => f.write_str("msp430"),
+            Architecture::Powerpc => f.write_str("powerpc"),
+            Architecture::Powerpc64 => f.write_str("powerpc64"),
+            Architecture::Powerpc64le => f.write_str("powerpc64le"),
+            Architecture::Riscv32 => f.write_str("riscv32"),
+            Architecture::Riscv32imac => f.write_str("riscv32imac"),
+            Architecture::Riscv32imc => f.write_str("riscv32imc"),
+            Architecture::Riscv64 => f.write_str("riscv64"),
+            Architecture::S390x => f.write_str("s390x"),
+            Architecture::Sparc => f.write_str("sparc"),
+            Architecture::Sparc64 => f.write_str("sparc64"),
+            Architecture::Sparcv9 => f.write_str("sparcv9"),
+            Architecture::Wasm32 => f.write_str("wasm32"),
+            Architecture::X86_64 => f.write_str("x86_64"),
         }
     }
 }
@@ -485,7 +533,10 @@ impl FromStr for Architecture {
         Ok(match s {
             "unknown" => Architecture::Unknown,
             "arm" => Architecture::Arm(ArmArchitecture::Arm),
-            "aarch64" => Architecture::Arm(ArmArchitecture::Aarch64),
+            "armeb" => Architecture::Arm(ArmArchitecture::Armeb),
+            "aarch64" => Architecture::Aarch64(Aarch64Architecture::Aarch64),
+            "arm64" => Architecture::Aarch64(Aarch64Architecture::Aarch64),
+            "aarch64be" => Architecture::Aarch64(Aarch64Architecture::Aarch64be),
             "armv4" => Architecture::Arm(ArmArchitecture::Armv4),
             "armv4t" => Architecture::Arm(ArmArchitecture::Armv4t),
             "armv5t" => Architecture::Arm(ArmArchitecture::Armv5t),
@@ -514,6 +565,7 @@ impl FromStr for Architecture {
             "armv8m.base" => Architecture::Arm(ArmArchitecture::Armv8mBase),
             "armv8m.main" => Architecture::Arm(ArmArchitecture::Armv8mMain),
             "armv8r" => Architecture::Arm(ArmArchitecture::Armv8r),
+            "thumbeb" => Architecture::Arm(ArmArchitecture::Thumbeb),
             "thumbv6m" => Architecture::Arm(ArmArchitecture::Thumbv6m),
             "thumbv7a" => Architecture::Arm(ArmArchitecture::Thumbv7a),
             "thumbv7em" => Architecture::Arm(ArmArchitecture::Thumbv7em),
