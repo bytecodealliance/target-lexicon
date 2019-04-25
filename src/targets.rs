@@ -526,54 +526,75 @@ impl fmt::Display for Architecture {
     }
 }
 
+impl FromStr for ArmArchitecture {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, ()> {
+        Ok(match s {
+            "arm" => ArmArchitecture::Arm,
+            "armeb" => ArmArchitecture::Armeb,
+            "armv4" => ArmArchitecture::Armv4,
+            "armv4t" => ArmArchitecture::Armv4t,
+            "armv5t" => ArmArchitecture::Armv5t,
+            "armv5te" => ArmArchitecture::Armv5te,
+            "armv5tej" => ArmArchitecture::Armv5tej,
+            "armv6" => ArmArchitecture::Armv6,
+            "armv6j" => ArmArchitecture::Armv6j,
+            "armv6k" => ArmArchitecture::Armv6k,
+            "armv6z" => ArmArchitecture::Armv6z,
+            "armv6kz" => ArmArchitecture::Armv6kz,
+            "armv6t2" => ArmArchitecture::Armv6t2,
+            "armv6m" => ArmArchitecture::Armv6m,
+            "armv7" => ArmArchitecture::Armv7,
+            "armv7a" => ArmArchitecture::Armv7a,
+            "armv7ve" => ArmArchitecture::Armv7ve,
+            "armv7m" => ArmArchitecture::Armv7m,
+            "armv7r" => ArmArchitecture::Armv7r,
+            "armv7s" => ArmArchitecture::Armv7s,
+            "armv8" => ArmArchitecture::Armv8,
+            "armv8a" => ArmArchitecture::Armv8a,
+            "armv8.1a" => ArmArchitecture::Armv8_1a,
+            "armv8.2a" => ArmArchitecture::Armv8_2a,
+            "armv8.3a" => ArmArchitecture::Armv8_3a,
+            "armv8.4a" => ArmArchitecture::Armv8_4a,
+            "armv8.5a" => ArmArchitecture::Armv8_5a,
+            "armv8m.base" => ArmArchitecture::Armv8mBase,
+            "armv8m.main" => ArmArchitecture::Armv8mMain,
+            "armv8r" => ArmArchitecture::Armv8r,
+            "thumbeb" => ArmArchitecture::Thumbeb,
+            "thumbv6m" => ArmArchitecture::Thumbv6m,
+            "thumbv7a" => ArmArchitecture::Thumbv7a,
+            "thumbv7em" => ArmArchitecture::Thumbv7em,
+            "thumbv7m" => ArmArchitecture::Thumbv7m,
+            "thumbv7neon" => ArmArchitecture::Thumbv7neon,
+            "thumbv8m.base" => ArmArchitecture::Thumbv8mBase,
+            "thumbv8m.main" => ArmArchitecture::Thumbv8mMain,
+            "armebv7r" => ArmArchitecture::Armebv7r,
+            _ => return Err(()),
+        })
+    }
+}
+
+
+impl FromStr for Aarch64Architecture {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, ()> {
+        Ok(match s {
+            "aarch64" => Aarch64Architecture::Aarch64,
+            "arm64" => Aarch64Architecture::Aarch64,
+            "aarch64be" => Aarch64Architecture::Aarch64be,
+            _ => return Err(()),
+        })
+    }
+}
+
 impl FromStr for Architecture {
     type Err = ();
 
     fn from_str(s: &str) -> Result<Self, ()> {
         Ok(match s {
             "unknown" => Architecture::Unknown,
-            "arm" => Architecture::Arm(ArmArchitecture::Arm),
-            "armeb" => Architecture::Arm(ArmArchitecture::Armeb),
-            "aarch64" => Architecture::Aarch64(Aarch64Architecture::Aarch64),
-            "arm64" => Architecture::Aarch64(Aarch64Architecture::Aarch64),
-            "aarch64be" => Architecture::Aarch64(Aarch64Architecture::Aarch64be),
-            "armv4" => Architecture::Arm(ArmArchitecture::Armv4),
-            "armv4t" => Architecture::Arm(ArmArchitecture::Armv4t),
-            "armv5t" => Architecture::Arm(ArmArchitecture::Armv5t),
-            "armv5te" => Architecture::Arm(ArmArchitecture::Armv5te),
-            "armv5tej" => Architecture::Arm(ArmArchitecture::Armv5tej),
-            "armv6" => Architecture::Arm(ArmArchitecture::Armv6),
-            "armv6j" => Architecture::Arm(ArmArchitecture::Armv6j),
-            "armv6k" => Architecture::Arm(ArmArchitecture::Armv6k),
-            "armv6z" => Architecture::Arm(ArmArchitecture::Armv6z),
-            "armv6kz" => Architecture::Arm(ArmArchitecture::Armv6kz),
-            "armv6t2" => Architecture::Arm(ArmArchitecture::Armv6t2),
-            "armv6m" => Architecture::Arm(ArmArchitecture::Armv6m),
-            "armv7" => Architecture::Arm(ArmArchitecture::Armv7),
-            "armv7a" => Architecture::Arm(ArmArchitecture::Armv7a),
-            "armv7ve" => Architecture::Arm(ArmArchitecture::Armv7ve),
-            "armv7m" => Architecture::Arm(ArmArchitecture::Armv7m),
-            "armv7r" => Architecture::Arm(ArmArchitecture::Armv7r),
-            "armv7s" => Architecture::Arm(ArmArchitecture::Armv7s),
-            "armv8" => Architecture::Arm(ArmArchitecture::Armv8),
-            "armv8a" => Architecture::Arm(ArmArchitecture::Armv8a),
-            "armv8.1a" => Architecture::Arm(ArmArchitecture::Armv8_1a),
-            "armv8.2a" => Architecture::Arm(ArmArchitecture::Armv8_2a),
-            "armv8.3a" => Architecture::Arm(ArmArchitecture::Armv8_3a),
-            "armv8.4a" => Architecture::Arm(ArmArchitecture::Armv8_4a),
-            "armv8.5a" => Architecture::Arm(ArmArchitecture::Armv8_5a),
-            "armv8m.base" => Architecture::Arm(ArmArchitecture::Armv8mBase),
-            "armv8m.main" => Architecture::Arm(ArmArchitecture::Armv8mMain),
-            "armv8r" => Architecture::Arm(ArmArchitecture::Armv8r),
-            "thumbeb" => Architecture::Arm(ArmArchitecture::Thumbeb),
-            "thumbv6m" => Architecture::Arm(ArmArchitecture::Thumbv6m),
-            "thumbv7a" => Architecture::Arm(ArmArchitecture::Thumbv7a),
-            "thumbv7em" => Architecture::Arm(ArmArchitecture::Thumbv7em),
-            "thumbv7m" => Architecture::Arm(ArmArchitecture::Thumbv7m),
-            "thumbv7neon" => Architecture::Arm(ArmArchitecture::Thumbv7neon),
-            "thumbv8m.base" => Architecture::Arm(ArmArchitecture::Thumbv8mBase),
-            "thumbv8m.main" => Architecture::Arm(ArmArchitecture::Thumbv8mMain),
-            "armebv7r" => Architecture::Arm(ArmArchitecture::Armebv7r),
             "asmjs" => Architecture::Asmjs,
             "i386" => Architecture::I386,
             "i586" => Architecture::I586,
@@ -596,7 +617,15 @@ impl FromStr for Architecture {
             "sparcv9" => Architecture::Sparcv9,
             "wasm32" => Architecture::Wasm32,
             "x86_64" => Architecture::X86_64,
-            _ => return Err(()),
+            _ => {
+                if let Ok(arm) = ArmArchitecture::from_str(s) {
+                    Architecture::Arm(arm)
+                } else if let Ok(aarch64) = Aarch64Architecture::from_str(s) {
+                    Architecture::Aarch64(aarch64)
+                } else {
+                    return Err(());
+                }
+            },
         })
     }
 }
