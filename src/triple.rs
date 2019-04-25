@@ -2,7 +2,8 @@
 
 use crate::parse_error::ParseError;
 use crate::targets::{
-    default_binary_format, Architecture, ArmArchitecture, BinaryFormat, Environment, OperatingSystem, Vendor,
+    default_binary_format, Architecture, ArmArchitecture, BinaryFormat, Environment,
+    OperatingSystem, Vendor,
 };
 use core::fmt;
 use core::str::FromStr;
