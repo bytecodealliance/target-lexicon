@@ -377,7 +377,7 @@ impl Architecture {
             | Architecture::Riscv64
             | Architecture::Wasm32
             | Architecture::X86_64 => Ok(Endianness::Little),
-            | Architecture::Mips
+            Architecture::Mips
             | Architecture::Mips64
             | Architecture::Powerpc
             | Architecture::Powerpc64
