@@ -242,9 +242,9 @@ impl ArmArchitecture {
             | ArmArchitecture::Thumbv7neon
             | ArmArchitecture::Thumbv8mBase
             | ArmArchitecture::Thumbv8mMain => Ok(Endianness::Little),
-            ArmArchitecture::Armeb
-            | ArmArchitecture::Armebv7r
-            | ArmArchitecture::Thumbeb => Ok(Endianness::Big),
+            ArmArchitecture::Armeb | ArmArchitecture::Armebv7r | ArmArchitecture::Thumbeb => {
+                Ok(Endianness::Big)
+            }
         }
     }
 }
@@ -252,8 +252,7 @@ impl ArmArchitecture {
 impl Aarch64Architecture {
     pub fn is_thumb(self) -> Result<bool, ()> {
         match self {
-            Aarch64Architecture::Aarch64
-            | Aarch64Architecture::Aarch64be => Ok(false),
+            Aarch64Architecture::Aarch64 | Aarch64Architecture::Aarch64be => Ok(false),
         }
     }
 
@@ -263,8 +262,7 @@ impl Aarch64Architecture {
 
     pub fn pointer_width(self) -> Result<PointerWidth, ()> {
         match self {
-            Aarch64Architecture::Aarch64
-            | Aarch64Architecture::Aarch64be => Ok(PointerWidth::U64),
+            Aarch64Architecture::Aarch64 | Aarch64Architecture::Aarch64be => Ok(PointerWidth::U64),
         }
     }
 
@@ -574,7 +572,6 @@ impl FromStr for ArmArchitecture {
     }
 }
 
-
 impl FromStr for Aarch64Architecture {
     type Err = ();
 
@@ -624,7 +621,7 @@ impl FromStr for Architecture {
                 } else {
                     return Err(());
                 }
-            },
+            }
         })
     }
 }
