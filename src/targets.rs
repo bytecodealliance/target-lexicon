@@ -21,6 +21,7 @@ pub enum Architecture {
     Mips64el,
     Mipsel,
     Msp430,
+    Nvptx64,
     Powerpc,
     Powerpc64,
     Powerpc64le,
@@ -28,6 +29,8 @@ pub enum Architecture {
     Riscv32imac,
     Riscv32imc,
     Riscv64,
+    Riscv64gc,
+    Riscv64imac,
     S390x,
     Sparc,
     Sparc64,
@@ -283,6 +286,7 @@ pub enum Vendor {
     Apple,
     Experimental,
     Fortanix,
+    Nvidia,
     Pc,
     Rumprun,
     Sun,
@@ -296,6 +300,7 @@ pub enum OperatingSystem {
     Unknown,
     Bitrig,
     Cloudabi,
+    Cuda,
     Darwin,
     Dragonfly,
     Emscripten,
@@ -367,11 +372,14 @@ impl Architecture {
             | Architecture::Mips64el
             | Architecture::Mipsel
             | Architecture::Msp430
+            | Architecture::Nvptx64
             | Architecture::Powerpc64le
             | Architecture::Riscv32
             | Architecture::Riscv32imac
             | Architecture::Riscv32imc
             | Architecture::Riscv64
+            | Architecture::Riscv64gc
+            | Architecture::Riscv64imac
             | Architecture::Wasm32
             | Architecture::X86_64 => Ok(Endianness::Little),
             Architecture::Mips
@@ -407,8 +415,11 @@ impl Architecture {
             Architecture::Mips64el
             | Architecture::Powerpc64le
             | Architecture::Riscv64
+            | Architecture::Riscv64gc
+            | Architecture::Riscv64imac
             | Architecture::X86_64
             | Architecture::Mips64
+            | Architecture::Nvptx64
             | Architecture::Powerpc64
             | Architecture::S390x
             | Architecture::Sparc64
@@ -506,6 +517,7 @@ impl fmt::Display for Architecture {
             Architecture::Mips64el => f.write_str("mips64el"),
             Architecture::Mipsel => f.write_str("mipsel"),
             Architecture::Msp430 => f.write_str("msp430"),
+            Architecture::Nvptx64 => f.write_str("nvptx64"),
             Architecture::Powerpc => f.write_str("powerpc"),
             Architecture::Powerpc64 => f.write_str("powerpc64"),
             Architecture::Powerpc64le => f.write_str("powerpc64le"),
@@ -513,6 +525,8 @@ impl fmt::Display for Architecture {
             Architecture::Riscv32imac => f.write_str("riscv32imac"),
             Architecture::Riscv32imc => f.write_str("riscv32imc"),
             Architecture::Riscv64 => f.write_str("riscv64"),
+            Architecture::Riscv64gc => f.write_str("riscv64gc"),
+            Architecture::Riscv64imac => f.write_str("riscv64imac"),
             Architecture::S390x => f.write_str("s390x"),
             Architecture::Sparc => f.write_str("sparc"),
             Architecture::Sparc64 => f.write_str("sparc64"),
@@ -600,6 +614,7 @@ impl FromStr for Architecture {
             "mips64el" => Architecture::Mips64el,
             "mipsel" => Architecture::Mipsel,
             "msp430" => Architecture::Msp430,
+            "nvptx64" => Architecture::Nvptx64,
             "powerpc" => Architecture::Powerpc,
             "powerpc64" => Architecture::Powerpc64,
             "powerpc64le" => Architecture::Powerpc64le,
@@ -607,6 +622,8 @@ impl FromStr for Architecture {
             "riscv32imac" => Architecture::Riscv32imac,
             "riscv32imc" => Architecture::Riscv32imc,
             "riscv64" => Architecture::Riscv64,
+            "riscv64gc" => Architecture::Riscv64gc,
+            "riscv64imac" => Architecture::Riscv64imac,
             "s390x" => Architecture::S390x,
             "sparc" => Architecture::Sparc,
             "sparc64" => Architecture::Sparc64,
@@ -633,6 +650,7 @@ impl fmt::Display for Vendor {
             Vendor::Apple => "apple",
             Vendor::Experimental => "experimental",
             Vendor::Fortanix => "fortanix",
+            Vendor::Nvidia => "nvidia",
             Vendor::Pc => "pc",
             Vendor::Rumprun => "rumprun",
             Vendor::Sun => "sun",
@@ -650,6 +668,7 @@ impl FromStr for Vendor {
             "apple" => Vendor::Apple,
             "experimental" => Vendor::Experimental,
             "fortanix" => Vendor::Fortanix,
+            "nvidia" => Vendor::Nvidia,
             "pc" => Vendor::Pc,
             "rumprun" => Vendor::Rumprun,
             "sun" => Vendor::Sun,
@@ -664,6 +683,7 @@ impl fmt::Display for OperatingSystem {
             OperatingSystem::Unknown => "unknown",
             OperatingSystem::Bitrig => "bitrig",
             OperatingSystem::Cloudabi => "cloudabi",
+            OperatingSystem::Cuda => "cuda",
             OperatingSystem::Darwin => "darwin",
             OperatingSystem::Dragonfly => "dragonfly",
             OperatingSystem::Emscripten => "emscripten",
@@ -695,6 +715,7 @@ impl FromStr for OperatingSystem {
             "unknown" => OperatingSystem::Unknown,
             "bitrig" => OperatingSystem::Bitrig,
             "cloudabi" => OperatingSystem::Cloudabi,
+            "cuda" => OperatingSystem::Cuda,
             "darwin" => OperatingSystem::Darwin,
             "dragonfly" => OperatingSystem::Dragonfly,
             "emscripten" => OperatingSystem::Emscripten,
@@ -866,8 +887,10 @@ mod tests {
             "mips-unknown-linux-musl",
             "mips-unknown-linux-uclibc",
             "msp430-none-elf",
+            "nvptx64-nvidia-cuda",
             "powerpc64le-unknown-linux-gnu",
             "powerpc64le-unknown-linux-musl",
+            "powerpc64-unknown-freebsd",
             "powerpc64-unknown-linux-gnu",
             "powerpc64-unknown-linux-musl",
             "powerpc-unknown-linux-gnu",
@@ -876,6 +899,8 @@ mod tests {
             "powerpc-unknown-netbsd",
             "riscv32imac-unknown-none-elf",
             "riscv32imc-unknown-none-elf",
+            "riscv64gc-unknown-none-elf",
+            "riscv64imac-unknown-none-elf",
             "s390x-unknown-linux-gnu",
             "sparc64-unknown-linux-gnu",
             "sparc64-unknown-netbsd",
