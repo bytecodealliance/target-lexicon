@@ -315,6 +315,7 @@ pub enum OperatingSystem {
     Redox,
     Solaris,
     Uefi,
+    Wasi,
     Windows,
 }
 
@@ -426,7 +427,8 @@ pub fn default_binary_format(triple: &Triple) -> BinaryFormat {
         OperatingSystem::None_ => BinaryFormat::Unknown,
         OperatingSystem::Darwin | OperatingSystem::Ios => BinaryFormat::Macho,
         OperatingSystem::Windows => BinaryFormat::Coff,
-        OperatingSystem::Nebulet | OperatingSystem::Emscripten | OperatingSystem::Unknown => {
+        OperatingSystem::Nebulet | OperatingSystem::Emscripten | OperatingSystem::Wasi
+        | OperatingSystem::Unknown => {
             match triple.architecture {
                 Architecture::Wasm32 => BinaryFormat::Wasm,
                 _ => BinaryFormat::Unknown,
@@ -684,6 +686,7 @@ impl fmt::Display for OperatingSystem {
             OperatingSystem::Redox => "redox",
             OperatingSystem::Solaris => "solaris",
             OperatingSystem::Uefi => "uefi",
+            OperatingSystem::Wasi => "wasi",
             OperatingSystem::Windows => "windows",
         };
         f.write_str(s)
@@ -715,6 +718,7 @@ impl FromStr for OperatingSystem {
             "redox" => OperatingSystem::Redox,
             "solaris" => OperatingSystem::Solaris,
             "uefi" => OperatingSystem::Uefi,
+            "wasi" => OperatingSystem::Wasi,
             "windows" => OperatingSystem::Windows,
             _ => return Err(()),
         })
@@ -897,6 +901,7 @@ mod tests {
             "wasm32-experimental-emscripten",
             "wasm32-unknown-emscripten",
             "wasm32-unknown-unknown",
+            "wasm32-unknown-wasi",
             "x86_64-apple-darwin",
             "x86_64-apple-ios",
             "x86_64-fortanix-unknown-sgx",
