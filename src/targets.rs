@@ -461,7 +461,7 @@ impl Architecture {
 
 /// Return the binary format implied by this target triple, ignoring its
 /// `binary_format` field.
-pub fn default_binary_format(triple: &Triple) -> BinaryFormat {
+pub(crate) fn default_binary_format(triple: &Triple) -> BinaryFormat {
     match triple.operating_system {
         OperatingSystem::None_ => BinaryFormat::Unknown,
         OperatingSystem::Darwin | OperatingSystem::Ios | OperatingSystem::MacOSX { .. } => {
