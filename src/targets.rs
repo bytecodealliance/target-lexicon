@@ -311,6 +311,7 @@ pub enum OperatingSystem {
     Ios,
     L4re,
     Linux,
+    MacOSX { major: u16, minor: u16, patch: u16 },
     Nebulet,
     Netbsd,
     None_,
@@ -434,7 +435,8 @@ impl Architecture {
 pub fn default_binary_format(triple: &Triple) -> BinaryFormat {
     match triple.operating_system {
         OperatingSystem::None_ => BinaryFormat::Unknown,
-        OperatingSystem::Darwin | OperatingSystem::Ios => BinaryFormat::Macho,
+        OperatingSystem::Darwin | OperatingSystem::Ios
+        | OperatingSystem::MacOSX { .. } => BinaryFormat::Macho,
         OperatingSystem::Windows => BinaryFormat::Coff,
         OperatingSystem::Nebulet | OperatingSystem::Emscripten | OperatingSystem::Wasi
         | OperatingSystem::Unknown => {
@@ -696,6 +698,9 @@ impl fmt::Display for OperatingSystem {
             OperatingSystem::Ios => "ios",
             OperatingSystem::L4re => "l4re",
             OperatingSystem::Linux => "linux",
+            OperatingSystem::MacOSX { major, minor, patch } => {
+                return write!(f, "macosx{}.{}.{}", major, minor, patch);
+            }
             OperatingSystem::Nebulet => "nebulet",
             OperatingSystem::Netbsd => "netbsd",
             OperatingSystem::None_ => "none",
@@ -714,6 +719,36 @@ impl FromStr for OperatingSystem {
     type Err = ();
 
     fn from_str(s: &str) -> Result<Self, ()> {
+        if s.starts_with("macosx") {
+            // Parse operating system names like `macosx10.7.0`.
+            let s = &s["macosx".len()..];
+            let mut parts = s.split(".").map(|num| num.parse::<u16>());
+
+            macro_rules! get_part {
+                () => {
+                    if let Some(Ok(part)) = parts.next() {
+                        part
+                    } else {
+                        return Err(());
+                    }
+                };
+            }
+
+            let major = get_part!();
+            let minor = get_part!();
+            let patch = get_part!();
+
+            if parts.next().is_some() {
+                return Err(());
+            }
+
+            return Ok(OperatingSystem::MacOSX {
+                major,
+                minor,
+                patch,
+            })
+        }
+
         Ok(match s {
             "unknown" => OperatingSystem::Unknown,
             "bitrig" => OperatingSystem::Bitrig,
@@ -872,6 +907,7 @@ mod tests {
             "i586-unknown-linux-musl",
             "i686-apple-darwin",
             "i686-linux-android",
+            "i686-apple-macosx10.7.0",
             "i686-pc-windows-gnu",
             "i686-pc-windows-msvc",
             "i686-unknown-cloudabi",
@@ -929,6 +965,7 @@ mod tests {
             "x86_64-fortanix-unknown-sgx",
             "x86_64-fuchsia",
             "x86_64-linux-android",
+            "x86_64-apple-macosx10.7.0",
             "x86_64-pc-windows-gnu",
             "x86_64-pc-windows-msvc",
             "x86_64-rumprun-netbsd",

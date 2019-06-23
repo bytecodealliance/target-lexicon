@@ -99,6 +99,7 @@ impl Triple {
             | OperatingSystem::Ios
             | OperatingSystem::L4re
             | OperatingSystem::Linux
+            | OperatingSystem::MacOSX { .. }
             | OperatingSystem::Netbsd
             | OperatingSystem::Openbsd
             | OperatingSystem::Redox
