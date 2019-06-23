@@ -160,6 +160,7 @@ impl fmt::Display for Triple {
                 && (self.environment == Environment::Android
                     || self.environment == Environment::Androideabi))
                 || self.operating_system == OperatingSystem::Fuchsia
+                || self.operating_system == OperatingSystem::Wasi
                 || (self.operating_system == OperatingSystem::None_
                     && (self.architecture == Architecture::Arm(ArmArchitecture::Armebv7r)
                         || self.architecture == Architecture::Arm(ArmArchitecture::Armv7r)
@@ -170,7 +171,7 @@ impl fmt::Display for Triple {
                         || self.architecture == Architecture::Arm(ArmArchitecture::Thumbv8mMain)
                         || self.architecture == Architecture::Msp430)))
         {
-            // As a special case, omit the vendor for Android, Fuchsia, and sometimes
+            // As a special case, omit the vendor for Android, Fuchsia, Wasi, and sometimes
             // None_, depending on the hardware architecture. This logic is entirely
             // ad-hoc, and is just sufficient to handle the current set of recognized
             // triples.
