@@ -54,6 +54,8 @@ impl PointerWidth {
 #[allow(missing_docs)]
 pub enum CallingConvention {
     SystemV,
+    /// https://github.com/WebAssembly/tool-conventions/blob/master/BasicCABI.md
+    WasmBasicCAbi,
     WindowsFastcall,
 }
 
@@ -97,12 +99,18 @@ impl Triple {
             | OperatingSystem::Ios
             | OperatingSystem::L4re
             | OperatingSystem::Linux
-            | OperatingSystem::Nebulet
             | OperatingSystem::Netbsd
             | OperatingSystem::Openbsd
             | OperatingSystem::Redox
             | OperatingSystem::Solaris => CallingConvention::SystemV,
             OperatingSystem::Windows => CallingConvention::WindowsFastcall,
+            OperatingSystem::Nebulet | OperatingSystem::Emscripten | OperatingSystem::Wasi
+            | OperatingSystem::Unknown => {
+                match self.architecture {
+                    Architecture::Wasm32 => CallingConvention::WasmBasicCAbi,
+                    _ => return Err(()),
+                }
+            }
             _ => return Err(()),
         })
     }
