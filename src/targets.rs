@@ -719,6 +719,7 @@ impl FromStr for OperatingSystem {
     type Err = ();
 
     fn from_str(s: &str) -> Result<Self, ()> {
+        // TODO also parse version number for darwin and ios OSes
         if s.starts_with("macosx") {
             // Parse operating system names like `macosx10.7.0`.
             let s = &s["macosx".len()..];
