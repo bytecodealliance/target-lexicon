@@ -1,8 +1,6 @@
 extern crate target_lexicon;
 
-use target_lexicon::Triple;
-
-const HOST: Triple = Triple::host();
+use target_lexicon::HOST;
 
 fn main() {
     println!(

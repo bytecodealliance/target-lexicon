@@ -121,7 +121,7 @@ fn main() {
 
 fn write_host_rs(mut out: File, triple: Triple) -> io::Result<()> {
     writeln!(out, "/// The `Triple` of the current host.")?;
-    writeln!(out, "pub static HOST: Triple = Triple {{")?;
+    writeln!(out, "pub const HOST: Triple = Triple {{")?;
     writeln!(
         out,
         "    architecture: Architecture::{:?},",
