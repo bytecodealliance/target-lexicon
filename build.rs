@@ -121,7 +121,7 @@ fn main() {
 
 fn write_host_rs(mut out: File, triple: Triple) -> io::Result<()> {
     writeln!(out, "/// The `Triple` of the current host.")?;
-    writeln!(out, "pub static HOST: Triple = Triple {{")?;
+    writeln!(out, "pub const HOST: Triple = Triple {{")?;
     writeln!(
         out,
         "    architecture: Architecture::{:?},",
@@ -148,7 +148,7 @@ fn write_host_rs(mut out: File, triple: Triple) -> io::Result<()> {
 
     writeln!(out, "impl Architecture {{")?;
     writeln!(out, "    /// Return the architecture for the current host.")?;
-    writeln!(out, "    pub fn host() -> Self {{")?;
+    writeln!(out, "    pub const fn host() -> Self {{")?;
     writeln!(out, "        Architecture::{:?}", triple.architecture)?;
     writeln!(out, "    }}")?;
     writeln!(out, "}}")?;
@@ -156,7 +156,7 @@ fn write_host_rs(mut out: File, triple: Triple) -> io::Result<()> {
 
     writeln!(out, "impl Vendor {{")?;
     writeln!(out, "    /// Return the vendor for the current host.")?;
-    writeln!(out, "    pub fn host() -> Self {{")?;
+    writeln!(out, "    pub const fn host() -> Self {{")?;
     writeln!(out, "        Vendor::{:?}", triple.vendor)?;
     writeln!(out, "    }}")?;
     writeln!(out, "}}")?;
@@ -167,7 +167,7 @@ fn write_host_rs(mut out: File, triple: Triple) -> io::Result<()> {
         out,
         "    /// Return the operating system for the current host."
     )?;
-    writeln!(out, "    pub fn host() -> Self {{")?;
+    writeln!(out, "    pub const fn host() -> Self {{")?;
     writeln!(
         out,
         "        OperatingSystem::{:?}",
@@ -179,7 +179,7 @@ fn write_host_rs(mut out: File, triple: Triple) -> io::Result<()> {
 
     writeln!(out, "impl Environment {{")?;
     writeln!(out, "    /// Return the environment for the current host.")?;
-    writeln!(out, "    pub fn host() -> Self {{")?;
+    writeln!(out, "    pub const fn host() -> Self {{")?;
     writeln!(out, "        Environment::{:?}", triple.environment)?;
     writeln!(out, "    }}")?;
     writeln!(out, "}}")?;
@@ -190,7 +190,7 @@ fn write_host_rs(mut out: File, triple: Triple) -> io::Result<()> {
         out,
         "    /// Return the binary format for the current host."
     )?;
-    writeln!(out, "    pub fn host() -> Self {{")?;
+    writeln!(out, "    pub const fn host() -> Self {{")?;
     writeln!(out, "        BinaryFormat::{:?}", triple.binary_format)?;
     writeln!(out, "    }}")?;
     writeln!(out, "}}")?;
@@ -198,7 +198,7 @@ fn write_host_rs(mut out: File, triple: Triple) -> io::Result<()> {
 
     writeln!(out, "impl Triple {{")?;
     writeln!(out, "    /// Return the triple for the current host.")?;
-    writeln!(out, "    pub fn host() -> Self {{")?;
+    writeln!(out, "    pub const fn host() -> Self {{")?;
     writeln!(out, "        Self {{")?;
     writeln!(
         out,
