@@ -59,8 +59,8 @@ pub enum CallingConvention {
     WindowsFastcall,
 }
 
-/// A target "triple", because historically such things had three fields, though
-/// they've grown more features over time.
+/// A target "triple". Historically such things had three fields, though they've
+/// added additional fields over time.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Triple {
     /// The "architecture" (and sometimes the subarchitecture).
@@ -280,7 +280,7 @@ impl FromStr for Triple {
     }
 }
 
-/// A convenient syntax for triple "literals".
+/// A convenient syntax for triple literals.
 ///
 /// This currently expands to code that just calls `Triple::from_str` and does
 /// an `expect`, though in the future it would be cool to use procedural macros
