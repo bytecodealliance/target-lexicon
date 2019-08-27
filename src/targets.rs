@@ -11,6 +11,7 @@ use core::str::FromStr;
 pub enum Architecture {
     Unknown,
     Arm(ArmArchitecture),
+    AmdGcn,
     Aarch64(Aarch64Architecture),
     Asmjs,
     I386,
@@ -283,6 +284,7 @@ impl Aarch64Architecture {
 #[allow(missing_docs)]
 pub enum Vendor {
     Unknown,
+    Amd,
     Apple,
     Experimental,
     Fortanix,
@@ -298,6 +300,7 @@ pub enum Vendor {
 #[allow(missing_docs)]
 pub enum OperatingSystem {
     Unknown,
+    AmdHsa,
     Bitrig,
     Cloudabi,
     Cuda,
@@ -330,6 +333,7 @@ pub enum OperatingSystem {
 #[allow(missing_docs)]
 pub enum Environment {
     Unknown,
+    AmdGiz,
     Android,
     Androideabi,
     Eabi,
@@ -367,7 +371,8 @@ impl Architecture {
             Architecture::Unknown => Err(()),
             Architecture::Arm(arm) => arm.endianness(),
             Architecture::Aarch64(aarch) => aarch.endianness(),
-            Architecture::Asmjs
+            Architecture::AmdGcn
+            | Architecture::Asmjs
             | Architecture::I386
             | Architecture::I586
             | Architecture::I686
@@ -414,7 +419,8 @@ impl Architecture {
             | Architecture::Wasm32
             | Architecture::Mips
             | Architecture::Powerpc => Ok(PointerWidth::U32),
-            Architecture::Mips64el
+            Architecture::AmdGcn
+            | Architecture::Mips64el
             | Architecture::Powerpc64le
             | Architecture::Riscv64
             | Architecture::Riscv64gc
@@ -512,6 +518,7 @@ impl fmt::Display for Architecture {
             Architecture::Arm(arm) => arm.fmt(f),
             Architecture::Aarch64(aarch) => aarch.fmt(f),
             Architecture::Unknown => f.write_str("unknown"),
+            Architecture::AmdGcn => f.write_str("amdgcn"),
             Architecture::Asmjs => f.write_str("asmjs"),
             Architecture::I386 => f.write_str("i386"),
             Architecture::I586 => f.write_str("i586"),
@@ -609,6 +616,7 @@ impl FromStr for Architecture {
     fn from_str(s: &str) -> Result<Self, ()> {
         Ok(match s {
             "unknown" => Architecture::Unknown,
+            "amdgcn" => Architecture::AmdGcn,
             "asmjs" => Architecture::Asmjs,
             "i386" => Architecture::I386,
             "i586" => Architecture::I586,
@@ -651,6 +659,7 @@ impl fmt::Display for Vendor {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let s = match *self {
             Vendor::Unknown => "unknown",
+            Vendor::Amd => "amd",
             Vendor::Apple => "apple",
             Vendor::Experimental => "experimental",
             Vendor::Fortanix => "fortanix",
@@ -669,6 +678,7 @@ impl FromStr for Vendor {
     fn from_str(s: &str) -> Result<Self, ()> {
         Ok(match s {
             "unknown" => Vendor::Unknown,
+            "amd" => Vendor::Amd,
             "apple" => Vendor::Apple,
             "experimental" => Vendor::Experimental,
             "fortanix" => Vendor::Fortanix,
@@ -685,6 +695,7 @@ impl fmt::Display for OperatingSystem {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let s = match *self {
             OperatingSystem::Unknown => "unknown",
+            OperatingSystem::AmdHsa => "amdhsa",
             OperatingSystem::Bitrig => "bitrig",
             OperatingSystem::Cloudabi => "cloudabi",
             OperatingSystem::Cuda => "cuda",
@@ -752,6 +763,7 @@ impl FromStr for OperatingSystem {
 
         Ok(match s {
             "unknown" => OperatingSystem::Unknown,
+            "amdhsa" => OperatingSystem::AmdHsa,
             "bitrig" => OperatingSystem::Bitrig,
             "cloudabi" => OperatingSystem::Cloudabi,
             "cuda" => OperatingSystem::Cuda,
@@ -783,6 +795,7 @@ impl fmt::Display for Environment {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let s = match *self {
             Environment::Unknown => "unknown",
+            Environment::AmdGiz => "amdgiz",
             Environment::Android => "android",
             Environment::Androideabi => "androideabi",
             Environment::Eabi => "eabi",
@@ -810,6 +823,7 @@ impl FromStr for Environment {
     fn from_str(s: &str) -> Result<Self, ()> {
         Ok(match s {
             "unknown" => Environment::Unknown,
+            "amdgiz" => Environment::AmdGiz,
             "android" => Environment::Android,
             "androideabi" => Environment::Androideabi,
             "eabi" => Environment::Eabi,
@@ -881,6 +895,8 @@ mod tests {
             "aarch64-unknown-netbsd",
             "aarch64-unknown-none",
             "aarch64-unknown-openbsd",
+            "amdgcn-amd-amdhsa",
+            "amdgcn-amd-amdhsa-amdgiz",
             "armebv7r-none-eabi",
             "armebv7r-none-eabihf",
             "arm-linux-androideabi",
