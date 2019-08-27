@@ -463,7 +463,10 @@ impl Architecture {
 /// `binary_format` field.
 pub fn default_binary_format(triple: &Triple) -> BinaryFormat {
     match triple.operating_system {
-        OperatingSystem::None_ => BinaryFormat::Unknown,
+        OperatingSystem::None_ => match triple.environment {
+            Environment::Eabi | Environment::Eabihf => BinaryFormat::Elf,
+            _ => BinaryFormat::Unknown,
+        },
         OperatingSystem::Darwin | OperatingSystem::Ios | OperatingSystem::MacOSX { .. } => {
             BinaryFormat::Macho
         }
@@ -1088,5 +1091,18 @@ mod tests {
             assert_ne!(t.architecture, Architecture::Unknown);
             assert_eq!(t.to_string(), *target);
         }
+    }
+
+    #[test]
+    fn thumbv7em_none_eabihf() {
+        let t = Triple::from_str("thumbv7em-none-eabihf").expect("can't parse target");
+        assert_eq!(
+            t.architecture,
+            Architecture::Arm(ArmArchitecture::Thumbv7em)
+        );
+        assert_eq!(t.vendor, Vendor::Unknown);
+        assert_eq!(t.operating_system, OperatingSystem::None_);
+        assert_eq!(t.environment, Environment::Eabihf);
+        assert_eq!(t.binary_format, BinaryFormat::Elf);
     }
 }
