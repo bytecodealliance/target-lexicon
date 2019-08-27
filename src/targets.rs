@@ -930,9 +930,11 @@ mod tests {
     use std::string::ToString;
 
     #[test]
-    fn rust_targets() {
-        // At the time of writing this, these are all the targets emitted by
-        // "rustup target list" and "rustc --print target-list".
+    fn roundtrip_known_triples() {
+        // This list is constructed from:
+        //  - targets emitted by "rustup target list"
+        //  - targets emitted by "rustc +nightly --print target-list"
+        //  - targets contributors have added
         let targets = [
             "aarch64-apple-ios",
             "aarch64-fuchsia",
