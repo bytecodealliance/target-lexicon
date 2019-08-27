@@ -69,7 +69,8 @@ pub struct Triple {
     pub vendor: Vendor,
     /// The "operating system" (sometimes also the environment).
     pub operating_system: OperatingSystem,
-    /// The "environment" on top of the operating system.
+    /// The "environment" on top of the operating system (often omitted for
+    /// operating systems with a single predominant environment).
     pub environment: Environment,
     /// The "binary format" (rarely used).
     pub binary_format: BinaryFormat,
