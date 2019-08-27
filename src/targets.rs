@@ -14,6 +14,7 @@ pub enum Architecture {
     AmdGcn,
     Aarch64(Aarch64Architecture),
     Asmjs,
+    Hexagon,
     I386,
     I586,
     I686,
@@ -21,12 +22,17 @@ pub enum Architecture {
     Mips64,
     Mips64el,
     Mipsel,
+    Mipsisa32r6,
+    Mipsisa32r6el,
+    Mipsisa64r6,
+    Mipsisa64r6el,
     Msp430,
     Nvptx64,
     Powerpc,
     Powerpc64,
     Powerpc64le,
     Riscv32,
+    Riscv32i,
     Riscv32imac,
     Riscv32imc,
     Riscv64,
@@ -292,6 +298,8 @@ pub enum Vendor {
     Pc,
     Rumprun,
     Sun,
+    Uwp,
+    Wrs,
 }
 
 /// The "operating system" field, which sometimes implies an environment, and
@@ -322,6 +330,7 @@ pub enum OperatingSystem {
     Redox,
     Solaris,
     Uefi,
+    VxWorks,
     Wasi,
     Windows,
 }
@@ -347,9 +356,11 @@ pub enum Environment {
     Musl,
     Musleabi,
     Musleabihf,
+    Muslabi64,
     Msvc,
     Uclibc,
     Sgx,
+    Spe,
 }
 
 /// The "binary format" field, which is usually omitted, and the binary format
@@ -373,15 +384,19 @@ impl Architecture {
             Architecture::Aarch64(aarch) => aarch.endianness(),
             Architecture::AmdGcn
             | Architecture::Asmjs
+            | Architecture::Hexagon
             | Architecture::I386
             | Architecture::I586
             | Architecture::I686
             | Architecture::Mips64el
             | Architecture::Mipsel
+            | Architecture::Mipsisa32r6el
+            | Architecture::Mipsisa64r6el
             | Architecture::Msp430
             | Architecture::Nvptx64
             | Architecture::Powerpc64le
             | Architecture::Riscv32
+            | Architecture::Riscv32i
             | Architecture::Riscv32imac
             | Architecture::Riscv32imc
             | Architecture::Riscv64
@@ -391,6 +406,8 @@ impl Architecture {
             | Architecture::X86_64 => Ok(Endianness::Little),
             Architecture::Mips
             | Architecture::Mips64
+            | Architecture::Mipsisa32r6
+            | Architecture::Mipsisa64r6
             | Architecture::Powerpc
             | Architecture::Powerpc64
             | Architecture::S390x
@@ -408,11 +425,15 @@ impl Architecture {
             Architecture::Arm(arm) => arm.pointer_width(),
             Architecture::Aarch64(aarch) => aarch.pointer_width(),
             Architecture::Asmjs
+            | Architecture::Hexagon
             | Architecture::I386
             | Architecture::I586
             | Architecture::I686
             | Architecture::Mipsel
+            | Architecture::Mipsisa32r6
+            | Architecture::Mipsisa32r6el
             | Architecture::Riscv32
+            | Architecture::Riscv32i
             | Architecture::Riscv32imac
             | Architecture::Riscv32imc
             | Architecture::Sparc
@@ -421,6 +442,8 @@ impl Architecture {
             | Architecture::Powerpc => Ok(PointerWidth::U32),
             Architecture::AmdGcn
             | Architecture::Mips64el
+            | Architecture::Mipsisa64r6
+            | Architecture::Mipsisa64r6el
             | Architecture::Powerpc64le
             | Architecture::Riscv64
             | Architecture::Riscv64gc
@@ -447,6 +470,7 @@ pub fn default_binary_format(triple: &Triple) -> BinaryFormat {
         OperatingSystem::Windows => BinaryFormat::Coff,
         OperatingSystem::Nebulet
         | OperatingSystem::Emscripten
+        | OperatingSystem::VxWorks
         | OperatingSystem::Wasi
         | OperatingSystem::Unknown => match triple.architecture {
             Architecture::Wasm32 => BinaryFormat::Wasm,
@@ -521,6 +545,7 @@ impl fmt::Display for Architecture {
             Architecture::Unknown => f.write_str("unknown"),
             Architecture::AmdGcn => f.write_str("amdgcn"),
             Architecture::Asmjs => f.write_str("asmjs"),
+            Architecture::Hexagon => f.write_str("hexagon"),
             Architecture::I386 => f.write_str("i386"),
             Architecture::I586 => f.write_str("i586"),
             Architecture::I686 => f.write_str("i686"),
@@ -528,12 +553,17 @@ impl fmt::Display for Architecture {
             Architecture::Mips64 => f.write_str("mips64"),
             Architecture::Mips64el => f.write_str("mips64el"),
             Architecture::Mipsel => f.write_str("mipsel"),
+            Architecture::Mipsisa32r6 => f.write_str("mipsisa32r6"),
+            Architecture::Mipsisa32r6el => f.write_str("mipsisa32r6el"),
+            Architecture::Mipsisa64r6 => f.write_str("mipsisa64r6"),
+            Architecture::Mipsisa64r6el => f.write_str("mipsisa64r6el"),
             Architecture::Msp430 => f.write_str("msp430"),
             Architecture::Nvptx64 => f.write_str("nvptx64"),
             Architecture::Powerpc => f.write_str("powerpc"),
             Architecture::Powerpc64 => f.write_str("powerpc64"),
             Architecture::Powerpc64le => f.write_str("powerpc64le"),
             Architecture::Riscv32 => f.write_str("riscv32"),
+            Architecture::Riscv32i => f.write_str("riscv32i"),
             Architecture::Riscv32imac => f.write_str("riscv32imac"),
             Architecture::Riscv32imc => f.write_str("riscv32imc"),
             Architecture::Riscv64 => f.write_str("riscv64"),
@@ -619,6 +649,7 @@ impl FromStr for Architecture {
             "unknown" => Architecture::Unknown,
             "amdgcn" => Architecture::AmdGcn,
             "asmjs" => Architecture::Asmjs,
+            "hexagon" => Architecture::Hexagon,
             "i386" => Architecture::I386,
             "i586" => Architecture::I586,
             "i686" => Architecture::I686,
@@ -626,12 +657,17 @@ impl FromStr for Architecture {
             "mips64" => Architecture::Mips64,
             "mips64el" => Architecture::Mips64el,
             "mipsel" => Architecture::Mipsel,
+            "mipsisa32r6" => Architecture::Mipsisa32r6,
+            "mipsisa32r6el" => Architecture::Mipsisa32r6el,
+            "mipsisa64r6" => Architecture::Mipsisa64r6,
+            "mipsisa64r6el" => Architecture::Mipsisa64r6el,
             "msp430" => Architecture::Msp430,
             "nvptx64" => Architecture::Nvptx64,
             "powerpc" => Architecture::Powerpc,
             "powerpc64" => Architecture::Powerpc64,
             "powerpc64le" => Architecture::Powerpc64le,
             "riscv32" => Architecture::Riscv32,
+            "riscv32i" => Architecture::Riscv32i,
             "riscv32imac" => Architecture::Riscv32imac,
             "riscv32imc" => Architecture::Riscv32imc,
             "riscv64" => Architecture::Riscv64,
@@ -668,6 +704,8 @@ impl fmt::Display for Vendor {
             Vendor::Pc => "pc",
             Vendor::Rumprun => "rumprun",
             Vendor::Sun => "sun",
+            Vendor::Uwp => "uwp",
+            Vendor::Wrs => "wrs",
         };
         f.write_str(s)
     }
@@ -687,6 +725,8 @@ impl FromStr for Vendor {
             "pc" => Vendor::Pc,
             "rumprun" => Vendor::Rumprun,
             "sun" => Vendor::Sun,
+            "uwp" => Vendor::Uwp,
+            "wrs" => Vendor::Wrs,
             _ => return Err(()),
         })
     }
@@ -724,6 +764,7 @@ impl fmt::Display for OperatingSystem {
             OperatingSystem::Redox => "redox",
             OperatingSystem::Solaris => "solaris",
             OperatingSystem::Uefi => "uefi",
+            OperatingSystem::VxWorks => "vxworks",
             OperatingSystem::Wasi => "wasi",
             OperatingSystem::Windows => "windows",
         };
@@ -789,6 +830,7 @@ impl FromStr for OperatingSystem {
             "redox" => OperatingSystem::Redox,
             "solaris" => OperatingSystem::Solaris,
             "uefi" => OperatingSystem::Uefi,
+            "vxworks" => OperatingSystem::VxWorks,
             "wasi" => OperatingSystem::Wasi,
             "windows" => OperatingSystem::Windows,
             _ => return Err(()),
@@ -814,9 +856,11 @@ impl fmt::Display for Environment {
             Environment::Musl => "musl",
             Environment::Musleabi => "musleabi",
             Environment::Musleabihf => "musleabihf",
+            Environment::Muslabi64 => "muslabi64",
             Environment::Msvc => "msvc",
             Environment::Uclibc => "uclibc",
             Environment::Sgx => "sgx",
+            Environment::Spe => "spe",
         };
         f.write_str(s)
     }
@@ -842,9 +886,11 @@ impl FromStr for Environment {
             "musl" => Environment::Musl,
             "musleabi" => Environment::Musleabi,
             "musleabihf" => Environment::Musleabihf,
+            "muslabi64" => Environment::Muslabi64,
             "msvc" => Environment::Msvc,
             "uclibc" => Environment::Uclibc,
             "sgx" => Environment::Sgx,
+            "spe" => Environment::Spe,
             _ => return Err(()),
         })
     }
@@ -900,6 +946,9 @@ mod tests {
             "aarch64-unknown-netbsd",
             "aarch64-unknown-none",
             "aarch64-unknown-openbsd",
+            "aarch64-unknown-redox",
+            "aarch64-uwp-windows-msvc",
+            "aarch64-wrs-vxworks",
             "amdgcn-amd-amdhsa",
             "amdgcn-amd-amdhsa-amdgiz",
             "armebv7r-none-eabi",
@@ -912,6 +961,7 @@ mod tests {
             "armv4t-unknown-linux-gnueabi",
             "armv5te-unknown-linux-gnueabi",
             "armv5te-unknown-linux-musleabi",
+            "armv6-unknown-freebsd",
             "armv6-unknown-netbsd-eabihf",
             "armv7-apple-ios",
             "armv7-linux-androideabi",
@@ -919,10 +969,15 @@ mod tests {
             "armv7r-none-eabihf",
             "armv7s-apple-ios",
             "armv7-unknown-cloudabi-eabihf",
+            "armv7-unknown-freebsd",
+            "armv7-unknown-linux-gnueabi",
             "armv7-unknown-linux-gnueabihf",
+            "armv7-unknown-linux-musleabi",
             "armv7-unknown-linux-musleabihf",
             "armv7-unknown-netbsd-eabihf",
+            "armv7-wrs-vxworks-eabihf",
             "asmjs-unknown-emscripten",
+            "hexagon-unknown-linux-musl",
             "i386-apple-ios",
             "i586-pc-windows-msvc",
             "i586-unknown-linux-gnu",
@@ -940,11 +995,20 @@ mod tests {
             "i686-unknown-linux-musl",
             "i686-unknown-netbsd",
             "i686-unknown-openbsd",
+            "i686-uwp-windows-gnu",
+            "i686-uwp-windows-msvc",
+            "i686-wrs-vxworks",
             "mips64el-unknown-linux-gnuabi64",
+            "mips64el-unknown-linux-muslabi64",
             "mips64-unknown-linux-gnuabi64",
+            "mips64-unknown-linux-muslabi64",
             "mipsel-unknown-linux-gnu",
             "mipsel-unknown-linux-musl",
             "mipsel-unknown-linux-uclibc",
+            "mipsisa32r6el-unknown-linux-gnu",
+            "mipsisa32r6-unknown-linux-gnu",
+            "mipsisa64r6el-unknown-linux-gnuabi64",
+            "mipsisa64r6-unknown-linux-gnuabi64",
             "mips-unknown-linux-gnu",
             "mips-unknown-linux-musl",
             "mips-unknown-linux-uclibc",
@@ -955,17 +1019,22 @@ mod tests {
             "powerpc64-unknown-freebsd",
             "powerpc64-unknown-linux-gnu",
             "powerpc64-unknown-linux-musl",
+            "powerpc64-wrs-vxworks",
             "powerpc-unknown-linux-gnu",
             "powerpc-unknown-linux-gnuspe",
             "powerpc-unknown-linux-musl",
             "powerpc-unknown-netbsd",
+            "powerpc-wrs-vxworks",
+            "powerpc-wrs-vxworks-spe",
             "riscv32imac-unknown-none-elf",
             "riscv32imc-unknown-none-elf",
+            "riscv32i-unknown-none-elf",
             "riscv64gc-unknown-none-elf",
             "riscv64imac-unknown-none-elf",
             "s390x-unknown-linux-gnu",
             "sparc64-unknown-linux-gnu",
             "sparc64-unknown-netbsd",
+            "sparc64-unknown-openbsd",
             "sparc-unknown-linux-gnu",
             "sparcv9-sun-solaris",
             "thumbv6m-none-eabi",
@@ -988,6 +1057,7 @@ mod tests {
             "x86_64-fuchsia",
             "x86_64-linux-android",
             "x86_64-apple-macosx10.7.0",
+            "x86_64-pc-solaris",
             "x86_64-pc-windows-gnu",
             "x86_64-pc-windows-msvc",
             "x86_64-rumprun-netbsd",
@@ -1006,6 +1076,9 @@ mod tests {
             "x86_64-unknown-openbsd",
             "x86_64-unknown-redox",
             "x86_64-unknown-uefi",
+            "x86_64-uwp-windows-gnu",
+            "x86_64-uwp-windows-msvc",
+            "x86_64-wrs-vxworks",
         ];
 
         for target in targets.iter() {
