@@ -780,7 +780,7 @@ impl FromStr for OperatingSystem {
         if s.starts_with("macosx") {
             // Parse operating system names like `macosx10.7.0`.
             let s = &s["macosx".len()..];
-            let mut parts = s.split(".").map(|num| num.parse::<u16>());
+            let mut parts = s.split('.').map(|num| num.parse::<u16>());
 
             macro_rules! get_part {
                 () => {
