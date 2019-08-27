@@ -441,16 +441,17 @@ impl Architecture {
 pub fn default_binary_format(triple: &Triple) -> BinaryFormat {
     match triple.operating_system {
         OperatingSystem::None_ => BinaryFormat::Unknown,
-        OperatingSystem::Darwin | OperatingSystem::Ios
-        | OperatingSystem::MacOSX { .. } => BinaryFormat::Macho,
-        OperatingSystem::Windows => BinaryFormat::Coff,
-        OperatingSystem::Nebulet | OperatingSystem::Emscripten | OperatingSystem::Wasi
-        | OperatingSystem::Unknown => {
-            match triple.architecture {
-                Architecture::Wasm32 => BinaryFormat::Wasm,
-                _ => BinaryFormat::Unknown,
-            }
+        OperatingSystem::Darwin | OperatingSystem::Ios | OperatingSystem::MacOSX { .. } => {
+            BinaryFormat::Macho
         }
+        OperatingSystem::Windows => BinaryFormat::Coff,
+        OperatingSystem::Nebulet
+        | OperatingSystem::Emscripten
+        | OperatingSystem::Wasi
+        | OperatingSystem::Unknown => match triple.architecture {
+            Architecture::Wasm32 => BinaryFormat::Wasm,
+            _ => BinaryFormat::Unknown,
+        },
         _ => BinaryFormat::Elf,
     }
 }
@@ -709,7 +710,11 @@ impl fmt::Display for OperatingSystem {
             OperatingSystem::Ios => "ios",
             OperatingSystem::L4re => "l4re",
             OperatingSystem::Linux => "linux",
-            OperatingSystem::MacOSX { major, minor, patch } => {
+            OperatingSystem::MacOSX {
+                major,
+                minor,
+                patch,
+            } => {
                 return write!(f, "macosx{}.{}.{}", major, minor, patch);
             }
             OperatingSystem::Nebulet => "nebulet",
@@ -758,7 +763,7 @@ impl FromStr for OperatingSystem {
                 major,
                 minor,
                 patch,
-            })
+            });
         }
 
         Ok(match s {

@@ -105,13 +105,13 @@ impl Triple {
             | OperatingSystem::Redox
             | OperatingSystem::Solaris => CallingConvention::SystemV,
             OperatingSystem::Windows => CallingConvention::WindowsFastcall,
-            OperatingSystem::Nebulet | OperatingSystem::Emscripten | OperatingSystem::Wasi
-            | OperatingSystem::Unknown => {
-                match self.architecture {
-                    Architecture::Wasm32 => CallingConvention::WasmBasicCAbi,
-                    _ => return Err(()),
-                }
-            }
+            OperatingSystem::Nebulet
+            | OperatingSystem::Emscripten
+            | OperatingSystem::Wasi
+            | OperatingSystem::Unknown => match self.architecture {
+                Architecture::Wasm32 => CallingConvention::WasmBasicCAbi,
+                _ => return Err(()),
+            },
             _ => return Err(()),
         })
     }
