@@ -5,9 +5,9 @@ use crate::targets::{
     default_binary_format, Architecture, ArmArchitecture, BinaryFormat, Environment,
     OperatingSystem, Vendor,
 };
+use alloc::borrow::ToOwned;
 use core::fmt;
 use core::str::FromStr;
-use std::borrow::ToOwned;
 
 /// The target memory endianness.
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]

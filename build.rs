@@ -12,6 +12,7 @@ use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
 
+extern crate alloc;
 extern crate serde_json;
 
 // Include triple.rs and targets.rs so we can parse the TARGET environment variable.
