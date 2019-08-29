@@ -122,6 +122,7 @@ pub enum Aarch64Architecture {
 // }
 
 impl ArmArchitecture {
+    /// Test if this architecture uses the Thumb instruction set.
     pub fn is_thumb(self) -> Result<bool, ()> {
         match self {
             ArmArchitecture::Arm
@@ -170,6 +171,7 @@ impl ArmArchitecture {
 
     // }
 
+    /// Return the pointer bit width of this target's architecture.
     pub fn pointer_width(self) -> Result<PointerWidth, ()> {
         match self {
             ArmArchitecture::Arm
@@ -214,6 +216,7 @@ impl ArmArchitecture {
         }
     }
 
+    /// Return the endianness of this architecture.
     pub fn endianness(self) -> Result<Endianness, ()> {
         match self {
             ArmArchitecture::Arm
@@ -260,6 +263,7 @@ impl ArmArchitecture {
 }
 
 impl Aarch64Architecture {
+    /// Test if this architecture uses the Thumb instruction set.
     pub fn is_thumb(self) -> Result<bool, ()> {
         match self {
             Aarch64Architecture::Aarch64 | Aarch64Architecture::Aarch64be => Ok(false),
@@ -270,12 +274,14 @@ impl Aarch64Architecture {
 
     // }
 
+    /// Return the pointer bit width of this target's architecture.
     pub fn pointer_width(self) -> Result<PointerWidth, ()> {
         match self {
             Aarch64Architecture::Aarch64 | Aarch64Architecture::Aarch64be => Ok(PointerWidth::U64),
         }
     }
 
+    /// Return the endianness of this architecture.
     pub fn endianness(self) -> Result<Endianness, ()> {
         match self {
             Aarch64Architecture::Aarch64 => Ok(Endianness::Little),
