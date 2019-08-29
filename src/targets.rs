@@ -123,7 +123,7 @@ pub enum Aarch64Architecture {
 
 impl ArmArchitecture {
     /// Test if this architecture uses the Thumb instruction set.
-    pub fn is_thumb(self) -> Result<bool, ()> {
+    pub fn is_thumb(self) -> bool {
         match self {
             ArmArchitecture::Arm
             | ArmArchitecture::Armeb
@@ -155,7 +155,7 @@ impl ArmArchitecture {
             | ArmArchitecture::Armv8mBase
             | ArmArchitecture::Armv8mMain
             | ArmArchitecture::Armv8r
-            | ArmArchitecture::Armebv7r => Ok(false),
+            | ArmArchitecture::Armebv7r => false,
             ArmArchitecture::Thumbeb
             | ArmArchitecture::Thumbv6m
             | ArmArchitecture::Thumbv7a
@@ -163,7 +163,7 @@ impl ArmArchitecture {
             | ArmArchitecture::Thumbv7m
             | ArmArchitecture::Thumbv7neon
             | ArmArchitecture::Thumbv8mBase
-            | ArmArchitecture::Thumbv8mMain => Ok(true),
+            | ArmArchitecture::Thumbv8mMain => true,
         }
     }
 
@@ -172,7 +172,7 @@ impl ArmArchitecture {
     // }
 
     /// Return the pointer bit width of this target's architecture.
-    pub fn pointer_width(self) -> Result<PointerWidth, ()> {
+    pub fn pointer_width(self) -> PointerWidth {
         match self {
             ArmArchitecture::Arm
             | ArmArchitecture::Armeb
@@ -212,12 +212,12 @@ impl ArmArchitecture {
             | ArmArchitecture::Thumbv7m
             | ArmArchitecture::Thumbv7neon
             | ArmArchitecture::Thumbv8mBase
-            | ArmArchitecture::Thumbv8mMain => Ok(PointerWidth::U32),
+            | ArmArchitecture::Thumbv8mMain => PointerWidth::U32,
         }
     }
 
     /// Return the endianness of this architecture.
-    pub fn endianness(self) -> Result<Endianness, ()> {
+    pub fn endianness(self) -> Endianness {
         match self {
             ArmArchitecture::Arm
             | ArmArchitecture::Armv4
@@ -254,9 +254,9 @@ impl ArmArchitecture {
             | ArmArchitecture::Thumbv7m
             | ArmArchitecture::Thumbv7neon
             | ArmArchitecture::Thumbv8mBase
-            | ArmArchitecture::Thumbv8mMain => Ok(Endianness::Little),
+            | ArmArchitecture::Thumbv8mMain => Endianness::Little,
             ArmArchitecture::Armeb | ArmArchitecture::Armebv7r | ArmArchitecture::Thumbeb => {
-                Ok(Endianness::Big)
+                Endianness::Big
             }
         }
     }
@@ -264,9 +264,9 @@ impl ArmArchitecture {
 
 impl Aarch64Architecture {
     /// Test if this architecture uses the Thumb instruction set.
-    pub fn is_thumb(self) -> Result<bool, ()> {
+    pub fn is_thumb(self) -> bool {
         match self {
-            Aarch64Architecture::Aarch64 | Aarch64Architecture::Aarch64be => Ok(false),
+            Aarch64Architecture::Aarch64 | Aarch64Architecture::Aarch64be => false,
         }
     }
 
@@ -275,17 +275,17 @@ impl Aarch64Architecture {
     // }
 
     /// Return the pointer bit width of this target's architecture.
-    pub fn pointer_width(self) -> Result<PointerWidth, ()> {
+    pub fn pointer_width(self) -> PointerWidth {
         match self {
-            Aarch64Architecture::Aarch64 | Aarch64Architecture::Aarch64be => Ok(PointerWidth::U64),
+            Aarch64Architecture::Aarch64 | Aarch64Architecture::Aarch64be => PointerWidth::U64,
         }
     }
 
     /// Return the endianness of this architecture.
-    pub fn endianness(self) -> Result<Endianness, ()> {
+    pub fn endianness(self) -> Endianness {
         match self {
-            Aarch64Architecture::Aarch64 => Ok(Endianness::Little),
-            Aarch64Architecture::Aarch64be => Ok(Endianness::Big),
+            Aarch64Architecture::Aarch64 => Endianness::Little,
+            Aarch64Architecture::Aarch64be => Endianness::Big,
         }
     }
 }
@@ -386,8 +386,8 @@ impl Architecture {
     pub fn endianness(self) -> Result<Endianness, ()> {
         match self {
             Architecture::Unknown => Err(()),
-            Architecture::Arm(arm) => arm.endianness(),
-            Architecture::Aarch64(aarch) => aarch.endianness(),
+            Architecture::Arm(arm) => Ok(arm.endianness()),
+            Architecture::Aarch64(aarch) => Ok(aarch.endianness()),
             Architecture::AmdGcn
             | Architecture::Asmjs
             | Architecture::Hexagon
@@ -428,8 +428,8 @@ impl Architecture {
         match self {
             Architecture::Unknown => Err(()),
             Architecture::Msp430 => Ok(PointerWidth::U16),
-            Architecture::Arm(arm) => arm.pointer_width(),
-            Architecture::Aarch64(aarch) => aarch.pointer_width(),
+            Architecture::Arm(arm) => Ok(arm.pointer_width()),
+            Architecture::Aarch64(aarch) => Ok(aarch.pointer_width()),
             Architecture::Asmjs
             | Architecture::Hexagon
             | Architecture::I386
