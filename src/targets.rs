@@ -930,7 +930,7 @@ impl FromStr for BinaryFormat {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::string::ToString;
+    use alloc::string::ToString;
 
     #[test]
     fn roundtrip_known_triples() {
