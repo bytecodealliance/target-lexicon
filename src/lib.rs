@@ -30,5 +30,8 @@ mod triple;
 
 pub use self::host::HOST;
 pub use self::parse_error::ParseError;
-pub use self::targets::{Architecture, BinaryFormat, Environment, OperatingSystem, Vendor};
+pub use self::targets::{
+    Aarch64Architecture, Architecture, ArmArchitecture, BinaryFormat, Environment, OperatingSystem,
+    Vendor,
+};
 pub use self::triple::{CallingConvention, Endianness, PointerWidth, Triple};
