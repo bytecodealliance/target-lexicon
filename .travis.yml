@@ -25,7 +25,13 @@ before_script:
     # Sometimes the component isn't actually ready after being installed, and
     # rustup update makes it ready.
     - rustup update
+    # Add targets for testing cross-compilation.
+    - rustup target add arm-unknown-linux-gnueabi
+    - rustup target add aarch64-unknown-linux-gnu
     - rustfmt +stable --version
-script: cargo test
+script:
+    - cargo test
+    - cargo build --target arm-unknown-linux-gnueabi
+    - cargo build --target aarch64-unknown-linux-gnu
 cache:
     cargo: true
