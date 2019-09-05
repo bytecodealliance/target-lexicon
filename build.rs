@@ -121,6 +121,15 @@ fn main() {
 }
 
 fn write_host_rs(mut out: File, triple: Triple) -> io::Result<()> {
+    // The generated Debug implementation for the inner architecture variants
+    // doesn't print the enum name qualifier, so import them here. There
+    // shouldn't be any conflicts because these enums all share a namespace
+    // in the triple string format.
+    writeln!(out, "#[allow(unused_imports)]")?;
+    writeln!(out, "use crate::Aarch64Architecture::*;")?;
+    writeln!(out, "#[allow(unused_imports)]")?;
+    writeln!(out, "use crate::ArmArchitecture::*;")?;
+    writeln!(out)?;
     writeln!(out, "/// The `Triple` of the current host.")?;
     writeln!(out, "pub const HOST: Triple = Triple {{")?;
     writeln!(
