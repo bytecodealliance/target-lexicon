@@ -53,9 +53,20 @@ impl PointerWidth {
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum CallingConvention {
+    /// "System V", which is used on most Unix-like platfoms. Note that the
+    /// specific conventions vary between hardware architectures; for example,
+    /// x86-32's "System V" is entirely different from x86-64's "System V".
     SystemV,
+
+    /// The WebAssembly C ABI.
     /// https://github.com/WebAssembly/tool-conventions/blob/master/BasicCABI.md
     WasmBasicCAbi,
+
+    /// "Windows Fastcall", which is used on Windows. Note that like "System V",
+    /// this varies between hardware architectures. On x86-32 it describes what
+    /// Windows documentation calls "fastcall", and on x86-64 it describes what
+    /// Windows documentation often just calls the Windows x64 calling convention
+    /// (though the compiler still recognizes "fastcall" as an alias for it).
     WindowsFastcall,
 }
 
