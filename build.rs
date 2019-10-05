@@ -6,8 +6,7 @@
 use serde_json::Value;
 use std::env;
 use std::ffi::OsString;
-use std::fs::File;
-use std::io::prelude::*;
+use std::fs::{self, File};
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
@@ -42,10 +41,7 @@ use self::triple::{Endianness, PointerWidth, Triple};
 /// Assuming `target` is a path to a custom target json config file, open it
 /// and build a `Triple` using its contents.
 fn read_target_from_file(path: &Path) -> Triple {
-    let mut file = File::open(path).expect("error opening target file");
-    let mut json = String::new();
-    file.read_to_string(&mut json)
-        .expect("error reading target file");
+    let json = fs::read_to_string(path).expect("error reading target file");
 
     let v: Value = serde_json::from_str(&json).expect("error parsing target file as json");
     let target = v["llvm-target"]
@@ -110,10 +106,7 @@ fn main() {
     let triple = if target.ends_with(".json") {
         read_target_from_file(Path::new(&target))
     } else {
-        match Triple::from_str(&target) {
-            Ok(triple) => triple,
-            Err(_) => read_target_from_file_in_path(&target),
-        }
+        Triple::from_str(&target).unwrap_or_else(|_| read_target_from_file_in_path(&target))
     };
 
     let out = File::create(out_dir.join("host.rs")).expect("error creating host.rs");
