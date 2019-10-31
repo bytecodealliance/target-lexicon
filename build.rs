@@ -29,7 +29,6 @@ mod parse_error {
         UnrecognizedEnvironment(String),
         UnrecognizedBinaryFormat(String),
         UnrecognizedField(String),
-        NoneWithoutBinaryFormat,
     }
 }
 
