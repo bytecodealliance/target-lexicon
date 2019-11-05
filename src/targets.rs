@@ -1174,6 +1174,7 @@ mod tests {
 
     #[test]
     fn custom_vendors() {
+        // Test various invalid cases.
         assert!(Triple::from_str("x86_64--linux").is_err());
         assert!(Triple::from_str("x86_64-42-linux").is_err());
         assert!(Triple::from_str("x86_64-__customvendor__-linux").is_err());
@@ -1190,6 +1191,31 @@ mod tests {
         assert!(Triple::from_str("x86_64-").is_err());
         assert!(Triple::from_str("x86_64--").is_err());
 
+        // Test various Unicode things.
+        assert!(
+            Triple::from_str("x86_64-𝓬𝓾𝓼𝓽𝓸𝓶𝓿𝓮𝓷𝓭𝓸𝓻-linux").is_err(),
+            "unicode font hazard"
+        );
+        assert!(
+            Triple::from_str("x86_64-ćúśtőḿvéńdőŕ-linux").is_err(),
+            "diacritical mark stripping hazard"
+        );
+        assert!(
+            Triple::from_str("x86_64-customvendοr-linux").is_err(),
+            "homoglyph hazard"
+        );
+        assert!(Triple::from_str("x86_64-customvendor-linux").is_ok());
+        assert!(
+            Triple::from_str("x86_64-ﬃ-linux").is_err(),
+            "normalization hazard"
+        );
+        assert!(Triple::from_str("x86_64-ffi-linux").is_ok());
+        assert!(
+            Triple::from_str("x86_64-custom‍vendor-linux").is_err(),
+            "zero-width character hazard"
+        );
+
+        // Test some valid cases.
         let t = Triple::from_str("x86_64-customvendor-linux")
             .expect("can't parse target with custom vendor");
         assert_eq!(t.architecture, Architecture::X86_64);
@@ -1202,8 +1228,8 @@ mod tests {
         assert_eq!(t.binary_format, BinaryFormat::Elf);
         assert_eq!(t.to_string(), "x86_64-customvendor-linux");
 
-        let t = Triple::from_str("x86_64-customvendor")
-            .expect("can't parse target with custom vendor");
+        let t =
+            Triple::from_str("x86_64-customvendor").expect("can't parse target with custom vendor");
         assert_eq!(t.architecture, Architecture::X86_64);
         assert_eq!(
             t.vendor,
