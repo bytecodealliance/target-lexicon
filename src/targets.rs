@@ -779,12 +779,9 @@ impl FromStr for Vendor {
                 }
 
                 // Restrict the set of characters permitted in a custom vendor.
-                if custom
-                    .find(|c: char| {
-                        !(c.is_ascii_lowercase() || c.is_ascii_digit() || c == '_' || c == '.')
-                    })
-                    .is_some()
-                {
+                if custom.chars().any(|c: char| {
+                    !(c.is_ascii_lowercase() || c.is_ascii_digit() || c == '_' || c == '.')
+                }) {
                     return Err(());
                 }
 
