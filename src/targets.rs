@@ -4,6 +4,7 @@ use crate::triple::{Endianness, PointerWidth, Triple};
 use alloc::boxed::Box;
 use alloc::string::String;
 use core::fmt;
+use core::hash::{Hash, Hasher};
 use core::str::FromStr;
 
 /// The "architecture" field, which in some cases also specifies a specific
@@ -292,6 +293,39 @@ impl Aarch64Architecture {
     }
 }
 
+/// A string for a `Vendor::Custom` that can either be used in `const`
+/// contexts or hold dynamic strings.
+#[derive(Clone, Debug, Eq)]
+pub enum CustomVendor {
+    /// An owned `String`. This supports the general case.
+    Owned(Box<String>),
+    /// A static `str`, so that `CustomVendor` can be constructed in `const`
+    /// contexts.
+    Static(&'static str),
+}
+
+impl CustomVendor {
+    /// Extracts a string slice.
+    pub fn as_str(&self) -> &str {
+        match self {
+            CustomVendor::Owned(s) => s,
+            CustomVendor::Static(s) => s,
+        }
+    }
+}
+
+impl PartialEq for CustomVendor {
+    fn eq(&self, other: &Self) -> bool {
+        self.as_str() == other.as_str()
+    }
+}
+
+impl Hash for CustomVendor {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.as_str().hash(state)
+    }
+}
+
 /// The "vendor" field, which in practice is little more than an arbitrary
 /// modifier.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
@@ -316,7 +350,7 @@ pub enum Vendor {
     ///
     /// Outside of such patched environments, users of `target-lexicon` should
     /// treat `Custom` the same as `Unknown` and ignore the string.
-    Custom(Box<String>),
+    Custom(CustomVendor),
 }
 
 /// The "operating system" field, which sometimes implies an environment, and
@@ -728,7 +762,7 @@ impl fmt::Display for Vendor {
             Vendor::Sun => "sun",
             Vendor::Uwp => "uwp",
             Vendor::Wrs => "wrs",
-            Vendor::Custom(ref name) => name,
+            Vendor::Custom(ref name) => name.as_str(),
         };
         f.write_str(s)
     }
@@ -779,13 +813,14 @@ impl FromStr for Vendor {
                 }
 
                 // Restrict the set of characters permitted in a custom vendor.
-                if custom.chars().any(|c: char| {
+                fn is_prohibited_char(c: char) -> bool {
                     !(c.is_ascii_lowercase() || c.is_ascii_digit() || c == '_' || c == '.')
-                }) {
+                }
+                if custom.chars().any(is_prohibited_char) {
                     return Err(());
                 }
 
-                Vendor::Custom(Box::new(custom.to_owned()))
+                Vendor::Custom(CustomVendor::Owned(Box::new(custom.to_owned())))
             }
         })
     }
@@ -1218,7 +1253,7 @@ mod tests {
         assert_eq!(t.architecture, Architecture::X86_64);
         assert_eq!(
             t.vendor,
-            Vendor::Custom(Box::new(String::from_str("customvendor").unwrap()))
+            Vendor::Custom(CustomVendor::Static("customvendor"))
         );
         assert_eq!(t.operating_system, OperatingSystem::Linux);
         assert_eq!(t.environment, Environment::Unknown);
@@ -1230,7 +1265,7 @@ mod tests {
         assert_eq!(t.architecture, Architecture::X86_64);
         assert_eq!(
             t.vendor,
-            Vendor::Custom(Box::new(String::from_str("customvendor").unwrap()))
+            Vendor::Custom(CustomVendor::Static("customvendor"))
         );
         assert_eq!(t.operating_system, OperatingSystem::Unknown);
         assert_eq!(t.environment, Environment::Unknown);
@@ -1240,7 +1275,7 @@ mod tests {
             Triple::from_str("unknown-foo"),
             Ok(Triple {
                 architecture: Architecture::Unknown,
-                vendor: Vendor::Custom(Box::new(String::from_str("foo").unwrap())),
+                vendor: Vendor::Custom(CustomVendor::Static("foo")),
                 operating_system: OperatingSystem::Unknown,
                 environment: Environment::Unknown,
                 binary_format: BinaryFormat::Unknown,

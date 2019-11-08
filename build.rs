@@ -53,6 +53,8 @@ fn write_host_rs(mut out: File, triple: Triple) -> io::Result<()> {
     writeln!(out, "use crate::Aarch64Architecture::*;")?;
     writeln!(out, "#[allow(unused_imports)]")?;
     writeln!(out, "use crate::ArmArchitecture::*;")?;
+    writeln!(out, "#[allow(unused_imports)]")?;
+    writeln!(out, "use crate::CustomVendor;")?;
     writeln!(out)?;
     writeln!(out, "/// The `Triple` of the current host.")?;
     writeln!(out, "pub const HOST: Triple = Triple {{")?;
@@ -139,7 +141,11 @@ fn write_host_rs(mut out: File, triple: Triple) -> io::Result<()> {
         "            architecture: Architecture::{:?},",
         triple.architecture
     )?;
-    writeln!(out, "            vendor: Vendor::{:?},", triple.vendor)?;
+    writeln!(
+        out,
+        "            vendor: {},",
+        vendor_display(&triple.vendor)
+    )?;
     writeln!(
         out,
         "            operating_system: OperatingSystem::{:?},",
@@ -164,9 +170,10 @@ fn write_host_rs(mut out: File, triple: Triple) -> io::Result<()> {
 
 fn vendor_display(vendor: &Vendor) -> String {
     match vendor {
-        Vendor::Custom(custom) => {
-            format!("Vendor::Custom(Box::new(String::from_str({:?})))", custom)
-        }
+        Vendor::Custom(custom) => format!(
+            "Vendor::Custom(CustomVendor::Static({:?}))",
+            custom.as_str()
+        ),
         known => format!("Vendor::{:?}", known),
     }
 }
