@@ -1246,6 +1246,10 @@ mod tests {
             Triple::from_str("x86_64-custom‍vendor-linux").is_err(),
             "zero-width character hazard"
         );
+        assert!(
+            Triple::from_str("x86_64-﻿customvendor-linux").is_err(),
+            "BOM hazard"
+        );
 
         // Test some valid cases.
         let t = Triple::from_str("x86_64-customvendor-linux")
