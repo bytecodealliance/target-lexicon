@@ -813,10 +813,9 @@ impl FromStr for Vendor {
                 }
 
                 // Restrict the set of characters permitted in a custom vendor.
-                fn is_prohibited_char(c: char) -> bool {
+                if custom.chars().any(|c: char| {
                     !(c.is_ascii_lowercase() || c.is_ascii_digit() || c == '_' || c == '.')
-                }
-                if custom.chars().any(is_prohibited_char) {
+                }) {
                     return Err(());
                 }
 
