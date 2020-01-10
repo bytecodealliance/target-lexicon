@@ -9,6 +9,7 @@ use core::str::FromStr;
 
 /// The "architecture" field, which in some cases also specifies a specific
 /// subarchitecture.
+#[non_exhaustive]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum Architecture {
@@ -49,6 +50,7 @@ pub enum Architecture {
     X86_64,
 }
 
+#[non_exhaustive]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum ArmArchitecture {
@@ -95,6 +97,7 @@ pub enum ArmArchitecture {
     Thumbv8mMain,
 }
 
+#[non_exhaustive]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum Aarch64Architecture {
@@ -102,6 +105,7 @@ pub enum Aarch64Architecture {
     Aarch64be,
 }
 
+// #[non_exhaustive]
 // #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 // #[allow(missing_docs)]
 // pub enum ArmFpu {
@@ -328,6 +332,7 @@ impl Hash for CustomVendor {
 
 /// The "vendor" field, which in practice is little more than an arbitrary
 /// modifier.
+#[non_exhaustive]
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum Vendor {
@@ -355,6 +360,7 @@ pub enum Vendor {
 
 /// The "operating system" field, which sometimes implies an environment, and
 /// sometimes isn't an actual operating system.
+#[non_exhaustive]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum OperatingSystem {
@@ -389,6 +395,7 @@ pub enum OperatingSystem {
 /// The "environment" field, which specifies an ABI environment on top of the
 /// operating system. In many configurations, this field is omitted, and the
 /// environment is implied by the operating system.
+#[non_exhaustive]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum Environment {
@@ -418,6 +425,7 @@ pub enum Environment {
 
 /// The "binary format" field, which is usually omitted, and the binary format
 /// is implied by the other fields.
+#[non_exhaustive]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum BinaryFormat {
