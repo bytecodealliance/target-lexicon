@@ -185,6 +185,7 @@ impl fmt::Display for Triple {
                 || self.operating_system == OperatingSystem::Wasi
                 || (self.operating_system == OperatingSystem::None_
                     && (self.architecture == Architecture::Arm(ArmArchitecture::Armebv7r)
+                        || self.architecture == Architecture::Arm(ArmArchitecture::Armv7a)
                         || self.architecture == Architecture::Arm(ArmArchitecture::Armv7r)
                         || self.architecture == Architecture::Arm(ArmArchitecture::Thumbv6m)
                         || self.architecture == Architecture::Arm(ArmArchitecture::Thumbv7em)
