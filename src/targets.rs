@@ -35,13 +35,8 @@ pub enum Architecture {
     Powerpc,
     Powerpc64,
     Powerpc64le,
-    Riscv32,
-    Riscv32i,
-    Riscv32imac,
-    Riscv32imc,
-    Riscv64,
-    Riscv64gc,
-    Riscv64imac,
+    Riscv32(Riscv32Architecture),
+    Riscv64(Riscv64Architecture),
     S390x,
     Sparc,
     Sparc64,
@@ -297,6 +292,25 @@ impl Aarch64Architecture {
     }
 }
 
+#[non_exhaustive]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
+#[allow(missing_docs)]
+pub enum Riscv32Architecture {
+    Riscv32,
+    Riscv32i,
+    Riscv32imac,
+    Riscv32imc,
+}
+
+#[non_exhaustive]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
+#[allow(missing_docs)]
+pub enum Riscv64Architecture {
+    Riscv64,
+    Riscv64gc,
+    Riscv64imac,
+}
+
 /// A string for a `Vendor::Custom` that can either be used in `const`
 /// contexts or hold dynamic strings.
 #[derive(Clone, Debug, Eq)]
@@ -456,13 +470,8 @@ impl Architecture {
             | Architecture::Msp430
             | Architecture::Nvptx64
             | Architecture::Powerpc64le
-            | Architecture::Riscv32
-            | Architecture::Riscv32i
-            | Architecture::Riscv32imac
-            | Architecture::Riscv32imc
-            | Architecture::Riscv64
-            | Architecture::Riscv64gc
-            | Architecture::Riscv64imac
+            | Architecture::Riscv32(_)
+            | Architecture::Riscv64(_)
             | Architecture::Wasm32
             | Architecture::X86_64 => Ok(Endianness::Little),
             Architecture::Mips
@@ -493,10 +502,7 @@ impl Architecture {
             | Architecture::Mipsel
             | Architecture::Mipsisa32r6
             | Architecture::Mipsisa32r6el
-            | Architecture::Riscv32
-            | Architecture::Riscv32i
-            | Architecture::Riscv32imac
-            | Architecture::Riscv32imc
+            | Architecture::Riscv32(_)
             | Architecture::Sparc
             | Architecture::Wasm32
             | Architecture::Mips
@@ -506,9 +512,7 @@ impl Architecture {
             | Architecture::Mipsisa64r6
             | Architecture::Mipsisa64r6el
             | Architecture::Powerpc64le
-            | Architecture::Riscv64
-            | Architecture::Riscv64gc
-            | Architecture::Riscv64imac
+            | Architecture::Riscv64(_)
             | Architecture::X86_64
             | Architecture::Mips64
             | Architecture::Nvptx64
@@ -601,6 +605,29 @@ impl fmt::Display for Aarch64Architecture {
     }
 }
 
+impl fmt::Display for Riscv32Architecture {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let s = match *self {
+            Riscv32Architecture::Riscv32 => "riscv32",
+            Riscv32Architecture::Riscv32i => "riscv32i",
+            Riscv32Architecture::Riscv32imac => "riscv32imac",
+            Riscv32Architecture::Riscv32imc => "riscv32imc",
+        };
+        f.write_str(s)
+    }
+}
+
+impl fmt::Display for Riscv64Architecture {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let s = match *self {
+            Riscv64Architecture::Riscv64 => "riscv64",
+            Riscv64Architecture::Riscv64gc => "riscv64gc",
+            Riscv64Architecture::Riscv64imac => "riscv64imac",
+        };
+        f.write_str(s)
+    }
+}
+
 impl fmt::Display for Architecture {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
@@ -626,13 +653,8 @@ impl fmt::Display for Architecture {
             Architecture::Powerpc => f.write_str("powerpc"),
             Architecture::Powerpc64 => f.write_str("powerpc64"),
             Architecture::Powerpc64le => f.write_str("powerpc64le"),
-            Architecture::Riscv32 => f.write_str("riscv32"),
-            Architecture::Riscv32i => f.write_str("riscv32i"),
-            Architecture::Riscv32imac => f.write_str("riscv32imac"),
-            Architecture::Riscv32imc => f.write_str("riscv32imc"),
-            Architecture::Riscv64 => f.write_str("riscv64"),
-            Architecture::Riscv64gc => f.write_str("riscv64gc"),
-            Architecture::Riscv64imac => f.write_str("riscv64imac"),
+            Architecture::Riscv32(riscv32) => riscv32.fmt(f),
+            Architecture::Riscv64(riscv64) => riscv64.fmt(f),
             Architecture::S390x => f.write_str("s390x"),
             Architecture::Sparc => f.write_str("sparc"),
             Architecture::Sparc64 => f.write_str("sparc64"),
@@ -705,6 +727,33 @@ impl FromStr for Aarch64Architecture {
     }
 }
 
+impl FromStr for Riscv32Architecture {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, ()> {
+        Ok(match s {
+            "riscv32" => Riscv32Architecture::Riscv32,
+            "riscv32i" => Riscv32Architecture::Riscv32i,
+            "riscv32imac" => Riscv32Architecture::Riscv32imac,
+            "riscv32imc" => Riscv32Architecture::Riscv32imc,
+            _ => return Err(()),
+        })
+    }
+}
+
+impl FromStr for Riscv64Architecture {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, ()> {
+        Ok(match s {
+            "riscv64" => Riscv64Architecture::Riscv64,
+            "riscv64gc" => Riscv64Architecture::Riscv64gc,
+            "riscv64imac" => Riscv64Architecture::Riscv64imac,
+            _ => return Err(()),
+        })
+    }
+}
+
 impl FromStr for Architecture {
     type Err = ();
 
@@ -730,13 +779,6 @@ impl FromStr for Architecture {
             "powerpc" => Architecture::Powerpc,
             "powerpc64" => Architecture::Powerpc64,
             "powerpc64le" => Architecture::Powerpc64le,
-            "riscv32" => Architecture::Riscv32,
-            "riscv32i" => Architecture::Riscv32i,
-            "riscv32imac" => Architecture::Riscv32imac,
-            "riscv32imc" => Architecture::Riscv32imc,
-            "riscv64" => Architecture::Riscv64,
-            "riscv64gc" => Architecture::Riscv64gc,
-            "riscv64imac" => Architecture::Riscv64imac,
             "s390x" => Architecture::S390x,
             "sparc" => Architecture::Sparc,
             "sparc64" => Architecture::Sparc64,
@@ -748,6 +790,10 @@ impl FromStr for Architecture {
                     Architecture::Arm(arm)
                 } else if let Ok(aarch64) = Aarch64Architecture::from_str(s) {
                     Architecture::Aarch64(aarch64)
+                } else if let Ok(riscv32) = Riscv32Architecture::from_str(s) {
+                    Architecture::Riscv32(riscv32)
+                } else if let Ok(riscv64) = Riscv64Architecture::from_str(s) {
+                    Architecture::Riscv64(riscv64)
                 } else {
                     return Err(());
                 }
