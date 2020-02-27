@@ -19,9 +19,7 @@ pub enum Architecture {
     Aarch64(Aarch64Architecture),
     Asmjs,
     Hexagon,
-    I386,
-    I586,
-    I686,
+    X86_32(X86_32Architecture),
     Mips,
     Mips64,
     Mips64el,
@@ -311,6 +309,15 @@ pub enum Riscv64Architecture {
     Riscv64imac,
 }
 
+#[non_exhaustive]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
+#[allow(missing_docs)]
+pub enum X86_32Architecture {
+    I386,
+    I586,
+    I686,
+}
+
 /// A string for a `Vendor::Custom` that can either be used in `const`
 /// contexts or hold dynamic strings.
 #[derive(Clone, Debug, Eq)]
@@ -460,9 +467,7 @@ impl Architecture {
             Architecture::AmdGcn
             | Architecture::Asmjs
             | Architecture::Hexagon
-            | Architecture::I386
-            | Architecture::I586
-            | Architecture::I686
+            | Architecture::X86_32(_)
             | Architecture::Mips64el
             | Architecture::Mipsel
             | Architecture::Mipsisa32r6el
@@ -496,9 +501,7 @@ impl Architecture {
             Architecture::Aarch64(aarch) => Ok(aarch.pointer_width()),
             Architecture::Asmjs
             | Architecture::Hexagon
-            | Architecture::I386
-            | Architecture::I586
-            | Architecture::I686
+            | Architecture::X86_32(_)
             | Architecture::Mipsel
             | Architecture::Mipsisa32r6
             | Architecture::Mipsisa32r6el
@@ -628,6 +631,17 @@ impl fmt::Display for Riscv64Architecture {
     }
 }
 
+impl fmt::Display for X86_32Architecture {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let s = match *self {
+            X86_32Architecture::I386 => "i386",
+            X86_32Architecture::I586 => "i586",
+            X86_32Architecture::I686 => "i686",
+        };
+        f.write_str(s)
+    }
+}
+
 impl fmt::Display for Architecture {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
@@ -637,9 +651,7 @@ impl fmt::Display for Architecture {
             Architecture::AmdGcn => f.write_str("amdgcn"),
             Architecture::Asmjs => f.write_str("asmjs"),
             Architecture::Hexagon => f.write_str("hexagon"),
-            Architecture::I386 => f.write_str("i386"),
-            Architecture::I586 => f.write_str("i586"),
-            Architecture::I686 => f.write_str("i686"),
+            Architecture::X86_32(x86_32) => x86_32.fmt(f),
             Architecture::Mips => f.write_str("mips"),
             Architecture::Mips64 => f.write_str("mips64"),
             Architecture::Mips64el => f.write_str("mips64el"),
@@ -754,6 +766,19 @@ impl FromStr for Riscv64Architecture {
     }
 }
 
+impl FromStr for X86_32Architecture {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, ()> {
+        Ok(match s {
+            "i386" => X86_32Architecture::I386,
+            "i586" => X86_32Architecture::I586,
+            "i686" => X86_32Architecture::I686,
+            _ => return Err(()),
+        })
+    }
+}
+
 impl FromStr for Architecture {
     type Err = ();
 
@@ -763,9 +788,6 @@ impl FromStr for Architecture {
             "amdgcn" => Architecture::AmdGcn,
             "asmjs" => Architecture::Asmjs,
             "hexagon" => Architecture::Hexagon,
-            "i386" => Architecture::I386,
-            "i586" => Architecture::I586,
-            "i686" => Architecture::I686,
             "mips" => Architecture::Mips,
             "mips64" => Architecture::Mips64,
             "mips64el" => Architecture::Mips64el,
@@ -794,6 +816,8 @@ impl FromStr for Architecture {
                     Architecture::Riscv32(riscv32)
                 } else if let Ok(riscv64) = Riscv64Architecture::from_str(s) {
                     Architecture::Riscv64(riscv64)
+                } else if let Ok(x86_32) = X86_32Architecture::from_str(s) {
+                    Architecture::X86_32(x86_32)
                 } else {
                     return Err(());
                 }
