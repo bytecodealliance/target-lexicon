@@ -891,7 +891,7 @@ impl FromStr for Vendor {
                 }
 
                 // Require the first character to be an ascii lowercase.
-                if !custom.chars().nth(0).unwrap().is_ascii_lowercase() {
+                if !custom.chars().next().unwrap().is_ascii_lowercase() {
                     return Err(());
                 }
 
