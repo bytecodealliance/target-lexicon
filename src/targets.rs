@@ -40,6 +40,7 @@ pub enum Architecture {
     Sparc64,
     Sparcv9,
     Wasm32,
+    Wasm64,
     X86_64,
 }
 
@@ -478,6 +479,7 @@ impl Architecture {
             | Architecture::Riscv32(_)
             | Architecture::Riscv64(_)
             | Architecture::Wasm32
+            | Architecture::Wasm64
             | Architecture::X86_64 => Ok(Endianness::Little),
             Architecture::Mips
             | Architecture::Mips64
@@ -522,7 +524,8 @@ impl Architecture {
             | Architecture::Powerpc64
             | Architecture::S390x
             | Architecture::Sparc64
-            | Architecture::Sparcv9 => Ok(PointerWidth::U64),
+            | Architecture::Sparcv9
+            | Architecture::Wasm64 => Ok(PointerWidth::U64),
         }
     }
 }
@@ -544,7 +547,7 @@ pub(crate) fn default_binary_format(triple: &Triple) -> BinaryFormat {
         | OperatingSystem::VxWorks
         | OperatingSystem::Wasi
         | OperatingSystem::Unknown => match triple.architecture {
-            Architecture::Wasm32 => BinaryFormat::Wasm,
+            Architecture::Wasm32 | Architecture::Wasm64 => BinaryFormat::Wasm,
             _ => BinaryFormat::Unknown,
         },
         _ => BinaryFormat::Elf,
@@ -672,6 +675,7 @@ impl fmt::Display for Architecture {
             Architecture::Sparc64 => f.write_str("sparc64"),
             Architecture::Sparcv9 => f.write_str("sparcv9"),
             Architecture::Wasm32 => f.write_str("wasm32"),
+            Architecture::Wasm64 => f.write_str("wasm64"),
             Architecture::X86_64 => f.write_str("x86_64"),
         }
     }
@@ -806,6 +810,7 @@ impl FromStr for Architecture {
             "sparc64" => Architecture::Sparc64,
             "sparcv9" => Architecture::Sparcv9,
             "wasm32" => Architecture::Wasm32,
+            "wasm64" => Architecture::Wasm64,
             "x86_64" => Architecture::X86_64,
             _ => {
                 if let Ok(arm) = ArmArchitecture::from_str(s) {
@@ -1229,7 +1234,9 @@ mod tests {
             "wasm32-experimental-emscripten",
             "wasm32-unknown-emscripten",
             "wasm32-unknown-unknown",
+            "wasm64-unknown-unknown",
             "wasm32-wasi",
+            "wasm64-wasi",
             "x86_64-apple-darwin",
             "x86_64-apple-ios",
             "x86_64-fortanix-unknown-sgx",
