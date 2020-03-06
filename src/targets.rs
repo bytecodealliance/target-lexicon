@@ -20,14 +20,8 @@ pub enum Architecture {
     Asmjs,
     Hexagon,
     X86_32(X86_32Architecture),
-    Mips,
-    Mips64,
-    Mips64el,
-    Mipsel,
-    Mipsisa32r6,
-    Mipsisa32r6el,
-    Mipsisa64r6,
-    Mipsisa64r6el,
+    Mips32(Mips32Architecture),
+    Mips64(Mips64Architecture),
     Msp430,
     Nvptx64,
     Powerpc,
@@ -291,6 +285,7 @@ impl Aarch64Architecture {
     }
 }
 
+/// An enum for all 32-bit RISC-V architectures.
 #[non_exhaustive]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
@@ -301,6 +296,7 @@ pub enum Riscv32Architecture {
     Riscv32imc,
 }
 
+/// An enum for all 64-bit RISC-V architectures.
 #[non_exhaustive]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
@@ -310,6 +306,7 @@ pub enum Riscv64Architecture {
     Riscv64imac,
 }
 
+/// An enum for all 32-bit x86 architectures.
 #[non_exhaustive]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
@@ -317,6 +314,28 @@ pub enum X86_32Architecture {
     I386,
     I586,
     I686,
+}
+
+/// An enum for all 32-bit MIPS architectures (not just "MIPS32").
+#[non_exhaustive]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
+#[allow(missing_docs)]
+pub enum Mips32Architecture {
+    Mips,
+    Mipsel,
+    Mipsisa32r6,
+    Mipsisa32r6el,
+}
+
+/// An enum for all 64-bit MIPS architectures (not just "MIPS64").
+#[non_exhaustive]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
+#[allow(missing_docs)]
+pub enum Mips64Architecture {
+    Mips64,
+    Mips64el,
+    Mipsisa64r6,
+    Mipsisa64r6el,
 }
 
 /// A string for a `Vendor::Custom` that can either be used in `const`
@@ -469,10 +488,10 @@ impl Architecture {
             | Architecture::Asmjs
             | Architecture::Hexagon
             | Architecture::X86_32(_)
-            | Architecture::Mips64el
-            | Architecture::Mipsel
-            | Architecture::Mipsisa32r6el
-            | Architecture::Mipsisa64r6el
+            | Architecture::Mips64(Mips64Architecture::Mips64el)
+            | Architecture::Mips32(Mips32Architecture::Mipsel)
+            | Architecture::Mips32(Mips32Architecture::Mipsisa32r6el)
+            | Architecture::Mips64(Mips64Architecture::Mipsisa64r6el)
             | Architecture::Msp430
             | Architecture::Nvptx64
             | Architecture::Powerpc64le
@@ -481,10 +500,10 @@ impl Architecture {
             | Architecture::Wasm32
             | Architecture::Wasm64
             | Architecture::X86_64 => Ok(Endianness::Little),
-            Architecture::Mips
-            | Architecture::Mips64
-            | Architecture::Mipsisa32r6
-            | Architecture::Mipsisa64r6
+            Architecture::Mips32(Mips32Architecture::Mips)
+            | Architecture::Mips64(Mips64Architecture::Mips64)
+            | Architecture::Mips32(Mips32Architecture::Mipsisa32r6)
+            | Architecture::Mips64(Mips64Architecture::Mipsisa64r6)
             | Architecture::Powerpc
             | Architecture::Powerpc64
             | Architecture::S390x
@@ -504,22 +523,16 @@ impl Architecture {
             Architecture::Asmjs
             | Architecture::Hexagon
             | Architecture::X86_32(_)
-            | Architecture::Mipsel
-            | Architecture::Mipsisa32r6
-            | Architecture::Mipsisa32r6el
             | Architecture::Riscv32(_)
             | Architecture::Sparc
             | Architecture::Wasm32
-            | Architecture::Mips
+            | Architecture::Mips32(_)
             | Architecture::Powerpc => Ok(PointerWidth::U32),
             Architecture::AmdGcn
-            | Architecture::Mips64el
-            | Architecture::Mipsisa64r6
-            | Architecture::Mipsisa64r6el
             | Architecture::Powerpc64le
             | Architecture::Riscv64(_)
             | Architecture::X86_64
-            | Architecture::Mips64
+            | Architecture::Mips64(_)
             | Architecture::Nvptx64
             | Architecture::Powerpc64
             | Architecture::S390x
@@ -645,6 +658,30 @@ impl fmt::Display for X86_32Architecture {
     }
 }
 
+impl fmt::Display for Mips32Architecture {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let s = match *self {
+            Mips32Architecture::Mips => "mips",
+            Mips32Architecture::Mipsel => "mipsel",
+            Mips32Architecture::Mipsisa32r6 => "mipsisa32r6",
+            Mips32Architecture::Mipsisa32r6el => "mipsisa32r6el",
+        };
+        f.write_str(s)
+    }
+}
+
+impl fmt::Display for Mips64Architecture {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let s = match *self {
+            Mips64Architecture::Mips64 => "mips64",
+            Mips64Architecture::Mips64el => "mips64el",
+            Mips64Architecture::Mipsisa64r6 => "mipsisa64r6",
+            Mips64Architecture::Mipsisa64r6el => "mipsisa64r6el",
+        };
+        f.write_str(s)
+    }
+}
+
 impl fmt::Display for Architecture {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
@@ -655,14 +692,8 @@ impl fmt::Display for Architecture {
             Architecture::Asmjs => f.write_str("asmjs"),
             Architecture::Hexagon => f.write_str("hexagon"),
             Architecture::X86_32(x86_32) => x86_32.fmt(f),
-            Architecture::Mips => f.write_str("mips"),
-            Architecture::Mips64 => f.write_str("mips64"),
-            Architecture::Mips64el => f.write_str("mips64el"),
-            Architecture::Mipsel => f.write_str("mipsel"),
-            Architecture::Mipsisa32r6 => f.write_str("mipsisa32r6"),
-            Architecture::Mipsisa32r6el => f.write_str("mipsisa32r6el"),
-            Architecture::Mipsisa64r6 => f.write_str("mipsisa64r6"),
-            Architecture::Mipsisa64r6el => f.write_str("mipsisa64r6el"),
+            Architecture::Mips32(mips32) => mips32.fmt(f),
+            Architecture::Mips64(mips64) => mips64.fmt(f),
             Architecture::Msp430 => f.write_str("msp430"),
             Architecture::Nvptx64 => f.write_str("nvptx64"),
             Architecture::Powerpc => f.write_str("powerpc"),
@@ -783,6 +814,34 @@ impl FromStr for X86_32Architecture {
     }
 }
 
+impl FromStr for Mips32Architecture {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, ()> {
+        Ok(match s {
+            "mips" => Mips32Architecture::Mips,
+            "mipsel" => Mips32Architecture::Mipsel,
+            "mipsisa32r6" => Mips32Architecture::Mipsisa32r6,
+            "mipsisa32r6el" => Mips32Architecture::Mipsisa32r6el,
+            _ => return Err(()),
+        })
+    }
+}
+
+impl FromStr for Mips64Architecture {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, ()> {
+        Ok(match s {
+            "mips64" => Mips64Architecture::Mips64,
+            "mips64el" => Mips64Architecture::Mips64el,
+            "mipsisa64r6" => Mips64Architecture::Mipsisa64r6,
+            "mipsisa64r6el" => Mips64Architecture::Mipsisa64r6el,
+            _ => return Err(()),
+        })
+    }
+}
+
 impl FromStr for Architecture {
     type Err = ();
 
@@ -792,14 +851,6 @@ impl FromStr for Architecture {
             "amdgcn" => Architecture::AmdGcn,
             "asmjs" => Architecture::Asmjs,
             "hexagon" => Architecture::Hexagon,
-            "mips" => Architecture::Mips,
-            "mips64" => Architecture::Mips64,
-            "mips64el" => Architecture::Mips64el,
-            "mipsel" => Architecture::Mipsel,
-            "mipsisa32r6" => Architecture::Mipsisa32r6,
-            "mipsisa32r6el" => Architecture::Mipsisa32r6el,
-            "mipsisa64r6" => Architecture::Mipsisa64r6,
-            "mipsisa64r6el" => Architecture::Mipsisa64r6el,
             "msp430" => Architecture::Msp430,
             "nvptx64" => Architecture::Nvptx64,
             "powerpc" => Architecture::Powerpc,
@@ -823,6 +874,10 @@ impl FromStr for Architecture {
                     Architecture::Riscv64(riscv64)
                 } else if let Ok(x86_32) = X86_32Architecture::from_str(s) {
                     Architecture::X86_32(x86_32)
+                } else if let Ok(mips32) = Mips32Architecture::from_str(s) {
+                    Architecture::Mips32(mips32)
+                } else if let Ok(mips64) = Mips64Architecture::from_str(s) {
+                    Architecture::Mips64(mips64)
                 } else {
                     return Err(());
                 }
