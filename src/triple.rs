@@ -189,6 +189,32 @@ impl Triple {
             _ => return Err(()),
         })
     }
+
+    /// The C data model for a given target.
+    pub fn data_model(&self) -> Result<CDataModel, ()> {
+        let pointer_width = self.pointer_width()?;
+        if pointer_width == Size::U64 {
+            if self.operating_system == OperatingSystem::Windows {
+                Ok(CDataModel::LLP64)
+            } else if self.default_calling_convention() == Ok(CallingConvention::SystemV) {
+                Ok(CDataModel::LP64)
+            } else {
+                Err(())
+            }
+        } else if pointer_width == Size::U32 {
+            if self.operating_system == OperatingSystem::Windows || self.default_calling_convention() == Ok(CallingConvention::SystemV) {
+                Ok(CDataModel::ILP32)
+            } else {
+                Err(())
+            }
+        } else {
+            if self.operating_system == OperatingSystem::Windows {
+                Ok(CDataModel::LP32)
+            } else {
+                Err(())
+            }
+        }
+    }
 }
 
 impl Default for Triple {
