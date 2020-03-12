@@ -128,7 +128,7 @@ impl Triple {
         })
     }
 
-    /// The C data model for a given target.
+    /// The C data model for a given target. If the model is not known, returns `Err(())`.
     pub fn data_model(&self) -> Result<CDataModel, ()> {
         let pointer_width = self.pointer_width()?;
         if pointer_width == PointerWidth::U64 {
