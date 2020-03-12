@@ -17,33 +17,32 @@ pub enum Endianness {
     Big,
 }
 
-/// The width of a pointer (in the default address space).
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
-pub enum PointerWidth {
+pub enum Size {
     U16,
     U32,
     U64,
 }
 
-impl PointerWidth {
-    /// Return the number of bits in a pointer.
+impl Size {
+    /// Return the number of bits in a size.
     pub fn bits(self) -> u8 {
         match self {
-            PointerWidth::U16 => 16,
-            PointerWidth::U32 => 32,
-            PointerWidth::U64 => 64,
+            Size::U16 => 16,
+            Size::U32 => 32,
+            Size::U64 => 64,
         }
     }
 
-    /// Return the number of bytes in a pointer.
+    /// Return the number of bytes in a size.
     ///
     /// For these purposes, there are 8 bits in a byte.
     pub fn bytes(self) -> u8 {
         match self {
-            PointerWidth::U16 => 2,
-            PointerWidth::U32 => 4,
-            PointerWidth::U64 => 8,
+            Size::U16 => 2,
+            Size::U32 => 4,
+            Size::U64 => 8,
         }
     }
 }
@@ -93,7 +92,7 @@ impl Triple {
     }
 
     /// Return the pointer width of this target's architecture.
-    pub fn pointer_width(&self) -> Result<PointerWidth, ()> {
+    pub fn pointer_width(&self) -> Result<Size, ()> {
         self.architecture.pointer_width()
     }
 
