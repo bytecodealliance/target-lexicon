@@ -19,18 +19,18 @@
 
 extern crate alloc;
 
+mod data_model;
 mod host;
 mod parse_error;
 mod targets;
 #[macro_use]
 mod triple;
 
+pub use self::data_model::{CDataModel, Size};
 pub use self::host::HOST;
 pub use self::parse_error::ParseError;
 pub use self::targets::{
     Aarch64Architecture, Architecture, ArmArchitecture, BinaryFormat, CustomVendor, Environment,
     OperatingSystem, Vendor,
 };
-pub use self::triple::{CallingConvention, CDataModel, Endianness, Size, Triple};
-/// The size of a pointer
-pub type PointerWidth = Size;
+pub use self::triple::{CallingConvention, Endianness, PointerWidth, Triple};

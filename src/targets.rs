@@ -1,6 +1,6 @@
 // This file defines all the identifier enums and target-aware logic.
 
-use crate::triple::{Endianness, Size, Triple};
+use crate::triple::{Endianness, PointerWidth, Triple};
 use alloc::boxed::Box;
 use alloc::string::String;
 use core::fmt;
@@ -173,7 +173,7 @@ impl ArmArchitecture {
     // }
 
     /// Return the pointer bit width of this target's architecture.
-    pub fn pointer_width(self) -> Size {
+    pub fn pointer_width(self) -> PointerWidth {
         match self {
             ArmArchitecture::Arm
             | ArmArchitecture::Armeb
@@ -213,7 +213,7 @@ impl ArmArchitecture {
             | ArmArchitecture::Thumbv7m
             | ArmArchitecture::Thumbv7neon
             | ArmArchitecture::Thumbv8mBase
-            | ArmArchitecture::Thumbv8mMain => Size::U32,
+            | ArmArchitecture::Thumbv8mMain => PointerWidth::U32,
         }
     }
 
@@ -276,9 +276,9 @@ impl Aarch64Architecture {
     // }
 
     /// Return the pointer bit width of this target's architecture.
-    pub fn pointer_width(self) -> Size {
+    pub fn pointer_width(self) -> PointerWidth {
         match self {
-            Aarch64Architecture::Aarch64 | Aarch64Architecture::Aarch64be => Size::U64,
+            Aarch64Architecture::Aarch64 | Aarch64Architecture::Aarch64be => PointerWidth::U64,
         }
     }
 
@@ -495,10 +495,10 @@ impl Architecture {
     }
 
     /// Return the pointer bit width of this target's architecture.
-    pub fn pointer_width(self) -> Result<Size, ()> {
+    pub fn pointer_width(self) -> Result<PointerWidth, ()> {
         match self {
             Architecture::Unknown => Err(()),
-            Architecture::Msp430 => Ok(Size::U16),
+            Architecture::Msp430 => Ok(PointerWidth::U16),
             Architecture::Arm(arm) => Ok(arm.pointer_width()),
             Architecture::Aarch64(aarch) => Ok(aarch.pointer_width()),
             Architecture::Asmjs
@@ -511,7 +511,7 @@ impl Architecture {
             | Architecture::Sparc
             | Architecture::Wasm32
             | Architecture::Mips
-            | Architecture::Powerpc => Ok(Size::U32),
+            | Architecture::Powerpc => Ok(PointerWidth::U32),
             Architecture::AmdGcn
             | Architecture::Mips64el
             | Architecture::Mipsisa64r6
@@ -525,7 +525,7 @@ impl Architecture {
             | Architecture::S390x
             | Architecture::Sparc64
             | Architecture::Sparcv9
-            | Architecture::Wasm64 => Ok(Size::U64),
+            | Architecture::Wasm64 => Ok(PointerWidth::U64),
         }
     }
 }

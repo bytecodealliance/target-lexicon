@@ -1,5 +1,6 @@
 // This file defines the `Triple` type and support code shared by all targets.
 
+use crate::data_model::CDataModel;
 use crate::parse_error::ParseError;
 use crate::targets::{
     default_binary_format, Architecture, ArmArchitecture, BinaryFormat, Environment,
@@ -17,33 +18,33 @@ pub enum Endianness {
     Big,
 }
 
-/// The size in bits of a type.
+/// The width of a pointer (in the default address space).
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
-pub enum Size {
+pub enum PointerWidth {
     U16,
     U32,
     U64,
 }
 
-impl Size {
-    /// Return the number of bits in a size.
+impl PointerWidth {
+    /// Return the number of bits in a pointer.
     pub fn bits(self) -> u8 {
         match self {
-            Size::U16 => 16,
-            Size::U32 => 32,
-            Size::U64 => 64,
+            PointerWidth::U16 => 16,
+            PointerWidth::U32 => 32,
+            PointerWidth::U64 => 64,
         }
     }
 
-    /// Return the number of bytes in a size.
+    /// Return the number of bytes in a pointer.
     ///
     /// For these purposes, there are 8 bits in a byte.
     pub fn bytes(self) -> u8 {
         match self {
-            Size::U16 => 2,
-            Size::U32 => 4,
-            Size::U64 => 8,
+            PointerWidth::U16 => 2,
+            PointerWidth::U32 => 4,
+            PointerWidth::U64 => 8,
         }
     }
 }
@@ -67,70 +68,6 @@ pub enum CallingConvention {
     /// Windows documentation often just calls the Windows x64 calling convention
     /// (though the compiler still recognizes "fastcall" as an alias for it).
     WindowsFastcall,
-}
-
-/// The C data model used on a target.
-///
-/// See also https://en.cppreference.com/w/c/language/arithmetic_types
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
-#[non_exhaustive]
-pub enum CDataModel {
-    /// The data model used most commonly on Win16
-    LP32,
-    /// The data model used most commonly on Win32 and 32-bit Unix systems
-    ILP32,
-    /// The data model used most commonly on Win64
-    LLP64,
-    /// The data model used most commonly on 64-bit Unix systems
-    LP64,
-    /// A rare data model used on early 64-bit Unix systems
-    ILP64,
-}
-
-impl CDataModel {
-    /// The width of a pointer (in the default address space).
-    pub fn pointer_width(&self) -> Size {
-        match self {
-            CDataModel::LP32 | CDataModel::ILP32 => Size::U32,
-            CDataModel::LLP64 | CDataModel::LP64 | CDataModel::ILP64 => Size::U64,
-        }
-    }
-    /// The size of a C `short`. This is required to be at least 16 bits.
-    pub fn short_size(&self) -> Size {
-        match self {
-            CDataModel::LP32 | CDataModel::ILP32 | CDataModel::LLP64 | CDataModel::LP64 | CDataModel::ILP64 => Size::U16,
-        }
-    }
-    /// The size of a C `int`. This is required to be at least 16 bits.
-    pub fn int_size(&self) -> Size {
-        match self {
-            CDataModel::LP32 => Size::U16,
-            CDataModel::ILP32 | CDataModel::LLP64 | CDataModel::LP64 | CDataModel::ILP64 => Size::U32,
-        }
-    }
-    /// The size of a C `long`. This is required to be at least 32 bits.
-    pub fn long_size(&self) -> Size {
-        match self {
-            CDataModel::LP32 | CDataModel::ILP32 | CDataModel::LLP64 | CDataModel::ILP64 => Size::U32,
-            CDataModel::LP64 => Size::U64,
-        }
-    }
-    /// The size of a C `long long`. This is required (in C99+) to be at least 64 bits.
-    pub fn long_long_size(&self) -> Size {
-        match self {
-            CDataModel::LP32 | CDataModel::ILP32 | CDataModel::LLP64 | CDataModel::ILP64 | CDataModel::LP64 => Size::U64,
-        }
-    }
-    /// The size of a C `float`.
-    pub fn float_size(&self) -> Size {
-        // TODO: this is probably wrong on at least one architecture
-        Size::U32
-    }
-    /// The size of a C `double`.
-    pub fn double_size(&self) -> Size {
-        // TODO: this is probably wrong on at least one architecture
-        Size::U64
-    }
 }
 
 /// A target "triple". Historically such things had three fields, though they've
@@ -157,7 +94,7 @@ impl Triple {
     }
 
     /// Return the pointer width of this target's architecture.
-    pub fn pointer_width(&self) -> Result<Size, ()> {
+    pub fn pointer_width(&self) -> Result<PointerWidth, ()> {
         self.architecture.pointer_width()
     }
 
@@ -194,7 +131,7 @@ impl Triple {
     /// The C data model for a given target.
     pub fn data_model(&self) -> Result<CDataModel, ()> {
         let pointer_width = self.pointer_width()?;
-        if pointer_width == Size::U64 {
+        if pointer_width == PointerWidth::U64 {
             if self.operating_system == OperatingSystem::Windows {
                 Ok(CDataModel::LLP64)
             } else if self.default_calling_convention() == Ok(CallingConvention::SystemV) {
@@ -202,7 +139,7 @@ impl Triple {
             } else {
                 Err(())
             }
-        } else if pointer_width == Size::U32 {
+        } else if pointer_width == PointerWidth::U32 {
             if self.operating_system == OperatingSystem::Windows || self.default_calling_convention() == Ok(CallingConvention::SystemV) {
                 Ok(CDataModel::ILP32)
             } else {

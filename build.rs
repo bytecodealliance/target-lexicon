@@ -12,6 +12,10 @@ use std::str::FromStr;
 extern crate alloc;
 
 // Include triple.rs and targets.rs so we can parse the TARGET environment variable.
+// targets.rs depends on data_model
+mod data_model {
+    include!("src/data_model.rs");
+}
 mod triple {
     include!("src/triple.rs");
 }
