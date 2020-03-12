@@ -17,6 +17,7 @@ pub enum Endianness {
     Big,
 }
 
+/// The size in bits of a type.
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum Size {
