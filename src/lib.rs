@@ -31,6 +31,6 @@ pub use self::targets::{
     Aarch64Architecture, Architecture, ArmArchitecture, BinaryFormat, CustomVendor, Environment,
     OperatingSystem, Vendor,
 };
-pub use self::triple::{CallingConvention, Endianness, Size, Triple};
+pub use self::triple::{CallingConvention, CDataModel, Endianness, Size, Triple};
 /// The size of a pointer
 pub type PointerWidth = Size;
