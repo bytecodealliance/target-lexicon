@@ -9,7 +9,7 @@ pub struct Size {
 }
 
 impl Size {
-    /// Return the number of bits in a size.
+    /// Return the number of bits this `Size` represents.
     pub fn bits(self) -> u8 {
         self.bits
     }
