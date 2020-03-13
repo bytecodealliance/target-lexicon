@@ -134,13 +134,16 @@ impl Triple {
         if pointer_width == PointerWidth::U64 {
             if self.operating_system == OperatingSystem::Windows {
                 Ok(CDataModel::LLP64)
-            } else if self.default_calling_convention() == Ok(CallingConvention::SystemV) {
+            } else if self.default_calling_convention() == Ok(CallingConvention::SystemV)
+                || self.architecture == Architecture::Wasm64 {
                 Ok(CDataModel::LP64)
             } else {
                 Err(())
             }
         } else if pointer_width == PointerWidth::U32 {
-            if self.operating_system == OperatingSystem::Windows || self.default_calling_convention() == Ok(CallingConvention::SystemV) {
+            if self.operating_system == OperatingSystem::Windows
+                || self.default_calling_convention() == Ok(CallingConvention::SystemV)
+                || self.architecture == Architecture::Wasm32 {
                 Ok(CDataModel::ILP32)
             } else {
                 Err(())
