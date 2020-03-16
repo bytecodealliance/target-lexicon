@@ -108,6 +108,7 @@ impl Triple {
             | OperatingSystem::Freebsd
             | OperatingSystem::Fuchsia
             | OperatingSystem::Haiku
+            | OperatingSystem::Hermit
             | OperatingSystem::Ios
             | OperatingSystem::L4re
             | OperatingSystem::Linux
