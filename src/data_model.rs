@@ -1,6 +1,5 @@
 /// The size of a type.
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
-#[allow(missing_docs)]
 pub struct Size {
     /// The size in bits of this type.
     bits: u8,
