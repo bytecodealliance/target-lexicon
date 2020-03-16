@@ -130,29 +130,32 @@ impl Triple {
 
     /// The C data model for a given target. If the model is not known, returns `Err(())`.
     pub fn data_model(&self) -> Result<CDataModel, ()> {
-        let pointer_width = self.pointer_width()?;
-        if pointer_width == PointerWidth::U64 {
-            if self.operating_system == OperatingSystem::Windows {
-                Ok(CDataModel::LLP64)
-            } else if self.default_calling_convention() == Ok(CallingConvention::SystemV)
-                || self.architecture == Architecture::Wasm64 {
-                Ok(CDataModel::LP64)
-            } else {
-                Err(())
+        match self.pointer_width()? {
+            PointerWidth::U64 => {
+                if self.operating_system == OperatingSystem::Windows {
+                    Ok(CDataModel::LLP64)
+                } else if self.default_calling_convention() == Ok(CallingConvention::SystemV)
+                    || self.architecture == Architecture::Wasm64 {
+                    Ok(CDataModel::LP64)
+                } else {
+                    Err(())
+                }
             }
-        } else if pointer_width == PointerWidth::U32 {
-            if self.operating_system == OperatingSystem::Windows
-                || self.default_calling_convention() == Ok(CallingConvention::SystemV)
-                || self.architecture == Architecture::Wasm32 {
-                Ok(CDataModel::ILP32)
-            } else {
-                Err(())
+            PointerWidth::U32 => {
+                if self.operating_system == OperatingSystem::Windows
+                    || self.default_calling_convention() == Ok(CallingConvention::SystemV)
+                    || self.architecture == Architecture::Wasm32 {
+                    Ok(CDataModel::ILP32)
+                } else {
+                    Err(())
+                }
             }
-        } else {
-            if self.operating_system == OperatingSystem::Windows {
-                Ok(CDataModel::LP32)
-            } else {
-                Err(())
+            PointerWidth::U16 => {
+                if self.operating_system == OperatingSystem::Windows {
+                    Ok(CDataModel::LP32)
+                } else {
+                    Err(())
+                }
             }
         }
     }
