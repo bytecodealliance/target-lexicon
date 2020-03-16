@@ -158,10 +158,9 @@ impl Triple {
             PointerWidth::U16 => Err(()),
         }
     }
-}
 
-impl Default for Triple {
-    fn default() -> Self {
+    /// Return a `Triple` with all unknown fields.
+    pub fn unknown() -> Self {
         Self {
             architecture: Architecture::Unknown,
             vendor: Vendor::Unknown,
@@ -169,36 +168,6 @@ impl Default for Triple {
             environment: Environment::Unknown,
             binary_format: BinaryFormat::Unknown,
         }
-    }
-}
-
-impl Default for Architecture {
-    fn default() -> Self {
-        Architecture::Unknown
-    }
-}
-
-impl Default for Vendor {
-    fn default() -> Self {
-        Vendor::Unknown
-    }
-}
-
-impl Default for OperatingSystem {
-    fn default() -> Self {
-        OperatingSystem::Unknown
-    }
-}
-
-impl Default for Environment {
-    fn default() -> Self {
-        Environment::Unknown
-    }
-}
-
-impl Default for BinaryFormat {
-    fn default() -> Self {
-        BinaryFormat::Unknown
     }
 }
 
@@ -250,7 +219,7 @@ impl FromStr for Triple {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut parts = s.split('-');
-        let mut result = Self::default();
+        let mut result = Self::unknown();
         let mut current_part;
 
         current_part = parts.next();
@@ -376,22 +345,22 @@ mod tests {
     fn defaults() {
         assert_eq!(
             Triple::from_str("unknown-unknown-unknown"),
-            Ok(Triple::default())
+            Ok(Triple::unknown())
         );
         assert_eq!(
             Triple::from_str("unknown-unknown-unknown-unknown"),
-            Ok(Triple::default())
+            Ok(Triple::unknown())
         );
         assert_eq!(
             Triple::from_str("unknown-unknown-unknown-unknown-unknown"),
-            Ok(Triple::default())
+            Ok(Triple::unknown())
         );
     }
 
     #[test]
     fn unknown_properties() {
-        assert_eq!(Triple::default().endianness(), Err(()));
-        assert_eq!(Triple::default().pointer_width(), Err(()));
-        assert_eq!(Triple::default().default_calling_convention(), Err(()));
+        assert_eq!(Triple::unknown().endianness(), Err(()));
+        assert_eq!(Triple::unknown().pointer_width(), Err(()));
+        assert_eq!(Triple::unknown().default_calling_convention(), Err(()));
     }
 }
