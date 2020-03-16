@@ -37,7 +37,7 @@ impl Size {
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[non_exhaustive]
 pub enum CDataModel {
-    /// The data model used most commonly on Win16. `int` and `long` are 32 bits.
+    /// The data model used most commonly on Win16. `long` and `pointer` are 32 bits.
     LP32,
     /// The data model used most commonly on Win32 and 32-bit Unix systems.
     ///
