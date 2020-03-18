@@ -1,5 +1,6 @@
 // This file defines the `Triple` type and support code shared by all targets.
 
+use crate::data_model::CDataModel;
 use crate::parse_error::ParseError;
 use crate::targets::{
     default_binary_format, Architecture, ArmArchitecture, BinaryFormat, Environment,
@@ -51,7 +52,6 @@ impl PointerWidth {
 /// The calling convention, which specifies things like which registers are
 /// used for passing arguments, which registers are callee-saved, and so on.
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
-#[allow(missing_docs)]
 pub enum CallingConvention {
     /// "System V", which is used on most Unix-like platfoms. Note that the
     /// specific conventions vary between hardware architectures; for example,
@@ -127,6 +127,36 @@ impl Triple {
             },
             _ => return Err(()),
         })
+    }
+
+    /// The C data model for a given target. If the model is not known, returns `Err(())`.
+    pub fn data_model(&self) -> Result<CDataModel, ()> {
+        match self.pointer_width()? {
+            PointerWidth::U64 => {
+                if self.operating_system == OperatingSystem::Windows {
+                    Ok(CDataModel::LLP64)
+                } else if self.default_calling_convention() == Ok(CallingConvention::SystemV)
+                    || self.architecture == Architecture::Wasm64 {
+                    Ok(CDataModel::LP64)
+                } else {
+                    Err(())
+                }
+            }
+            PointerWidth::U32 => {
+                if self.operating_system == OperatingSystem::Windows
+                    || self.default_calling_convention() == Ok(CallingConvention::SystemV)
+                    || self.architecture == Architecture::Wasm32 {
+                    Ok(CDataModel::ILP32)
+                } else {
+                    Err(())
+                }
+            }
+            // TODO: on 16-bit machines there is usually a distinction
+            // between near-pointers and far-pointers.
+            // Additionally, code pointers sometimes have a different size than data pointers.
+            // We don't handle this case.
+            PointerWidth::U16 => Err(()),
+        }
     }
 }
 
