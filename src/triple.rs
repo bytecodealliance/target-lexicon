@@ -150,13 +150,11 @@ impl Triple {
                     Err(())
                 }
             }
-            PointerWidth::U16 => {
-                if self.operating_system == OperatingSystem::Windows {
-                    Ok(CDataModel::LP32)
-                } else {
-                    Err(())
-                }
-            }
+            // TODO: on 16-bit machines there is usually a distinction
+            // between near-pointers and far-pointers.
+            // Additionally, code pointers sometimes have a different size than data pointers.
+            // We don't handle this case.
+            PointerWidth::U16 => Err(()),
         }
     }
 }
