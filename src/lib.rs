@@ -25,10 +25,8 @@ mod parse_error;
 mod targets;
 #[macro_use]
 mod triple;
-mod default_to_host;
 
 pub use self::data_model::{CDataModel, Size};
-pub use self::default_to_host::DefaultToHost;
 pub use self::host::HOST;
 pub use self::parse_error::ParseError;
 pub use self::targets::{
@@ -36,3 +34,13 @@ pub use self::targets::{
     OperatingSystem, Vendor,
 };
 pub use self::triple::{CallingConvention, Endianness, PointerWidth, Triple};
+
+/// A simple wrapper around `Triple` that provides an implementation of
+/// `Default` which defaults to `Triple::host()`.
+pub struct DefaultToHost(pub Triple);
+
+impl Default for DefaultToHost {
+    fn default() -> Self {
+        Self(Triple::host())
+    }
+}
