@@ -44,3 +44,13 @@ impl Default for DefaultToHost {
         Self(Triple::host())
     }
 }
+
+/// A simple wrapper around `Triple` that provides an implementation of
+/// `Default` which defaults to `Triple::unknown()`.
+pub struct DefaultToUnknown(pub Triple);
+
+impl Default for DefaultToUnknown {
+    fn default() -> Self {
+        Self(Triple::unknown())
+    }
+}
