@@ -12,10 +12,10 @@ impl Size {
     /// Return the number of bits this `Size` represents.
     pub fn bits(self) -> u8 {
         match self {
-            Size::U8 => 8,
-            Size::U16 => 16,
-            Size::U32 => 32,
-            Size::U64 => 64,
+            Self::U8 => 8,
+            Self::U16 => 16,
+            Self::U32 => 32,
+            Self::U64 => 64,
         }
     }
 
@@ -24,10 +24,10 @@ impl Size {
     /// A byte is assumed to be 8 bits.
     pub fn bytes(self) -> u8 {
         match self {
-            Size::U8 => 1,
-            Size::U16 => 2,
-            Size::U32 => 4,
-            Size::U64 => 8,
+            Self::U8 => 1,
+            Self::U16 => 2,
+            Self::U32 => 4,
+            Self::U64 => 8,
         }
     }
 }
@@ -60,45 +60,45 @@ pub enum CDataModel {
 
 impl CDataModel {
     /// The width of a pointer (in the default address space).
-    pub fn pointer_width(&self) -> Size {
+    pub fn pointer_width(self) -> Size {
         match self {
-            CDataModel::LP32 | CDataModel::ILP32 => Size::U32,
-            CDataModel::LLP64 | CDataModel::LP64 | CDataModel::ILP64 => Size::U64,
+            Self::LP32 | Self::ILP32 => Size::U32,
+            Self::LLP64 | Self::LP64 | Self::ILP64 => Size::U64,
         }
     }
     /// The size of a C `short`. This is required to be at least 16 bits.
-    pub fn short_size(&self) -> Size {
+    pub fn short_size(self) -> Size {
         match self {
-            CDataModel::LP32 | CDataModel::ILP32 | CDataModel::LLP64 | CDataModel::LP64 | CDataModel::ILP64 => Size::U16,
+            Self::LP32 | Self::ILP32 | Self::LLP64 | Self::LP64 | Self::ILP64 => Size::U16,
         }
     }
     /// The size of a C `int`. This is required to be at least 16 bits.
-    pub fn int_size(&self) -> Size {
+    pub fn int_size(self) -> Size {
         match self {
-            CDataModel::LP32 => Size::U16,
-            CDataModel::ILP32 | CDataModel::LLP64 | CDataModel::LP64 | CDataModel::ILP64 => Size::U32,
+            Self::LP32 => Size::U16,
+            Self::ILP32 | Self::LLP64 | Self::LP64 | Self::ILP64 => Size::U32,
         }
     }
     /// The size of a C `long`. This is required to be at least 32 bits.
-    pub fn long_size(&self) -> Size {
+    pub fn long_size(self) -> Size {
         match self {
-            CDataModel::LP32 | CDataModel::ILP32 | CDataModel::LLP64 | CDataModel::ILP64 => Size::U32,
-            CDataModel::LP64 => Size::U64,
+            Self::LP32 | Self::ILP32 | Self::LLP64 | Self::ILP64 => Size::U32,
+            Self::LP64 => Size::U64,
         }
     }
     /// The size of a C `long long`. This is required (in C99+) to be at least 64 bits.
-    pub fn long_long_size(&self) -> Size {
+    pub fn long_long_size(self) -> Size {
         match self {
-            CDataModel::LP32 | CDataModel::ILP32 | CDataModel::LLP64 | CDataModel::ILP64 | CDataModel::LP64 => Size::U64,
+            Self::LP32 | Self::ILP32 | Self::LLP64 | Self::ILP64 | Self::LP64 => Size::U64,
         }
     }
     /// The size of a C `float`.
-    pub fn float_size(&self) -> Size {
+    pub fn float_size(self) -> Size {
         // TODO: this is probably wrong on at least one architecture
         Size::U32
     }
     /// The size of a C `double`.
-    pub fn double_size(&self) -> Size {
+    pub fn double_size(self) -> Size {
         // TODO: this is probably wrong on at least one architecture
         Size::U64
     }

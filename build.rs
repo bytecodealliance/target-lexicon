@@ -43,7 +43,8 @@ fn main() {
     let out_dir =
         PathBuf::from(env::var("OUT_DIR").expect("The OUT_DIR environment variable must be set"));
     let target = env::var("TARGET").expect("The TARGET environment variable must be set");
-    let triple = Triple::from_str(&target).expect(&format!("Invalid target name: '{}'", target));
+    let triple =
+        Triple::from_str(&target).unwrap_or_else(|_| panic!("Invalid target name: '{}'", target));
     let out = File::create(out_dir.join("host.rs")).expect("error creating host.rs");
     write_host_rs(out, triple).expect("error writing host.rs");
 }
@@ -67,7 +68,11 @@ fn write_host_rs(mut out: File, triple: Triple) -> io::Result<()> {
         "    architecture: Architecture::{:?},",
         triple.architecture
     )?;
-    writeln!(out, "    vendor: {},", vendor_display(&triple.vendor))?;
+    writeln!(
+        out,
+        "    vendor: Vendor::{},",
+        vendor_display(&triple.vendor)
+    )?;
     writeln!(
         out,
         "    operating_system: OperatingSystem::{:?},",
@@ -89,7 +94,7 @@ fn write_host_rs(mut out: File, triple: Triple) -> io::Result<()> {
     writeln!(out, "impl Architecture {{")?;
     writeln!(out, "    /// Return the architecture for the current host.")?;
     writeln!(out, "    pub const fn host() -> Self {{")?;
-    writeln!(out, "        Architecture::{:?}", triple.architecture)?;
+    writeln!(out, "        Self::{:?}", triple.architecture)?;
     writeln!(out, "    }}")?;
     writeln!(out, "}}")?;
     writeln!(out)?;
@@ -97,7 +102,7 @@ fn write_host_rs(mut out: File, triple: Triple) -> io::Result<()> {
     writeln!(out, "impl Vendor {{")?;
     writeln!(out, "    /// Return the vendor for the current host.")?;
     writeln!(out, "    pub const fn host() -> Self {{")?;
-    writeln!(out, "        {}", vendor_display(&triple.vendor))?;
+    writeln!(out, "        Self::{}", vendor_display(&triple.vendor))?;
     writeln!(out, "    }}")?;
     writeln!(out, "}}")?;
     writeln!(out)?;
@@ -108,11 +113,7 @@ fn write_host_rs(mut out: File, triple: Triple) -> io::Result<()> {
         "    /// Return the operating system for the current host."
     )?;
     writeln!(out, "    pub const fn host() -> Self {{")?;
-    writeln!(
-        out,
-        "        OperatingSystem::{:?}",
-        triple.operating_system
-    )?;
+    writeln!(out, "        Self::{:?}", triple.operating_system)?;
     writeln!(out, "    }}")?;
     writeln!(out, "}}")?;
     writeln!(out)?;
@@ -120,7 +121,7 @@ fn write_host_rs(mut out: File, triple: Triple) -> io::Result<()> {
     writeln!(out, "impl Environment {{")?;
     writeln!(out, "    /// Return the environment for the current host.")?;
     writeln!(out, "    pub const fn host() -> Self {{")?;
-    writeln!(out, "        Environment::{:?}", triple.environment)?;
+    writeln!(out, "        Self::{:?}", triple.environment)?;
     writeln!(out, "    }}")?;
     writeln!(out, "}}")?;
     writeln!(out)?;
@@ -131,7 +132,7 @@ fn write_host_rs(mut out: File, triple: Triple) -> io::Result<()> {
         "    /// Return the binary format for the current host."
     )?;
     writeln!(out, "    pub const fn host() -> Self {{")?;
-    writeln!(out, "        BinaryFormat::{:?}", triple.binary_format)?;
+    writeln!(out, "        Self::{:?}", triple.binary_format)?;
     writeln!(out, "    }}")?;
     writeln!(out, "}}")?;
     writeln!(out)?;
@@ -147,7 +148,7 @@ fn write_host_rs(mut out: File, triple: Triple) -> io::Result<()> {
     )?;
     writeln!(
         out,
-        "            vendor: {},",
+        "            vendor: Vendor::{},",
         vendor_display(&triple.vendor)
     )?;
     writeln!(
@@ -174,10 +175,7 @@ fn write_host_rs(mut out: File, triple: Triple) -> io::Result<()> {
 
 fn vendor_display(vendor: &Vendor) -> String {
     match vendor {
-        Vendor::Custom(custom) => format!(
-            "Vendor::Custom(CustomVendor::Static({:?}))",
-            custom.as_str()
-        ),
-        known => format!("Vendor::{:?}", known),
+        Vendor::Custom(custom) => format!("CustomVendor::Static({:?})", custom.as_str()),
+        known => format!("{:?}", known),
     }
 }
