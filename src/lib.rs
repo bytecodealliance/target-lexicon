@@ -12,7 +12,7 @@
         clippy::option_map_unwrap_or_else,
         clippy::print_stdout,
         clippy::unicode_not_nfc,
-        clippy::use_self
+        clippy::use_self,
     )
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
