@@ -31,9 +31,9 @@ impl PointerWidth {
     /// Return the number of bits in a pointer.
     pub fn bits(self) -> u8 {
         match self {
-            Self::U16 => 16,
-            Self::U32 => 32,
-            Self::U64 => 64,
+            PointerWidth::U16 => 16,
+            PointerWidth::U32 => 32,
+            PointerWidth::U64 => 64,
         }
     }
 
@@ -42,9 +42,9 @@ impl PointerWidth {
     /// For these purposes, there are 8 bits in a byte.
     pub fn bytes(self) -> u8 {
         match self {
-            Self::U16 => 2,
-            Self::U32 => 4,
-            Self::U64 => 8,
+            PointerWidth::U16 => 2,
+            PointerWidth::U32 => 4,
+            PointerWidth::U64 => 8,
         }
     }
 }
