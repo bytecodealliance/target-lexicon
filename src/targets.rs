@@ -9,7 +9,7 @@ use core::str::FromStr;
 
 /// The "architecture" field, which in some cases also specifies a specific
 /// subarchitecture.
-#[non_exhaustive]
+#[cfg_attr(feature = "rust_1_40", non_exhaustive)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum Architecture {
@@ -38,7 +38,7 @@ pub enum Architecture {
     X86_64,
 }
 
-#[non_exhaustive]
+#[cfg_attr(feature = "rust_1_40", non_exhaustive)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum ArmArchitecture {
@@ -85,7 +85,7 @@ pub enum ArmArchitecture {
     Thumbv8mMain,
 }
 
-#[non_exhaustive]
+#[cfg_attr(feature = "rust_1_40", non_exhaustive)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum Aarch64Architecture {
@@ -93,7 +93,7 @@ pub enum Aarch64Architecture {
     Aarch64be,
 }
 
-// #[non_exhaustive]
+// #[cfg_attr(feature = "rust_1_40", non_exhaustive)]
 // #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 // #[allow(missing_docs)]
 // pub enum ArmFpu {
@@ -290,7 +290,7 @@ impl Aarch64Architecture {
 }
 
 /// An enum for all 32-bit RISC-V architectures.
-#[non_exhaustive]
+#[cfg_attr(feature = "rust_1_40", non_exhaustive)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum Riscv32Architecture {
@@ -301,7 +301,7 @@ pub enum Riscv32Architecture {
 }
 
 /// An enum for all 64-bit RISC-V architectures.
-#[non_exhaustive]
+#[cfg_attr(feature = "rust_1_40", non_exhaustive)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum Riscv64Architecture {
@@ -311,7 +311,7 @@ pub enum Riscv64Architecture {
 }
 
 /// An enum for all 32-bit x86 architectures.
-#[non_exhaustive]
+#[cfg_attr(feature = "rust_1_40", non_exhaustive)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum X86_32Architecture {
@@ -321,7 +321,7 @@ pub enum X86_32Architecture {
 }
 
 /// An enum for all 32-bit MIPS architectures (not just "MIPS32").
-#[non_exhaustive]
+#[cfg_attr(feature = "rust_1_40", non_exhaustive)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum Mips32Architecture {
@@ -332,7 +332,7 @@ pub enum Mips32Architecture {
 }
 
 /// An enum for all 64-bit MIPS architectures (not just "MIPS64").
-#[non_exhaustive]
+#[cfg_attr(feature = "rust_1_40", non_exhaustive)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum Mips64Architecture {
@@ -377,7 +377,7 @@ impl Hash for CustomVendor {
 
 /// The "vendor" field, which in practice is little more than an arbitrary
 /// modifier.
-#[non_exhaustive]
+#[cfg_attr(feature = "rust_1_40", non_exhaustive)]
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum Vendor {
@@ -405,7 +405,7 @@ pub enum Vendor {
 
 /// The "operating system" field, which sometimes implies an environment, and
 /// sometimes isn't an actual operating system.
-#[non_exhaustive]
+#[cfg_attr(feature = "rust_1_40", non_exhaustive)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum OperatingSystem {
@@ -442,7 +442,7 @@ pub enum OperatingSystem {
 /// The "environment" field, which specifies an ABI environment on top of the
 /// operating system. In many configurations, this field is omitted, and the
 /// environment is implied by the operating system.
-#[non_exhaustive]
+#[cfg_attr(feature = "rust_1_40", non_exhaustive)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum Environment {
@@ -473,7 +473,7 @@ pub enum Environment {
 
 /// The "binary format" field, which is usually omitted, and the binary format
 /// is implied by the other fields.
-#[non_exhaustive]
+#[cfg_attr(feature = "rust_1_40", non_exhaustive)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum BinaryFormat {
