@@ -9,6 +9,9 @@ use std::io::{self, Write};
 use std::path::PathBuf;
 use std::str::FromStr;
 
+#[cfg(feature = "std")]
+extern crate std as alloc;
+#[cfg(not(feature = "std"))]
 extern crate alloc;
 
 // Include triple.rs and targets.rs so we can parse the TARGET environment variable.
