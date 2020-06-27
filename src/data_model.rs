@@ -40,7 +40,7 @@ impl Size {
 ///
 /// See also https://en.cppreference.com/w/c/language/arithmetic_types
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
-#[non_exhaustive]
+#[cfg_attr(feature = "rust_1_40", non_exhaustive)]
 pub enum CDataModel {
     /// The data model used most commonly on Win16. `long` and `pointer` are 32 bits.
     LP32,

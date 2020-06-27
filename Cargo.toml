@@ -12,7 +12,9 @@ repository = "https://github.com/CraneStation/target-lexicon"
 edition = "2018"
 
 [features]
-default = []
+default = ["rust_1_40"]
+# When enabled, use features that are only available with 1.40 or later.
+rust_1_40 = []
 std = []
 
 [badges]

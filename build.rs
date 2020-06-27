@@ -107,7 +107,7 @@ fn write_host_rs(mut out: File, triple: Triple) -> io::Result<()> {
     writeln!(out, "impl Architecture {{")?;
     writeln!(out, "    /// Return the architecture for the current host.")?;
     writeln!(out, "    pub const fn host() -> Self {{")?;
-    writeln!(out, "        Self::{:?}", triple.architecture)?;
+    writeln!(out, "        Architecture::{:?}", triple.architecture)?;
     writeln!(out, "    }}")?;
     writeln!(out, "}}")?;
     writeln!(out)?;
@@ -115,7 +115,7 @@ fn write_host_rs(mut out: File, triple: Triple) -> io::Result<()> {
     writeln!(out, "impl Vendor {{")?;
     writeln!(out, "    /// Return the vendor for the current host.")?;
     writeln!(out, "    pub const fn host() -> Self {{")?;
-    writeln!(out, "        Self::{}", vendor_display(&triple.vendor))?;
+    writeln!(out, "        Vendor::{}", vendor_display(&triple.vendor))?;
     writeln!(out, "    }}")?;
     writeln!(out, "}}")?;
     writeln!(out)?;
@@ -126,7 +126,7 @@ fn write_host_rs(mut out: File, triple: Triple) -> io::Result<()> {
         "    /// Return the operating system for the current host."
     )?;
     writeln!(out, "    pub const fn host() -> Self {{")?;
-    writeln!(out, "        Self::{:?}", triple.operating_system)?;
+    writeln!(out, "        OperatingSystem::{:?}", triple.operating_system)?;
     writeln!(out, "    }}")?;
     writeln!(out, "}}")?;
     writeln!(out)?;
@@ -134,7 +134,7 @@ fn write_host_rs(mut out: File, triple: Triple) -> io::Result<()> {
     writeln!(out, "impl Environment {{")?;
     writeln!(out, "    /// Return the environment for the current host.")?;
     writeln!(out, "    pub const fn host() -> Self {{")?;
-    writeln!(out, "        Self::{:?}", triple.environment)?;
+    writeln!(out, "        Environment::{:?}", triple.environment)?;
     writeln!(out, "    }}")?;
     writeln!(out, "}}")?;
     writeln!(out)?;
@@ -145,7 +145,7 @@ fn write_host_rs(mut out: File, triple: Triple) -> io::Result<()> {
         "    /// Return the binary format for the current host."
     )?;
     writeln!(out, "    pub const fn host() -> Self {{")?;
-    writeln!(out, "        Self::{:?}", triple.binary_format)?;
+    writeln!(out, "        BinaryFormat::{:?}", triple.binary_format)?;
     writeln!(out, "    }}")?;
     writeln!(out, "}}")?;
     writeln!(out)?;
