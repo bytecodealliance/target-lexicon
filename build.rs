@@ -51,22 +51,21 @@ fn main() {
         Triple::from_str(&target).unwrap_or_else(|_| panic!("Invalid target name: '{}'", target));
     let out = File::create(out_dir.join("host.rs")).expect("error creating host.rs");
     write_host_rs(out, triple).expect("error writing host.rs");
-    if using_less_1_40().is_none() {
+    if using_1_40() {
         println!("cargo:rustc-cfg=feature=\"rust_1_40\"");
     }
 }
 
-fn using_less_1_40() -> Option<()> {
-    let stdout = match Command::new("rustc").arg("--version").output() {
-        Ok(output) if output.status.success() => output.stdout,
-        // Assume we're up-to-date, rustc wasn't found in PATH
-        _ => return None,
-    };
-    let version: i32 = std::str::from_utf8(&stdout).ok()?.split(' ').nth(1)?.parse().ok()?;
-    if version < 40 {
-        Some(())
-    } else {
-        None
+fn using_1_40() -> bool {
+    match (|| {
+        let stdout = match Command::new("rustc").arg("--version").output() {
+            Ok(output) if output.status.success() => output.stdout,
+            _ => return None,
+        };
+        std::str::from_utf8(&stdout).ok()?.split(' ').nth(1)?.parse::<i32>().ok()
+    })() {
+        Some(version) => version >= 40,
+        None => true, // assume we're using an up-to-date compiler
     }
 }
 
