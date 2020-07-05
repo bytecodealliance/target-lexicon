@@ -59,10 +59,16 @@ fn main() {
 fn using_1_40() -> bool {
     match (|| {
         let stdout = match Command::new("rustc").arg("--version").output() {
-            Ok(output) if output.status.success() => output.stdout,
+            Ok(output) => {
+                if output.status.success() {
+                    output.stdout
+                } else {
+                    return None;
+                }
+            }
             _ => return None,
         };
-        std::str::from_utf8(&stdout).ok()?.split(' ').nth(1)?.parse::<i32>().ok()
+        std::str::from_utf8(&stdout).ok()?.split(' ').nth(1)?.split('.').nth(1)?.parse::<i32>().ok()
     })() {
         Some(version) => version >= 40,
         None => true, // assume we're using an up-to-date compiler
