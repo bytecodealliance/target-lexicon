@@ -964,6 +964,7 @@ impl FromStr for Vendor {
             "uwp" => Uwp,
             "wrs" => Wrs,
             custom => {
+                #[cfg(not(feature = "std"))]
                 use alloc::borrow::ToOwned;
 
                 // A custom vendor. Since triple syntax is so loosely defined,

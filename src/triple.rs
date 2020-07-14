@@ -6,6 +6,7 @@ use crate::targets::{
     default_binary_format, Architecture, ArmArchitecture, BinaryFormat, Environment,
     OperatingSystem, Vendor,
 };
+#[cfg(not(feature = "std"))]
 use alloc::borrow::ToOwned;
 use core::fmt;
 use core::str::FromStr;
