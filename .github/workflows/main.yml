@@ -24,11 +24,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        build: [1.34, stable, beta, nightly, windows, macos]
+        build: [1.34.2, stable, beta, nightly, windows, macos]
         include:
-          - build: 1.34
+          - build: 1.34.2
             os: ubuntu-latest
-            rust: 1.34
+            rust: 1.34.2
           - build: stable
             os: ubuntu-latest
             rust: stable
