@@ -41,10 +41,9 @@ jobs:
           - build: macos
             os: macos-latest
             rust: stable
-          # Enable once we figure out how to build stable on Windows
-          # - build: windows
-          #   os: windows-latest
-          #   rust: stable
+          - build: windows
+            os: windows-latest
+            rust: stable
           - build: windows
             os: windows-latest
             rust: nightly
@@ -63,7 +62,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        build: [stable, beta, nightly, macos] #, windows]
+        build: [stable, beta, nightly, macos, windows]
         include:
           - build: stable
             os: ubuntu-latest
@@ -77,14 +76,12 @@ jobs:
           - build: macos
             os: macos-latest
             rust: stable
-          # Enable once we figure out how to build stable on Windows,
-          # tests build and run
-          # - build: windows
-          #   os: windows-latest
-          #   rust: stable
-          # - build: windows
-          #   os: windows-latest
-          #   rust: nightly
+          - build: windows
+            os: windows-latest
+            rust: stable
+          - build: windows
+            os: windows-latest
+            rust: nightly
 
     steps:
     - uses: actions/checkout@v1
