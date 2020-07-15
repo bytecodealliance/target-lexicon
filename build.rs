@@ -10,10 +10,10 @@ use std::path::PathBuf;
 use std::process::Command;
 use std::str::FromStr;
 
-#[cfg(feature = "std")]
-extern crate std as alloc;
 #[cfg(not(feature = "std"))]
 extern crate alloc;
+#[cfg(feature = "std")]
+extern crate std as alloc;
 
 // Include triple.rs and targets.rs so we can parse the TARGET environment variable.
 // targets.rs depends on data_model
@@ -68,7 +68,14 @@ fn using_1_40() -> bool {
             }
             _ => return None,
         };
-        std::str::from_utf8(&stdout).ok()?.split(' ').nth(1)?.split('.').nth(1)?.parse::<i32>().ok()
+        std::str::from_utf8(&stdout)
+            .ok()?
+            .split(' ')
+            .nth(1)?
+            .split('.')
+            .nth(1)?
+            .parse::<i32>()
+            .ok()
     })() {
         Some(version) => version >= 40,
         None => true, // assume we're using an up-to-date compiler
@@ -149,7 +156,11 @@ fn write_host_rs(mut out: File, triple: Triple) -> io::Result<()> {
         "    /// Return the operating system for the current host."
     )?;
     writeln!(out, "    pub const fn host() -> Self {{")?;
-    writeln!(out, "        OperatingSystem::{:?}", triple.operating_system)?;
+    writeln!(
+        out,
+        "        OperatingSystem::{:?}",
+        triple.operating_system
+    )?;
     writeln!(out, "    }}")?;
     writeln!(out, "}}")?;
     writeln!(out)?;
