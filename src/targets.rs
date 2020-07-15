@@ -118,6 +118,7 @@ pub enum Aarch64Architecture {
 
 impl ArmArchitecture {
     /// Test if this architecture uses the Thumb instruction set.
+    #[rustfmt::skip]
     pub fn is_thumb(self) -> bool {
         use ArmArchitecture::*;
 
@@ -169,6 +170,7 @@ impl ArmArchitecture {
     // }
 
     /// Return the pointer bit width of this target's architecture.
+    #[rustfmt::skip]
     pub fn pointer_width(self) -> PointerWidth {
         use ArmArchitecture::*;
 
@@ -216,6 +218,7 @@ impl ArmArchitecture {
     }
 
     /// Return the endianness of this architecture.
+    #[rustfmt::skip]
     pub fn endianness(self) -> Endianness {
         use ArmArchitecture::*;
 
@@ -486,6 +489,7 @@ pub enum BinaryFormat {
 
 impl Architecture {
     /// Return the endianness of this architecture.
+    #[rustfmt::skip]
     pub fn endianness(self) -> Result<Endianness, ()> {
         use Architecture::*;
 
@@ -523,6 +527,7 @@ impl Architecture {
     }
 
     /// Return the pointer bit width of this target's architecture.
+    #[rustfmt::skip]
     pub fn pointer_width(self) -> Result<PointerWidth, ()> {
         use Architecture::*;
 
