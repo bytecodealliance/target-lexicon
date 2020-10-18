@@ -1370,6 +1370,7 @@ mod tests {
             "sparcv9-sun-solaris",
             "thumbv4t-none-eabi",
             "thumbv6m-none-eabi",
+            "thumbv4t-none-eabi",
             "thumbv7a-pc-windows-msvc",
             "thumbv7a-uwp-windows-msvc",
             "thumbv7em-none-eabi",
