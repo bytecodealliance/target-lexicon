@@ -1252,7 +1252,9 @@ mod tests {
         //  - targets emitted by "rustc +nightly --print target-list"
         //  - targets contributors have added
         let targets = [
+            "aarch64-apple-darwin",
             "aarch64-apple-ios",
+            "aarch64-apple-tvos",
             "aarch64-fuchsia",
             "aarch64-linux-android",
             "aarch64-pc-windows-msvc",
@@ -1298,6 +1300,7 @@ mod tests {
             "armv7-unknown-netbsd-eabihf",
             "armv7-wrs-vxworks-eabihf",
             "asmjs-unknown-emscripten",
+            "avr-unknown-unknown",
             "hexagon-unknown-linux-musl",
             "i386-apple-ios",
             "i586-pc-windows-msvc",
@@ -1362,6 +1365,7 @@ mod tests {
             "sparc-unknown-linux-gnu",
             "sparcv9-sun-solaris",
             "thumbv6m-none-eabi",
+            "thumbv4t-none-eabi",
             "thumbv7a-pc-windows-msvc",
             "thumbv7a-uwp-windows-msvc",
             "thumbv7em-none-eabi",
@@ -1381,6 +1385,7 @@ mod tests {
             "wasm64-wasi",
             "x86_64-apple-darwin",
             "x86_64-apple-ios",
+            "x86_64-apple-tvos",
             "x86_64-fortanix-unknown-sgx",
             "x86_64-fuchsia",
             "x86_64-linux-android",
