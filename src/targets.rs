@@ -18,6 +18,7 @@ pub enum Architecture {
     AmdGcn,
     Aarch64(Aarch64Architecture),
     Asmjs,
+    Avr,
     Hexagon,
     X86_32(X86_32Architecture),
     Mips32(Mips32Architecture),
@@ -76,6 +77,7 @@ pub enum ArmArchitecture {
     Armebv7r,
 
     Thumbeb,
+    Thumbv4t,
     Thumbv6m,
     Thumbv7a,
     Thumbv7em,
@@ -155,6 +157,7 @@ impl ArmArchitecture {
             | Armv8r
             | Armebv7r => false,
             Thumbeb
+            | Thumbv4t
             | Thumbv6m
             | Thumbv7a
             | Thumbv7em
@@ -207,6 +210,7 @@ impl ArmArchitecture {
             | Armv8r
             | Armebv7r
             | Thumbeb
+            | Thumbv4t
             | Thumbv6m
             | Thumbv7a
             | Thumbv7em
@@ -252,6 +256,7 @@ impl ArmArchitecture {
             | Armv8mBase
             | Armv8mMain
             | Armv8r
+            | Thumbv4t
             | Thumbv6m
             | Thumbv7a
             | Thumbv7em
@@ -436,6 +441,7 @@ pub enum OperatingSystem {
     Psp,
     Redox,
     Solaris,
+    Tvos,
     Uefi,
     VxWorks,
     Wasi,
@@ -499,6 +505,7 @@ impl Architecture {
             Aarch64(aarch) => Ok(aarch.endianness()),
             AmdGcn
             | Asmjs
+            | Avr
             | Hexagon
             | X86_32(_)
             | Mips64(Mips64Architecture::Mips64el)
@@ -533,7 +540,7 @@ impl Architecture {
 
         match self {
             Unknown => Err(()),
-            Msp430 => Ok(PointerWidth::U16),
+            Avr | Msp430 => Ok(PointerWidth::U16),
             Arm(arm) => Ok(arm.pointer_width()),
             Aarch64(aarch) => Ok(aarch.pointer_width()),
             Asmjs
@@ -567,9 +574,10 @@ pub(crate) fn default_binary_format(triple: &Triple) -> BinaryFormat {
             Environment::Eabi | Environment::Eabihf => BinaryFormat::Elf,
             _ => BinaryFormat::Unknown,
         },
-        OperatingSystem::Darwin | OperatingSystem::Ios | OperatingSystem::MacOSX { .. } => {
-            BinaryFormat::Macho
-        }
+        OperatingSystem::Darwin
+        | OperatingSystem::Ios
+        | OperatingSystem::MacOSX { .. }
+        | OperatingSystem::Tvos => BinaryFormat::Macho,
         OperatingSystem::Windows => BinaryFormat::Coff,
         OperatingSystem::Nebulet
         | OperatingSystem::Emscripten
@@ -619,6 +627,7 @@ impl fmt::Display for ArmArchitecture {
             Armv8mMain => "armv8m.main",
             Armv8r => "armv8r",
             Thumbeb => "thumbeb",
+            Thumbv4t => "thumbv4t",
             Thumbv6m => "thumbv6m",
             Thumbv7a => "thumbv7a",
             Thumbv7em => "thumbv7em",
@@ -716,6 +725,7 @@ impl fmt::Display for Architecture {
             Unknown => f.write_str("unknown"),
             AmdGcn => f.write_str("amdgcn"),
             Asmjs => f.write_str("asmjs"),
+            Avr => f.write_str("avr"),
             Hexagon => f.write_str("hexagon"),
             X86_32(x86_32) => x86_32.fmt(f),
             Mips32(mips32) => mips32.fmt(f),
@@ -776,6 +786,7 @@ impl FromStr for ArmArchitecture {
             "armv8m.main" => Armv8mMain,
             "armv8r" => Armv8r,
             "thumbeb" => Thumbeb,
+            "thumbv4t" => Thumbv4t,
             "thumbv6m" => Thumbv6m,
             "thumbv7a" => Thumbv7a,
             "thumbv7em" => Thumbv7em,
@@ -892,6 +903,7 @@ impl FromStr for Architecture {
             "unknown" => Unknown,
             "amdgcn" => AmdGcn,
             "asmjs" => Asmjs,
+            "avr" => Avr,
             "hexagon" => Hexagon,
             "msp430" => Msp430,
             "nvptx64" => Nvptx64,
@@ -1047,6 +1059,7 @@ impl fmt::Display for OperatingSystem {
             Psp => "psp",
             Redox => "redox",
             Solaris => "solaris",
+            Tvos => "tvos",
             Uefi => "uefi",
             VxWorks => "vxworks",
             Wasi => "wasi",
@@ -1117,6 +1130,7 @@ impl FromStr for OperatingSystem {
             "psp" => Psp,
             "redox" => Redox,
             "solaris" => Solaris,
+            "tvos" => Tvos,
             "uefi" => Uefi,
             "vxworks" => VxWorks,
             "wasi" => Wasi,
