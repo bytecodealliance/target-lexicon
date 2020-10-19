@@ -92,7 +92,7 @@ fn write_host_rs(mut out: File, triple: Triple) -> io::Result<()> {
     writeln!(out, "#[allow(unused_imports)]")?;
     writeln!(out, "use crate::ArmArchitecture::*;")?;
     writeln!(out, "#[allow(unused_imports)]")?;
-    writeln!(out, "use crate::X86_32Architecture::*;")?;
+    writeln!(out, "use crate::CustomVendor;")?;
     writeln!(out, "#[allow(unused_imports)]")?;
     writeln!(out, "use crate::Mips32Architecture::*;")?;
     writeln!(out, "#[allow(unused_imports)]")?;
@@ -102,7 +102,7 @@ fn write_host_rs(mut out: File, triple: Triple) -> io::Result<()> {
     writeln!(out, "#[allow(unused_imports)]")?;
     writeln!(out, "use crate::Riscv64Architecture::*;")?;
     writeln!(out, "#[allow(unused_imports)]")?;
-    writeln!(out, "use crate::CustomVendor;")?;
+    writeln!(out, "use crate::X86_32Architecture::*;")?;
     writeln!(out)?;
     writeln!(out, "/// The `Triple` of the current host.")?;
     writeln!(out, "pub const HOST: Triple = Triple {{")?;
