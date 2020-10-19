@@ -17,4 +17,3 @@ std = []
 
 [badges]
 maintenance = { status = "passively-maintained" }
-travis-ci = { repository = "CraneStation/target-lexicon" }
