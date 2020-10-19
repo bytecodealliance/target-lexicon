@@ -303,6 +303,7 @@ impl Aarch64Architecture {
 #[allow(missing_docs)]
 pub enum Riscv32Architecture {
     Riscv32,
+    Riscv32gc,
     Riscv32i,
     Riscv32imac,
     Riscv32imc,
@@ -657,6 +658,7 @@ impl fmt::Display for Riscv32Architecture {
 
         let s = match *self {
             Riscv32 => "riscv32",
+            Riscv32gc => "riscv32gc",
             Riscv32i => "riscv32i",
             Riscv32imac => "riscv32imac",
             Riscv32imc => "riscv32imc",
@@ -823,6 +825,7 @@ impl FromStr for Riscv32Architecture {
 
         Ok(match s {
             "riscv32" => Riscv32,
+            "riscv32gc" => Riscv32gc,
             "riscv32i" => Riscv32i,
             "riscv32imac" => Riscv32imac,
             "riscv32imc" => Riscv32imc,
@@ -1352,6 +1355,7 @@ mod tests {
             "powerpc-unknown-netbsd",
             "powerpc-wrs-vxworks",
             "powerpc-wrs-vxworks-spe",
+            "riscv32gc-unknown-linux-gnu",
             "riscv32imac-unknown-none-elf",
             "riscv32imc-unknown-none-elf",
             "riscv32i-unknown-none-elf",
@@ -1364,8 +1368,8 @@ mod tests {
             "sparc64-unknown-openbsd",
             "sparc-unknown-linux-gnu",
             "sparcv9-sun-solaris",
-            "thumbv6m-none-eabi",
             "thumbv4t-none-eabi",
+            "thumbv6m-none-eabi",
             "thumbv7a-pc-windows-msvc",
             "thumbv7a-uwp-windows-msvc",
             "thumbv7em-none-eabi",
@@ -1385,6 +1389,7 @@ mod tests {
             "wasm64-wasi",
             "x86_64-apple-darwin",
             "x86_64-apple-ios",
+            "x86_64-apple-ios-macabi",
             "x86_64-apple-tvos",
             "x86_64-fortanix-unknown-sgx",
             "x86_64-fuchsia",
