@@ -121,6 +121,7 @@ impl Triple {
             | OperatingSystem::Netbsd
             | OperatingSystem::Openbsd
             | OperatingSystem::Redox
+            | OperatingSystem::Sel4
             | OperatingSystem::Solaris => CallingConvention::SystemV,
             OperatingSystem::Windows => CallingConvention::WindowsFastcall,
             OperatingSystem::Nebulet
@@ -189,6 +190,7 @@ impl fmt::Display for Triple {
                     || self.environment == Environment::Androideabi
                     || self.environment == Environment::Kernel))
                 || self.operating_system == OperatingSystem::Fuchsia
+                || self.environment == Environment::Robigalia
                 || self.operating_system == OperatingSystem::Wasi
                 || (self.operating_system == OperatingSystem::None_
                     && (self.architecture == Architecture::Arm(ArmArchitecture::Armebv7r)
