@@ -47,8 +47,8 @@ fn main() {
     let out_dir =
         PathBuf::from(env::var("OUT_DIR").expect("The OUT_DIR environment variable must be set"));
     let target = env::var("TARGET").expect("The TARGET environment variable must be set");
-    let triple =
-        Triple::from_str(&target).unwrap_or_else(|_| panic!("Invalid target name: '{}'", target));
+    let triple = Triple::from_str(&target)
+        .unwrap_or_else(|e| panic!("Invalid target name '{}': {:?}", target, e));
     let out = File::create(out_dir.join("host.rs")).expect("error creating host.rs");
     write_host_rs(out, triple).expect("error writing host.rs");
     if using_1_40() {
