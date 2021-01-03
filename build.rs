@@ -222,7 +222,7 @@ fn write_host_rs(mut out: File, triple: Triple) -> io::Result<()> {
 
 fn vendor_display(vendor: &Vendor) -> String {
     match vendor {
-        Vendor::Custom(custom) => format!("CustomVendor::Static({:?})", custom.as_str()),
+        Vendor::Custom(custom) => format!("Custom(CustomVendor::Static({:?}))", custom.as_str()),
         known => format!("{:?}", known),
     }
 }
