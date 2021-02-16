@@ -648,7 +648,7 @@ impl fmt::Display for Aarch64Architecture {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let s = match *self {
             Aarch64Architecture::Aarch64 => "aarch64",
-            Aarch64Architecture::Aarch64be => "aarch64be",
+            Aarch64Architecture::Aarch64be => "aarch64_be",
         };
         f.write_str(s)
     }
@@ -813,7 +813,7 @@ impl FromStr for Aarch64Architecture {
         Ok(match s {
             "aarch64" => Aarch64,
             "arm64" => Aarch64,
-            "aarch64be" => Aarch64be,
+            "aarch64_be" => Aarch64be,
             _ => return Err(()),
         })
     }
