@@ -69,6 +69,12 @@ pub enum CallingConvention {
     /// Windows documentation often just calls the Windows x64 calling convention
     /// (though the compiler still recognizes "fastcall" as an alias for it).
     WindowsFastcall,
+
+    /// Apple Aarch64 platforms use their own variant of the common Aarch64
+    /// calling convention.
+    ///
+    /// <https://developer.apple.com/documentation/xcode/writing_arm64_code_for_apple_platforms>
+    AppleAarch64,
 }
 
 /// A target "triple". Historically such things had three fields, though they've
@@ -106,6 +112,14 @@ impl Triple {
     /// Return the default calling convention for the given target triple.
     pub fn default_calling_convention(&self) -> Result<CallingConvention, ()> {
         Ok(match self.operating_system {
+            OperatingSystem::Darwin
+            | OperatingSystem::Ios
+            | OperatingSystem::Tvos
+            | OperatingSystem::MacOSX { .. }
+                if matches!(self.architecture, Architecture::Aarch64(_)) =>
+            {
+                CallingConvention::AppleAarch64
+            }
             OperatingSystem::Bitrig
             | OperatingSystem::Cloudabi
             | OperatingSystem::Darwin
@@ -115,6 +129,7 @@ impl Triple {
             | OperatingSystem::Haiku
             | OperatingSystem::Hermit
             | OperatingSystem::Ios
+            | OperatingSystem::Tvos
             | OperatingSystem::L4re
             | OperatingSystem::Linux
             | OperatingSystem::MacOSX { .. }
@@ -370,5 +385,33 @@ mod tests {
         assert_eq!(Triple::unknown().endianness(), Err(()));
         assert_eq!(Triple::unknown().pointer_width(), Err(()));
         assert_eq!(Triple::unknown().default_calling_convention(), Err(()));
+    }
+
+    #[test]
+    fn apple_calling_convention() {
+        for triple in &[
+            "aarch64-apple-darwin",
+            "aarch64-apple-ios",
+            "aarch64-apple-ios-macabi",
+            "aarch64-apple-tvos",
+        ] {
+            assert_eq!(
+                Triple::from_str(triple)
+                    .unwrap()
+                    .default_calling_convention()
+                    .unwrap(),
+                CallingConvention::AppleAarch64
+            );
+        }
+
+        for triple in &["aarch64-linux-android", "x86_64-apple-ios"] {
+            assert_eq!(
+                Triple::from_str(triple)
+                    .unwrap()
+                    .default_calling_convention()
+                    .unwrap(),
+                CallingConvention::SystemV
+            );
+        }
     }
 }
