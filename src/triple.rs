@@ -115,24 +115,19 @@ impl Triple {
             OperatingSystem::Darwin
             | OperatingSystem::Ios
             | OperatingSystem::Tvos
-            | OperatingSystem::MacOSX { .. }
-                if matches!(self.architecture, Architecture::Aarch64(_)) =>
-            {
-                CallingConvention::AppleAarch64
-            }
+            | OperatingSystem::MacOSX { .. } => match self.architecture {
+                Architecture::Aarch64(_) => CallingConvention::AppleAarch64,
+                _ => CallingConvention::SystemV,
+            },
             OperatingSystem::Bitrig
             | OperatingSystem::Cloudabi
-            | OperatingSystem::Darwin
             | OperatingSystem::Dragonfly
             | OperatingSystem::Freebsd
             | OperatingSystem::Fuchsia
             | OperatingSystem::Haiku
             | OperatingSystem::Hermit
-            | OperatingSystem::Ios
-            | OperatingSystem::Tvos
             | OperatingSystem::L4re
             | OperatingSystem::Linux
-            | OperatingSystem::MacOSX { .. }
             | OperatingSystem::Netbsd
             | OperatingSystem::Openbsd
             | OperatingSystem::Redox
