@@ -52,6 +52,7 @@ impl PointerWidth {
 
 /// The calling convention, which specifies things like which registers are
 /// used for passing arguments, which registers are callee-saved, and so on.
+#[cfg_attr(feature = "rust_1_40", non_exhaustive)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub enum CallingConvention {
     /// "System V", which is used on most Unix-like platfoms. Note that the
