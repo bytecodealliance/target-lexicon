@@ -479,6 +479,7 @@ pub enum Environment {
     Uclibc,
     Uclibceabi,
     Sgx,
+    Sim,
     Softfloat,
     Spe,
 }
@@ -1173,6 +1174,7 @@ impl fmt::Display for Environment {
             Uclibc => "uclibc",
             Uclibceabi => "uclibceabi",
             Sgx => "sgx",
+            Sim => "sim",
             Softfloat => "softfloat",
             Spe => "spe",
         };
@@ -1210,6 +1212,7 @@ impl FromStr for Environment {
             "uclibc" => Uclibc,
             "uclibceabi" => Uclibceabi,
             "sgx" => Sgx,
+            "sim" => Sim,
             "softfloat" => Softfloat,
             "spe" => Spe,
             _ => return Err(()),
@@ -1264,6 +1267,7 @@ mod tests {
             "aarch64-apple-darwin",
             "aarch64-apple-ios",
             "aarch64-apple-ios-macabi",
+            "aarch64-apple-ios-sim",
             "aarch64-apple-tvos",
             "aarch64_be-unknown-linux-gnu",
             "aarch64_be-unknown-linux-gnu_ilp32",
