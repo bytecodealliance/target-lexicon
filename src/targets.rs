@@ -1442,12 +1442,12 @@ mod tests {
             "x86_64-fortanix-unknown-sgx",
             "x86_64-fuchsia",
             "x86_64-linux-android",
-            "x86_64-linux-kernel",
+            "x86_64-linux-kernel", // Changed to x86_64-unknown-none-linuxkernel in 1.53.0
             "x86_64-apple-macosx10.7.0",
             "x86_64-pc-solaris",
             "x86_64-pc-windows-gnu",
             "x86_64-pc-windows-msvc",
-            "x86_64-rumprun-netbsd",
+            "x86_64-rumprun-netbsd", // Removed in 1.53.0
             "x86_64-sun-solaris",
             "x86_64-unknown-bitrig",
             "x86_64-unknown-cloudabi",
@@ -1455,6 +1455,7 @@ mod tests {
             "x86_64-unknown-freebsd",
             "x86_64-unknown-haiku",
             "x86_64-unknown-hermit",
+            "x86_64-unknown-hermit-kernel", // Changed to x86_64-unknown-none-hermitkernel in 1.53.0
             "x86_64-unknown-illumos",
             "x86_64-unknown-l4re-uclibc",
             "x86_64-unknown-linux-gnu",
