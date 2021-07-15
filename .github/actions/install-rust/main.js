@@ -1,32 +1,117 @@
-const child_process = require('child_process');
-const toolchain = process.env.INPUT_TOOLCHAIN;
-const fs = require('fs');
+const core = require('@actions/core');
+const path = require("path");
+const fs = require("fs");
+const github = require('@actions/github');
+const glob = require('glob');
 
-function set_env(name, val) {
-  fs.appendFileSync(process.env['GITHUB_ENV'], `${name}=${val}\n`)
+function sleep(milliseconds) {
+  return new Promise(resolve => setTimeout(resolve, milliseconds))
 }
 
-if (process.platform === 'darwin') {
-  child_process.execSync(`curl https://sh.rustup.rs | sh -s -- -y --default-toolchain=none --profile=minimal`);
-  const bindir = `${process.env.HOME}/.cargo/bin`;
-  fs.appendFileSync(process.env['GITHUB_PATH'], `${bindir}\n`);
-  process.env.PATH = `${process.env.PATH}:${bindir}`;
+async function runOnce() {
+  // Load all our inputs and env vars. Note that `getInput` reads from `INPUT_*`
+  const files = core.getInput('files');
+  const name = core.getInput('name');
+  const token = core.getInput('token');
+  const slug = process.env.GITHUB_REPOSITORY;
+  const owner = slug.split('/')[0];
+  const repo = slug.split('/')[1];
+  const sha = process.env.GITHUB_SHA;
+
+  core.info(`files: ${files}`);
+  core.info(`name: ${name}`);
+  core.info(`token: ${token}`);
+
+  const octokit = new github.GitHub(token);
+
+  // Delete the previous release since we can't overwrite one. This may happen
+  // due to retrying an upload or it may happen because we're doing the dev
+  // release.
+  const releases = await octokit.paginate("GET /repos/:owner/:repo/releases", { owner, repo });
+  for (const release of releases) {
+    if (release.tag_name !== name) {
+      continue;
+    }
+    const release_id = release.id;
+    core.info(`deleting release ${release_id}`);
+    await octokit.repos.deleteRelease({ owner, repo, release_id });
+  }
+
+  // We also need to update the `dev` tag while we're at it on the `dev` branch.
+  if (name == 'dev') {
+    try {
+      core.info(`updating dev tag`);
+      await octokit.git.updateRef({
+          owner,
+          repo,
+          ref: 'tags/dev',
+          sha,
+          force: true,
+      });
+    } catch (e) {
+      console.log("ERROR: ", JSON.stringify(e, null, 2));
+      core.info(`creating dev tag`);
+      await octokit.git.createTag({
+        owner,
+        repo,
+        tag: 'dev',
+        message: 'dev release',
+        object: sha,
+        type: 'commit',
+      });
+    }
+  }
+
+  // Creates an official GitHub release for this `tag`, and if this is `dev`
+  // then we know that from the previous block this should be a fresh release.
+  core.info(`creating a release`);
+  const release = await octokit.repos.createRelease({
+    owner,
+    repo,
+    tag_name: name,
+    prerelease: name === 'dev',
+  });
+
+  // Upload all the relevant assets for this release as just general blobs.
+  for (const file of glob.sync(files)) {
+    const size = fs.statSync(file).size;
+    core.info(`upload ${file}`);
+    await octokit.repos.uploadReleaseAsset({
+      data: fs.createReadStream(file),
+      headers: { 'content-length': size, 'content-type': 'application/octet-stream' },
+      name: path.basename(file),
+      url: release.data.upload_url,
+    });
+  }
 }
 
-child_process.execFileSync('rustup', ['set', 'profile', 'minimal']);
-child_process.execFileSync('rustup', ['update', toolchain, '--no-self-update']);
-child_process.execFileSync('rustup', ['default', toolchain]);
-
-// Deny warnings on CI to keep our code warning-free as it lands in-tree. Don't
-// do this on nightly though since there's a fair amount of warning churn there.
-if (!toolchain.startsWith('nightly')) {
-  set_env("RUSTFLAGS", "-D warnings");
+async function run() {
+  const retries = 10;
+  for (let i = 0; i < retries; i++) {
+    try {
+      await runOnce();
+      break;
+    } catch (e) {
+      if (i === retries - 1)
+        throw e;
+      logError(e);
+      console.log("RETRYING after 10s");
+      await sleep(10000)
+    }
+  }
 }
 
-// Save disk space by avoiding incremental compilation, and also we don't use
-// any caching so incremental wouldn't help anyway.
-set_env("CARGO_INCREMENTAL", "0");
+function logError(e) {
+  console.log("ERROR: ", e.message);
+  try {
+    console.log(JSON.stringify(e, null, 2));
+  } catch (e) {
+    // ignore json errors for now
+  }
+  console.log(e.stack);
+}
 
-// Turn down debuginfo from 2 to 1 to help save disk space
-set_env("CARGO_PROFILE_DEV_DEBUG", "1");
-set_env("CARGO_PROFILE_TEST_DEBUG", "1");
+run().catch(err => {
+  logError(err);
+  core.setFailed(err.message);
+});
