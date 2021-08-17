@@ -19,6 +19,8 @@ pub enum Architecture {
     Aarch64(Aarch64Architecture),
     Asmjs,
     Avr,
+    Bpfeb,
+    Bpfel,
     Hexagon,
     X86_32(X86_32Architecture),
     Mips32(Mips32Architecture),
@@ -512,6 +514,7 @@ impl Architecture {
             AmdGcn
             | Asmjs
             | Avr
+            | Bpfel
             | Hexagon
             | X86_32(_)
             | Mips64(Mips64Architecture::Mips64el)
@@ -526,7 +529,8 @@ impl Architecture {
             | Wasm32
             | Wasm64
             | X86_64 => Ok(Endianness::Little),
-            Mips32(Mips32Architecture::Mips)
+            Bpfeb
+            | Mips32(Mips32Architecture::Mips)
             | Mips64(Mips64Architecture::Mips64)
             | Mips32(Mips32Architecture::Mipsisa32r6)
             | Mips64(Mips64Architecture::Mipsisa64r6)
@@ -558,6 +562,8 @@ impl Architecture {
             | Mips32(_)
             | Powerpc => Ok(PointerWidth::U32),
             AmdGcn
+            | Bpfeb
+            | Bpfel
             | Powerpc64le
             | Riscv64(_)
             | X86_64
@@ -733,6 +739,8 @@ impl fmt::Display for Architecture {
             AmdGcn => f.write_str("amdgcn"),
             Asmjs => f.write_str("asmjs"),
             Avr => f.write_str("avr"),
+            Bpfeb => f.write_str("bpfeb"),
+            Bpfel => f.write_str("bpfel"),
             Hexagon => f.write_str("hexagon"),
             X86_32(x86_32) => x86_32.fmt(f),
             Mips32(mips32) => mips32.fmt(f),
@@ -912,6 +920,8 @@ impl FromStr for Architecture {
             "amdgcn" => AmdGcn,
             "asmjs" => Asmjs,
             "avr" => Avr,
+            "bpfeb" => Bpfeb,
+            "bpfel" => Bpfel,
             "hexagon" => Hexagon,
             "msp430" => Msp430,
             "nvptx64" => Nvptx64,
@@ -1332,6 +1342,8 @@ mod tests {
             "armv7s-apple-ios",
             "asmjs-unknown-emscripten",
             "avr-unknown-unknown",
+            "bpfeb-unknown-none",
+            "bpfel-unknown-none",
             "hexagon-unknown-linux-musl",
             "i386-apple-ios",
             "i586-pc-windows-msvc",
