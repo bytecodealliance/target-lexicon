@@ -563,8 +563,8 @@ impl Architecture {
             | Sparc
             | Wasm32
             | Mips32(_)
-            | Powerpc 
-            | XTensa=> Ok(PointerWidth::U32),
+            | Powerpc
+            | XTensa => Ok(PointerWidth::U32),
             AmdGcn
             | Bpfeb
             | Bpfel
@@ -763,7 +763,7 @@ impl fmt::Display for Architecture {
             Wasm32 => f.write_str("wasm32"),
             Wasm64 => f.write_str("wasm64"),
             X86_64 => f.write_str("x86_64"),
-            XTensa => f.write_str("xtensa")
+            XTensa => f.write_str("xtensa"),
         }
     }
 }
