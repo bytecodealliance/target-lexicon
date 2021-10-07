@@ -39,6 +39,7 @@ pub enum Architecture {
     Wasm32,
     Wasm64,
     X86_64,
+    XTensa,
 }
 
 #[cfg_attr(feature = "rust_1_40", non_exhaustive)]
@@ -428,6 +429,7 @@ pub enum OperatingSystem {
     Darwin,
     Dragonfly,
     Emscripten,
+    Espidf,
     Freebsd,
     Fuchsia,
     Haiku,
@@ -528,7 +530,8 @@ impl Architecture {
             | Riscv64(_)
             | Wasm32
             | Wasm64
-            | X86_64 => Ok(Endianness::Little),
+            | X86_64
+            | XTensa => Ok(Endianness::Little),
             Bpfeb
             | Mips32(Mips32Architecture::Mips)
             | Mips64(Mips64Architecture::Mips64)
@@ -560,7 +563,8 @@ impl Architecture {
             | Sparc
             | Wasm32
             | Mips32(_)
-            | Powerpc => Ok(PointerWidth::U32),
+            | Powerpc
+            | XTensa => Ok(PointerWidth::U32),
             AmdGcn
             | Bpfeb
             | Bpfel
@@ -759,6 +763,7 @@ impl fmt::Display for Architecture {
             Wasm32 => f.write_str("wasm32"),
             Wasm64 => f.write_str("wasm64"),
             X86_64 => f.write_str("x86_64"),
+            XTensa => f.write_str("xtensa"),
         }
     }
 }
@@ -935,6 +940,7 @@ impl FromStr for Architecture {
             "wasm32" => Wasm32,
             "wasm64" => Wasm64,
             "x86_64" => X86_64,
+            "xtensa" => XTensa,
             _ => {
                 if let Ok(arm) = ArmArchitecture::from_str(s) {
                     Arm(arm)
@@ -1055,6 +1061,7 @@ impl fmt::Display for OperatingSystem {
             Darwin => "darwin",
             Dragonfly => "dragonfly",
             Emscripten => "emscripten",
+            Espidf => "espidf",
             Freebsd => "freebsd",
             Fuchsia => "fuchsia",
             Haiku => "haiku",
@@ -1153,6 +1160,7 @@ impl FromStr for OperatingSystem {
             "vxworks" => VxWorks,
             "wasi" => Wasi,
             "windows" => Windows,
+            "espidf" => Espidf,
             _ => return Err(()),
         })
     }
@@ -1482,6 +1490,8 @@ mod tests {
             "x86_64-uwp-windows-gnu",
             "x86_64-uwp-windows-msvc",
             "x86_64-wrs-vxworks",
+            "xtensa-esp32-espidf",
+            "riscv32imc-esp-espidf",
         ];
 
         for target in targets.iter() {
