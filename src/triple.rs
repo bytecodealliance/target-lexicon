@@ -121,7 +121,8 @@ impl Triple {
                 Architecture::Aarch64(_) => CallingConvention::AppleAarch64,
                 _ => CallingConvention::SystemV,
             },
-            OperatingSystem::Bitrig
+            OperatingSystem::Aix
+            | OperatingSystem::Bitrig
             | OperatingSystem::Cloudabi
             | OperatingSystem::Dragonfly
             | OperatingSystem::Freebsd

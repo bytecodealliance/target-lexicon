@@ -6,6 +6,13 @@ include!(concat!(env!("OUT_DIR"), "/host.rs"));
 
 #[cfg(test)]
 mod tests {
+    #[cfg(target_os = "aix")]
+    #[test]
+    fn test_aix() {
+        use super::*;
+        assert_eq!(OperatingSystem::host(), OperatingSystem::Aix);
+    }
+
     #[cfg(target_os = "linux")]
     #[test]
     fn test_linux() {
