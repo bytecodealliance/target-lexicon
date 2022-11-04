@@ -116,7 +116,8 @@ impl Triple {
             OperatingSystem::Darwin
             | OperatingSystem::Ios
             | OperatingSystem::Tvos
-            | OperatingSystem::MacOSX { .. } => match self.architecture {
+            | OperatingSystem::MacOSX { .. }
+            | OperatingSystem::Watchos => match self.architecture {
                 Architecture::Aarch64(_) => CallingConvention::AppleAarch64,
                 _ => CallingConvention::SystemV,
             },
@@ -208,10 +209,13 @@ impl fmt::Display for Triple {
                 || self.operating_system == OperatingSystem::Fuchsia
                 || self.operating_system == OperatingSystem::Wasi
                 || (self.operating_system == OperatingSystem::None_
-                    && (self.architecture == Architecture::Arm(ArmArchitecture::Armebv7r)
+                    && (self.architecture == Architecture::Arm(ArmArchitecture::Armv4t)
+                        || self.architecture == Architecture::Arm(ArmArchitecture::Armv5te)
+                        || self.architecture == Architecture::Arm(ArmArchitecture::Armebv7r)
                         || self.architecture == Architecture::Arm(ArmArchitecture::Armv7a)
                         || self.architecture == Architecture::Arm(ArmArchitecture::Armv7r)
                         || self.architecture == Architecture::Arm(ArmArchitecture::Thumbv4t)
+                        || self.architecture == Architecture::Arm(ArmArchitecture::Thumbv5te)
                         || self.architecture == Architecture::Arm(ArmArchitecture::Thumbv6m)
                         || self.architecture == Architecture::Arm(ArmArchitecture::Thumbv7em)
                         || self.architecture == Architecture::Arm(ArmArchitecture::Thumbv7m)
@@ -459,6 +463,7 @@ mod tests {
             "aarch64-apple-ios",
             "aarch64-apple-ios-macabi",
             "aarch64-apple-tvos",
+            "aarch64-apple-watchos",
         ] {
             assert_eq!(
                 Triple::from_str(triple)

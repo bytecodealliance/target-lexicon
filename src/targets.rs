@@ -63,6 +63,7 @@ pub enum ArmArchitecture {
     Armv6m,
     Armv7,
     Armv7a,
+    Armv7k,
     Armv7ve,
     Armv7m,
     Armv7r,
@@ -82,6 +83,7 @@ pub enum ArmArchitecture {
 
     Thumbeb,
     Thumbv4t,
+    Thumbv5te,
     Thumbv6m,
     Thumbv7a,
     Thumbv7em,
@@ -145,6 +147,7 @@ impl ArmArchitecture {
             | Armv6m
             | Armv7
             | Armv7a
+            | Armv7k
             | Armv7ve
             | Armv7m
             | Armv7r
@@ -162,6 +165,7 @@ impl ArmArchitecture {
             | Armebv7r => false,
             Thumbeb
             | Thumbv4t
+            | Thumbv5te
             | Thumbv6m
             | Thumbv7a
             | Thumbv7em
@@ -198,6 +202,7 @@ impl ArmArchitecture {
             | Armv6m
             | Armv7
             | Armv7a
+            | Armv7k
             | Armv7ve
             | Armv7m
             | Armv7r
@@ -215,6 +220,7 @@ impl ArmArchitecture {
             | Armebv7r
             | Thumbeb
             | Thumbv4t
+            | Thumbv5te
             | Thumbv6m
             | Thumbv7a
             | Thumbv7em
@@ -246,6 +252,7 @@ impl ArmArchitecture {
             | Armv6m
             | Armv7
             | Armv7a
+            | Armv7k
             | Armv7ve
             | Armv7m
             | Armv7r
@@ -261,6 +268,7 @@ impl ArmArchitecture {
             | Armv8mMain
             | Armv8r
             | Thumbv4t
+            | Thumbv5te
             | Thumbv6m
             | Thumbv7a
             | Thumbv7em
@@ -457,6 +465,7 @@ pub enum OperatingSystem {
     Uefi,
     VxWorks,
     Wasi,
+    Watchos,
     Windows,
 }
 
@@ -605,6 +614,7 @@ pub(crate) fn default_binary_format(triple: &Triple) -> BinaryFormat {
         OperatingSystem::Darwin
         | OperatingSystem::Ios
         | OperatingSystem::MacOSX { .. }
+        | OperatingSystem::Watchos
         | OperatingSystem::Tvos => BinaryFormat::Macho,
         OperatingSystem::Windows => BinaryFormat::Coff,
         OperatingSystem::Nebulet
@@ -640,6 +650,7 @@ impl fmt::Display for ArmArchitecture {
             Armv6m => "armv6m",
             Armv7 => "armv7",
             Armv7a => "armv7a",
+            Armv7k => "armv7k",
             Armv7ve => "armv7ve",
             Armv7m => "armv7m",
             Armv7r => "armv7r",
@@ -656,6 +667,7 @@ impl fmt::Display for ArmArchitecture {
             Armv8r => "armv8r",
             Thumbeb => "thumbeb",
             Thumbv4t => "thumbv4t",
+            Thumbv5te => "thumbv5te",
             Thumbv6m => "thumbv6m",
             Thumbv7a => "thumbv7a",
             Thumbv7em => "thumbv7em",
@@ -805,6 +817,7 @@ impl FromStr for ArmArchitecture {
             "armv6m" => Armv6m,
             "armv7" => Armv7,
             "armv7a" => Armv7a,
+            "armv7k" => Armv7k,
             "armv7ve" => Armv7ve,
             "armv7m" => Armv7m,
             "armv7r" => Armv7r,
@@ -821,6 +834,7 @@ impl FromStr for ArmArchitecture {
             "armv8r" => Armv8r,
             "thumbeb" => Thumbeb,
             "thumbv4t" => Thumbv4t,
+            "thumbv5te" => Thumbv5te,
             "thumbv6m" => Thumbv6m,
             "thumbv7a" => Thumbv7a,
             "thumbv7em" => Thumbv7em,
@@ -1112,6 +1126,7 @@ impl fmt::Display for OperatingSystem {
             Uefi => "uefi",
             VxWorks => "vxworks",
             Wasi => "wasi",
+            Watchos => "watchos",
             Windows => "windows",
         };
         f.write_str(s)
@@ -1185,6 +1200,7 @@ impl FromStr for OperatingSystem {
             "uefi" => Uefi,
             "vxworks" => VxWorks,
             "wasi" => Wasi,
+            "watchos" => Watchos,
             "windows" => Windows,
             "espidf" => Espidf,
             _ => return Err(()),
@@ -1325,13 +1341,15 @@ mod tests {
             "aarch64-apple-ios-macabi",
             "aarch64-apple-ios-sim",
             "aarch64-apple-tvos",
+            "aarch64-apple-watchos-sim",
             "aarch64_be-unknown-linux-gnu",
             "aarch64_be-unknown-linux-gnu_ilp32",
             "aarch64-fuchsia",
             "aarch64-kmc-solid_asp3",
             "aarch64-linux-android",
-            "aarch64-pc-windows-msvc",
+            //"aarch64-nintendo-switch-freestanding", // TODO
             "aarch64-pc-windows-gnullvm",
+            "aarch64-pc-windows-msvc",
             "aarch64-unknown-cloudabi",
             "aarch64-unknown-freebsd",
             "aarch64-unknown-hermit",
@@ -1346,6 +1364,8 @@ mod tests {
             "aarch64-unknown-uefi",
             "aarch64-uwp-windows-msvc",
             "aarch64-wrs-vxworks",
+            //"arm64_32-apple-watchos", // TODO
+            "armeb-unknown-linux-gnueabi",
             "amdgcn-amd-amdhsa",
             "amdgcn-amd-amdhsa-amdgiz",
             "armebv7r-none-eabi",
@@ -1355,20 +1375,21 @@ mod tests {
             "arm-unknown-linux-gnueabihf",
             "arm-unknown-linux-musleabi",
             "arm-unknown-linux-musleabihf",
-            "armebv7r-none-eabi",
-            "armebv7r-none-eabihf",
+            "armv4t-none-eabi",
             "armv4t-unknown-linux-gnueabi",
+            "armv5te-none-eabi",
             "armv5te-unknown-linux-gnueabi",
             "armv5te-unknown-linux-musleabi",
             "armv5te-unknown-linux-uclibceabi",
+            "armv6k-nintendo-3ds",
             "armv6-unknown-freebsd",
             "armv6-unknown-netbsd-eabihf",
-            "armv6k-nintendo-3ds",
             "armv7a-kmc-solid_asp3-eabi",
             "armv7a-kmc-solid_asp3-eabihf",
             "armv7a-none-eabi",
             "armv7a-none-eabihf",
             "armv7-apple-ios",
+            "armv7k-apple-watchos",
             "armv7-linux-androideabi",
             "armv7r-none-eabi",
             "armv7r-none-eabihf",
@@ -1379,15 +1400,12 @@ mod tests {
             "armv7-unknown-linux-gnueabihf",
             "armv7-unknown-linux-musleabi",
             "armv7-unknown-linux-musleabihf",
+            "armv7-unknown-linux-uclibceabi",
             "armv7-unknown-linux-uclibceabihf",
             "armv7-unknown-netbsd-eabihf",
             "armv7-wrs-vxworks-eabihf",
-            "armv7a-none-eabi",
-            "armv7a-none-eabihf",
-            "armv7r-none-eabi",
-            "armv7r-none-eabihf",
-            "armv7s-apple-ios",
             "asmjs-unknown-emscripten",
+            //"avr-unknown-gnu-atmega328", // TODO
             "avr-unknown-unknown",
             "bpfeb-unknown-none",
             "bpfel-unknown-none",
@@ -1414,13 +1432,9 @@ mod tests {
             "i686-uwp-windows-msvc",
             "i686-wrs-vxworks",
             "m68k-unknown-linux-gnu",
-            "mips-unknown-linux-gnu",
-            "mips-unknown-linux-musl",
-            "mips-unknown-linux-uclibc",
-            "mips64-unknown-linux-gnuabi64",
-            "mips64-unknown-linux-muslabi64",
             "mips64el-unknown-linux-gnuabi64",
             "mips64el-unknown-linux-muslabi64",
+            "mips64-openwrt-linux-musl",
             "mips64-unknown-linux-gnuabi64",
             "mips64-unknown-linux-muslabi64",
             "mipsel-sony-psp",
@@ -1430,7 +1444,6 @@ mod tests {
             "mipsel-unknown-none",
             "mipsisa32r6el-unknown-linux-gnu",
             "mipsisa32r6-unknown-linux-gnu",
-            "mipsisa64r6-unknown-linux-gnuabi64",
             "mipsisa64r6el-unknown-linux-gnuabi64",
             "mipsisa64r6-unknown-linux-gnuabi64",
             "mips-unknown-linux-gnu",
@@ -1438,48 +1451,46 @@ mod tests {
             "mips-unknown-linux-uclibc",
             "msp430-none-elf",
             "nvptx64-nvidia-cuda",
+            "powerpc64le-unknown-freebsd",
             "powerpc64le-unknown-linux-gnu",
             "powerpc64le-unknown-linux-musl",
             "powerpc64-unknown-freebsd",
             "powerpc64-unknown-linux-gnu",
             "powerpc64-unknown-linux-musl",
+            "powerpc64-unknown-openbsd",
             "powerpc64-wrs-vxworks",
+            "powerpc-unknown-freebsd",
             "powerpc-unknown-linux-gnu",
             "powerpc-unknown-linux-gnuspe",
             "powerpc-unknown-linux-musl",
-            "powerpc-unknown-freebsd",
             "powerpc-unknown-netbsd",
             "powerpc-unknown-openbsd",
             "powerpc-wrs-vxworks",
             "powerpc-wrs-vxworks-spe",
-            "powerpc64-unknown-freebsd",
-            "powerpc64-unknown-linux-gnu",
-            "powerpc64-unknown-linux-musl",
-            "powerpc64-wrs-vxworks",
-            "powerpc64le-unknown-linux-gnu",
-            "powerpc64le-unknown-linux-musl",
             "riscv32gc-unknown-linux-gnu",
             "riscv32gc-unknown-linux-musl",
-            "riscv32i-unknown-none-elf",
-            "riscv32im-unknown-none-elf",
             "riscv32imac-unknown-none-elf",
+            //"riscv32imac-unknown-xous-elf", // TODO
+            "riscv32imc-esp-espidf",
             "riscv32imc-unknown-none-elf",
+            "riscv32im-unknown-none-elf",
             "riscv32i-unknown-none-elf",
+            "riscv64gc-unknown-freebsd",
             "riscv64gc-unknown-linux-gnu",
             "riscv64gc-unknown-linux-musl",
             "riscv64gc-unknown-none-elf",
+            "riscv64gc-unknown-openbsd",
             "riscv64imac-unknown-none-elf",
             "s390x-unknown-linux-gnu",
             "s390x-unknown-linux-musl",
-            "sparc-unknown-linux-gnu",
             "sparc64-unknown-linux-gnu",
             "sparc64-unknown-netbsd",
             "sparc64-unknown-openbsd",
             "sparc-unknown-linux-gnu",
             "sparcv9-sun-solaris",
             "thumbv4t-none-eabi",
+            "thumbv5te-none-eabi",
             "thumbv6m-none-eabi",
-            "thumbv4t-none-eabi",
             "thumbv7a-pc-windows-msvc",
             "thumbv7a-uwp-windows-msvc",
             "thumbv7em-none-eabi",
@@ -1501,6 +1512,7 @@ mod tests {
             "x86_64-apple-ios",
             "x86_64-apple-ios-macabi",
             "x86_64-apple-tvos",
+            "x86_64-apple-watchos-sim",
             "x86_64-fortanix-unknown-sgx",
             "x86_64-fuchsia",
             "x86_64-linux-android",
@@ -1508,8 +1520,8 @@ mod tests {
             "x86_64-apple-macosx10.7.0",
             "x86_64-pc-solaris",
             "x86_64-pc-windows-gnu",
-            "x86_64-pc-windows-msvc",
             "x86_64-pc-windows-gnullvm",
+            "x86_64-pc-windows-msvc",
             "x86_64-rumprun-netbsd", // Removed in 1.53.0
             "x86_64-sun-solaris",
             "x86_64-unknown-bitrig",
@@ -1520,14 +1532,14 @@ mod tests {
             "x86_64-unknown-hermit",
             "x86_64-unknown-hermit-kernel", // Changed to x86_64-unknown-none-hermitkernel in 1.53.0
             "x86_64-unknown-illumos",
-            "x86_64-unknown-none",
             "x86_64-unknown-l4re-uclibc",
             "x86_64-unknown-linux-gnu",
             "x86_64-unknown-linux-gnux32",
             "x86_64-unknown-linux-musl",
+            "x86_64-unknown-netbsd",
+            "x86_64-unknown-none",
             "x86_64-unknown-none-hermitkernel",
             "x86_64-unknown-none-linuxkernel",
-            "x86_64-unknown-netbsd",
             "x86_64-unknown-openbsd",
             "x86_64-unknown-redox",
             "x86_64-unknown-uefi",
@@ -1535,7 +1547,6 @@ mod tests {
             "x86_64-uwp-windows-msvc",
             "x86_64-wrs-vxworks",
             "xtensa-esp32-espidf",
-            "riscv32imc-esp-espidf",
         ];
 
         for target in targets.iter() {
