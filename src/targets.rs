@@ -6,6 +6,7 @@ use alloc::string::String;
 use core::fmt;
 use core::hash::{Hash, Hasher};
 use core::str::FromStr;
+use alloc::borrow::Cow;
 
 /// The "architecture" field, which in some cases also specifies a specific
 /// subarchitecture.
