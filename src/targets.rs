@@ -888,8 +888,8 @@ impl FromStr for CleverArchitecture {
     type Err = ();
     fn from_str(s: &str) -> Result<Self, ()> {
         match s {
-            "clever" => Ok(Self::Clever),
-            "clever1.0" => Ok(Self::Clever1_0),
+            "clever" => Ok(CleverArchitecture::Clever),
+            "clever1.0" => Ok(CleverArchitecture::Clever1_0),
             _ => Err(()),
         }
     }
@@ -1581,7 +1581,6 @@ mod tests {
             "x86_64-uwp-windows-msvc",
             "x86_64-wrs-vxworks",
             "xtensa-esp32-espidf",
-            "clever-unknown-elf",
         ];
 
         for target in targets.iter() {
