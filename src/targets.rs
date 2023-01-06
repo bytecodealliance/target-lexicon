@@ -1,12 +1,12 @@
 // This file defines all the identifier enums and target-aware logic.
 
 use crate::triple::{Endianness, PointerWidth, Triple};
+use alloc::borrow::Cow;
 use alloc::boxed::Box;
 use alloc::string::String;
 use core::fmt;
 use core::hash::{Hash, Hasher};
 use core::str::FromStr;
-use alloc::borrow::Cow;
 
 /// The "architecture" field, which in some cases also specifies a specific
 /// subarchitecture.
@@ -314,11 +314,9 @@ impl Aarch64Architecture {
 #[cfg_attr(feature = "rust_1_40", non_exhaustive)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
-pub enum CleverArchitecture{
+pub enum CleverArchitecture {
     Clever,
     Clever1_0,
-    // clever1.1.. is valid to parse. 
-    CleverFuture(Cow<str>),
 }
 
 /// An enum for all 32-bit RISC-V architectures.
@@ -705,15 +703,11 @@ impl fmt::Display for Aarch64Architecture {
     }
 }
 
-impl fmt::Display for CleverArchitecture{
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result{
-        match self{
+impl fmt::Display for CleverArchitecture {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
             Self::Clever => f.write_str("clever"),
             Self::Clever1_0 => f.write_str("clever1.0"),
-            Self::CleverFuture(ver) => {
-                f.write_str("clever")?;
-                f.write_str(ver)
-            }
         }
     }
 }
@@ -891,16 +885,13 @@ impl FromStr for Aarch64Architecture {
     }
 }
 
-impl FromStr for CleverArchitecture{
+impl FromStr for CleverArchitecture {
     type Err = ();
-    fn from_str(s: &str) -> Result<Self, ()>{
-        match s{
+    fn from_str(s: &str) -> Result<Self, ()> {
+        match s {
             "clever" => Ok(Self::Clever),
             "clever1.0" => Ok(Self::Clever1_0),
-            x if x.starts_with("clever") => {
-                let x = &x[5..];
-                Ok(Self::CleverFuture(Cow::Owned(x.to_string())))
-            }
+            _ => Err(())
         }
     }
 }
@@ -1028,7 +1019,7 @@ impl FromStr for Architecture {
                     Mips32(mips32)
                 } else if let Ok(mips64) = Mips64Architecture::from_str(s) {
                     Mips64(mips64)
-                } else if let Ok(clever) = CleverArchitecture::from_str(s){
+                } else if let Ok(clever) = CleverArchitecture::from_str(s) {
                     Clever(clever)
                 } else {
                     return Err(());
@@ -1591,7 +1582,7 @@ mod tests {
             "x86_64-uwp-windows-msvc",
             "x86_64-wrs-vxworks",
             "xtensa-esp32-espidf",
-            "clever-unknown-elf"
+            "clever-unknown-elf",
         ];
 
         for target in targets.iter() {
