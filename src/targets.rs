@@ -1,7 +1,6 @@
 // This file defines all the identifier enums and target-aware logic.
 
 use crate::triple::{Endianness, PointerWidth, Triple};
-use alloc::borrow::Cow;
 use alloc::boxed::Box;
 use alloc::string::String;
 use core::fmt;
@@ -706,8 +705,8 @@ impl fmt::Display for Aarch64Architecture {
 impl fmt::Display for CleverArchitecture {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Self::Clever => f.write_str("clever"),
-            Self::Clever1_0 => f.write_str("clever1.0"),
+            CleverArchitecture::Clever => f.write_str("clever"),
+            CleverArchitecture::Clever1_0 => f.write_str("clever1.0"),
         }
     }
 }
@@ -891,7 +890,7 @@ impl FromStr for CleverArchitecture {
         match s {
             "clever" => Ok(Self::Clever),
             "clever1.0" => Ok(Self::Clever1_0),
-            _ => Err(())
+            _ => Err(()),
         }
     }
 }
