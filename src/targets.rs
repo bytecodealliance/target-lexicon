@@ -41,6 +41,7 @@ pub enum Architecture {
     Wasm64,
     X86_64,
     XTensa,
+    Clever,
 }
 
 #[cfg_attr(feature = "rust_1_40", non_exhaustive)]
@@ -790,6 +791,7 @@ impl fmt::Display for Architecture {
             Wasm64 => f.write_str("wasm64"),
             X86_64 => f.write_str("x86_64"),
             XTensa => f.write_str("xtensa"),
+            Clever => f.write_str("clever"),
         }
     }
 }
@@ -986,6 +988,8 @@ impl FromStr for Architecture {
                     Mips32(mips32)
                 } else if let Ok(mips64) = Mips64Architecture::from_str(s) {
                     Mips64(mips64)
+                } else if s.starts_with("clever"){
+                    Clever
                 } else {
                     return Err(());
                 }
@@ -1547,6 +1551,7 @@ mod tests {
             "x86_64-uwp-windows-msvc",
             "x86_64-wrs-vxworks",
             "xtensa-esp32-espidf",
+            "clever-unknown-elf"
         ];
 
         for target in targets.iter() {
