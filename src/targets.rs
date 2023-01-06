@@ -1027,7 +1027,7 @@ impl FromStr for Architecture {
                     Mips32(mips32)
                 } else if let Ok(mips64) = Mips64Architecture::from_str(s) {
                     Mips64(mips64)
-                } else if let Ok(clever) = CleverArchitecture::from_str(s)){
+                } else if let Ok(clever) = CleverArchitecture::from_str(s){
                     Clever(clever)
                 } else {
                     return Err(());
