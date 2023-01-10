@@ -1581,6 +1581,7 @@ mod tests {
             "x86_64-uwp-windows-msvc",
             "x86_64-wrs-vxworks",
             "xtensa-esp32-espidf",
+            "clever-unknown-none",
         ];
 
         for target in targets.iter() {
