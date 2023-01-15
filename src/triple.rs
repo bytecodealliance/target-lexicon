@@ -228,8 +228,9 @@ impl fmt::Display for Triple {
             // ad-hoc, and is just sufficient to handle the current set of recognized
             // triples.
             write!(f, "-{}", self.operating_system)?;
-        } else if matches!(self.architecture,Architecture::Clever(_)) && self.operating_system == OperatingSystem::Unknown{
-            write!(f, "-{}",self.vendor)?;
+        } else if self.architecture.is_clever() && self.operating_system == OperatingSystem::Unknown
+        {
+            write!(f, "-{}", self.vendor)?;
         } else {
             write!(f, "-{}-{}", self.vendor, self.operating_system)?;
         }

@@ -574,6 +574,7 @@ impl Architecture {
             | Sparc64
             | Sparcv9 => Ok(Endianness::Big),
         }
+
     }
 
     /// Return the pointer bit width of this target's architecture.
@@ -610,6 +611,14 @@ impl Architecture {
             | Sparcv9
             | Wasm64
             | Clever(_) => Ok(PointerWidth::U64),
+        }
+    }
+
+    /// Checks if this Architecture is some variant of Clever-ISA
+    pub fn is_clever(&self) -> bool {
+        match self {
+            Architecture::Clever(_) => true,
+            _ => false,
         }
     }
 }
