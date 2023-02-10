@@ -418,6 +418,7 @@ pub enum Vendor {
     Espressif,
     Experimental,
     Fortanix,
+    Ibm,
     Kmc,
     Nintendo,
     Nvidia,
@@ -444,6 +445,7 @@ pub enum Vendor {
 #[allow(missing_docs)]
 pub enum OperatingSystem {
     Unknown,
+    Aix,
     AmdHsa,
     Bitrig,
     Cloudabi,
@@ -529,6 +531,7 @@ pub enum BinaryFormat {
     Coff,
     Macho,
     Wasm,
+    Xcoff,
 }
 
 impl Architecture {
@@ -631,6 +634,7 @@ pub(crate) fn default_binary_format(triple: &Triple) -> BinaryFormat {
             Environment::Eabi | Environment::Eabihf => BinaryFormat::Elf,
             _ => BinaryFormat::Unknown,
         },
+        OperatingSystem::Aix => BinaryFormat::Xcoff,
         OperatingSystem::Darwin
         | OperatingSystem::Ios
         | OperatingSystem::MacOSX { .. }
@@ -1048,6 +1052,7 @@ impl fmt::Display for Vendor {
             Espressif => "espressif",
             Experimental => "experimental",
             Fortanix => "fortanix",
+            Ibm => "ibm",
             Kmc => "kmc",
             Nintendo => "nintendo",
             Nvidia => "nvidia",
@@ -1075,6 +1080,7 @@ impl FromStr for Vendor {
             "espressif" => Espressif,
             "experimental" => Experimental,
             "fortanix" => Fortanix,
+            "ibm" => Ibm,
             "kmc" => Kmc,
             "nintendo" => Nintendo,
             "nvidia" => Nvidia,
@@ -1133,6 +1139,7 @@ impl fmt::Display for OperatingSystem {
 
         let s = match *self {
             Unknown => "unknown",
+            Aix => "aix",
             AmdHsa => "amdhsa",
             Bitrig => "bitrig",
             Cloudabi => "cloudabi",
@@ -1215,6 +1222,7 @@ impl FromStr for OperatingSystem {
 
         Ok(match s {
             "unknown" => Unknown,
+            "aix" => Aix,
             "amdhsa" => AmdHsa,
             "bitrig" => Bitrig,
             "cloudabi" => Cloudabi,
@@ -1345,6 +1353,7 @@ impl fmt::Display for BinaryFormat {
             Coff => "coff",
             Macho => "macho",
             Wasm => "wasm",
+            Xcoff => "xcoff",
         };
         f.write_str(s)
     }
@@ -1362,6 +1371,7 @@ impl FromStr for BinaryFormat {
             "coff" => Coff,
             "macho" => Macho,
             "wasm" => Wasm,
+            "xcoff" => Xcoff,
             _ => return Err(()),
         })
     }
@@ -1497,11 +1507,13 @@ mod tests {
             "powerpc64le-unknown-freebsd",
             "powerpc64le-unknown-linux-gnu",
             "powerpc64le-unknown-linux-musl",
+            "powerpc64-ibm-aix",
             "powerpc64-unknown-freebsd",
             "powerpc64-unknown-linux-gnu",
             "powerpc64-unknown-linux-musl",
             "powerpc64-unknown-openbsd",
             "powerpc64-wrs-vxworks",
+            "powerpc-ibm-aix",
             "powerpc-unknown-freebsd",
             "powerpc-unknown-linux-gnu",
             "powerpc-unknown-linux-gnuspe",
