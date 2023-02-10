@@ -40,6 +40,7 @@ pub use self::triple::{CallingConvention, Endianness, PointerWidth, Triple};
 
 /// A simple wrapper around `Triple` that provides an implementation of
 /// `Default` which defaults to `Triple::host()`.
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct DefaultToHost(pub Triple);
 
 impl Default for DefaultToHost {
@@ -50,6 +51,7 @@ impl Default for DefaultToHost {
 
 /// A simple wrapper around `Triple` that provides an implementation of
 /// `Default` which defaults to `Triple::unknown()`.
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct DefaultToUnknown(pub Triple);
 
 impl Default for DefaultToUnknown {
