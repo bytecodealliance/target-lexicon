@@ -57,3 +57,50 @@ impl Default for DefaultToUnknown {
         Self(Triple::unknown())
     }
 }
+
+// For some reason, the below `serde` impls don't work when they're in the
+// `triple` module.
+
+#[cfg(feature = "serde")]
+impl serde::Serialize for Triple {
+    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        serializer.serialize_str(&self.to_string())
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de> serde::de::Deserialize<'de> for Triple {
+    fn deserialize<D: serde::de::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let s = String::deserialize(deserializer)?;
+        s.parse().map_err(serde::de::Error::custom)
+    }
+}
+
+#[cfg(feature = "serde")]
+#[test]
+fn test_serialize() {
+    let triples: Vec<Triple> = vec![
+        "x86_64-unknown-linux-gnu".parse().unwrap(),
+        "i686-pc-windows-gnu".parse().unwrap(),
+    ];
+
+    let json = serde_json::to_string(&triples).unwrap();
+    assert_eq!(
+        json,
+        r#"["x86_64-unknown-linux-gnu","i686-pc-windows-gnu"]"#
+    );
+}
+
+#[cfg(feature = "serde")]
+#[test]
+fn test_deserialize() {
+    let triples: Vec<Triple> = vec![
+        "x86_64-unknown-linux-gnu".parse().unwrap(),
+        "i686-pc-windows-gnu".parse().unwrap(),
+    ];
+
+    let vals: Vec<Triple> =
+        serde_json::from_str(r#"["x86_64-unknown-linux-gnu","i686-pc-windows-gnu"]"#).unwrap();
+
+    assert_eq!(vals, triples);
+}
