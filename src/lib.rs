@@ -61,14 +61,14 @@ impl Default for DefaultToUnknown {
 // For some reason, the below `serde` impls don't work when they're in the
 // `triple` module.
 
-#[cfg(feature = "serde")]
+#[cfg(feature = "serde_support")]
 impl serde::Serialize for Triple {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         serializer.serialize_str(&self.to_string())
     }
 }
 
-#[cfg(feature = "serde")]
+#[cfg(feature = "serde_support")]
 impl<'de> serde::de::Deserialize<'de> for Triple {
     fn deserialize<D: serde::de::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         let s = String::deserialize(deserializer)?;
@@ -76,7 +76,7 @@ impl<'de> serde::de::Deserialize<'de> for Triple {
     }
 }
 
-#[cfg(feature = "serde")]
+#[cfg(feature = "serde_support")]
 #[test]
 fn test_serialize() {
     let triples: Vec<Triple> = vec![
@@ -91,7 +91,7 @@ fn test_serialize() {
     );
 }
 
-#[cfg(feature = "serde")]
+#[cfg(feature = "serde_support")]
 #[test]
 fn test_deserialize() {
     let triples: Vec<Triple> = vec![

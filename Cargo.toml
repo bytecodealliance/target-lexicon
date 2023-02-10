@@ -19,7 +19,7 @@ serde_json = "1.0"
 
 [features]
 default = []
-serde = ["dep:serde", "std"]
+serde_support = ["serde", "std"]
 std = []
 
 [badges]
