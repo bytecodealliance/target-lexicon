@@ -1,11 +1,13 @@
 // This file defines all the identifier enums and target-aware logic.
 
 use crate::triple::{Endianness, PointerWidth, Triple};
+use alloc::borrow::Cow;
 use alloc::boxed::Box;
-use alloc::string::String;
+use alloc::string::{String, ToString};
 use core::fmt;
 use core::hash::{Hash, Hasher};
 use core::str::FromStr;
+use strum_macros::{Display, EnumString, IntoStaticStr};
 
 /// The "architecture" field, which in some cases also specifies a specific
 /// subarchitecture.
@@ -45,9 +47,55 @@ pub enum Architecture {
     Clever(CleverArchitecture),
 }
 
+impl From<Architecture> for &'static str {
+    fn from(arch: Architecture) -> &'static str {
+        use Architecture::*;
+
+        match arch {
+            Arm(arm) => arm.into(),
+            Aarch64(aarch) => aarch.into(),
+            Unknown => "unknown",
+            AmdGcn => "amdgcn",
+            Asmjs => "asmjs",
+            Avr => "avr",
+            Bpfeb => "bpfeb",
+            Bpfel => "bpfel",
+            Hexagon => "hexagon",
+            X86_32(x86_32) => x86_32.into(),
+            LoongArch64 => "loongarch64",
+            M68k => "m68k",
+            Mips32(mips32) => mips32.into(),
+            Mips64(mips64) => mips64.into(),
+            Msp430 => "msp430",
+            Nvptx64 => "nvptx64",
+            Powerpc => "powerpc",
+            Powerpc64 => "powerpc64",
+            Powerpc64le => "powerpc64le",
+            Riscv32(riscv32) => riscv32.into(),
+            Riscv64(riscv64) => riscv64.into(),
+            S390x => "s390x",
+            Sparc => "sparc",
+            Sparc64 => "sparc64",
+            Sparcv9 => "sparcv9",
+            Wasm32 => "wasm32",
+            Wasm64 => "wasm64",
+            X86_64 => "x86_64",
+            XTensa => "xtensa",
+            Clever(ver) => ver.into(),
+        }
+    }
+}
+
+impl From<&Architecture> for &'static str {
+    fn from(arch: &Architecture) -> &'static str {
+        (*arch).into()
+    }
+}
+
 #[cfg_attr(feature = "rust_1_40", non_exhaustive)]
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(IntoStaticStr, Copy, Clone, Debug, Display, EnumString, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
+#[strum(serialize_all = "lowercase")]
 pub enum ArmArchitecture {
     Arm, // Generic arm
     Armeb,
@@ -72,12 +120,19 @@ pub enum ArmArchitecture {
     Armv7s,
     Armv8,
     Armv8a,
+    #[strum(serialize = "armv8.1a")]
     Armv8_1a,
+    #[strum(serialize = "armv8.2a")]
     Armv8_2a,
+    #[strum(serialize = "armv8.3a")]
     Armv8_3a,
+    #[strum(serialize = "armv8.4a")]
     Armv8_4a,
+    #[strum(serialize = "armv8.5a")]
     Armv8_5a,
+    #[strum(serialize = "armv8m.base")]
     Armv8mBase,
+    #[strum(serialize = "armv8m.main")]
     Armv8mMain,
     Armv8r,
 
@@ -91,15 +146,19 @@ pub enum ArmArchitecture {
     Thumbv7em,
     Thumbv7m,
     Thumbv7neon,
+    #[strum(serialize = "thumbv8m.base")]
     Thumbv8mBase,
+    #[strum(serialize = "thumbv8m.main")]
     Thumbv8mMain,
 }
 
 #[cfg_attr(feature = "rust_1_40", non_exhaustive)]
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(IntoStaticStr, Copy, Clone, Debug, Display, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
+#[strum(serialize_all = "lowercase")]
 pub enum Aarch64Architecture {
     Aarch64,
+    #[strum(serialize = "aarch64_be")]
     Aarch64be,
 }
 
@@ -312,17 +371,20 @@ impl Aarch64Architecture {
 }
 
 #[cfg_attr(feature = "rust_1_40", non_exhaustive)]
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(IntoStaticStr, Copy, Clone, Debug, Display, EnumString, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
+#[strum(serialize_all = "lowercase")]
 pub enum CleverArchitecture {
     Clever,
+    #[strum(serialize = "clever1.0")]
     Clever1_0,
 }
 
 /// An enum for all 32-bit RISC-V architectures.
 #[cfg_attr(feature = "rust_1_40", non_exhaustive)]
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(IntoStaticStr, Copy, Clone, Debug, Display, EnumString, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
+#[strum(serialize_all = "lowercase")]
 pub enum Riscv32Architecture {
     Riscv32,
     Riscv32gc,
@@ -334,8 +396,9 @@ pub enum Riscv32Architecture {
 
 /// An enum for all 64-bit RISC-V architectures.
 #[cfg_attr(feature = "rust_1_40", non_exhaustive)]
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(IntoStaticStr, Copy, Clone, Debug, Display, EnumString, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
+#[strum(serialize_all = "lowercase")]
 pub enum Riscv64Architecture {
     Riscv64,
     Riscv64gc,
@@ -344,8 +407,9 @@ pub enum Riscv64Architecture {
 
 /// An enum for all 32-bit x86 architectures.
 #[cfg_attr(feature = "rust_1_40", non_exhaustive)]
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(IntoStaticStr, Copy, Clone, Debug, Display, EnumString, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
+#[strum(serialize_all = "lowercase")]
 pub enum X86_32Architecture {
     I386,
     I586,
@@ -354,8 +418,9 @@ pub enum X86_32Architecture {
 
 /// An enum for all 32-bit MIPS architectures (not just "MIPS32").
 #[cfg_attr(feature = "rust_1_40", non_exhaustive)]
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(IntoStaticStr, Copy, Clone, Debug, Display, EnumString, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
+#[strum(serialize_all = "lowercase")]
 pub enum Mips32Architecture {
     Mips,
     Mipsel,
@@ -365,8 +430,9 @@ pub enum Mips32Architecture {
 
 /// An enum for all 64-bit MIPS architectures (not just "MIPS64").
 #[cfg_attr(feature = "rust_1_40", non_exhaustive)]
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(IntoStaticStr, Copy, Clone, Debug, Display, EnumString, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
+#[strum(serialize_all = "lowercase")]
 pub enum Mips64Architecture {
     Mips64,
     Mips64el,
@@ -392,6 +458,12 @@ impl CustomVendor {
             CustomVendor::Owned(s) => s,
             CustomVendor::Static(s) => s,
         }
+    }
+}
+
+impl AsRef<str> for CustomVendor {
+    fn as_ref(&self) -> &str {
+        self.as_str()
     }
 }
 
@@ -439,6 +511,31 @@ pub enum Vendor {
     Custom(CustomVendor),
 }
 
+impl AsRef<str> for Vendor {
+    fn as_ref(&self) -> &str {
+        use Vendor::*;
+
+        match *self {
+            Unknown => "unknown",
+            Amd => "amd",
+            Apple => "apple",
+            Espressif => "espressif",
+            Experimental => "experimental",
+            Fortanix => "fortanix",
+            Ibm => "ibm",
+            Kmc => "kmc",
+            Nintendo => "nintendo",
+            Nvidia => "nvidia",
+            Pc => "pc",
+            Rumprun => "rumprun",
+            Sun => "sun",
+            Uwp => "uwp",
+            Wrs => "wrs",
+            Custom(ref name) => name.as_str(),
+        }
+    }
+}
+
 /// The "operating system" field, which sometimes implies an environment, and
 /// sometimes isn't an actual operating system.
 #[cfg_attr(feature = "rust_1_40", non_exhaustive)]
@@ -481,12 +578,65 @@ pub enum OperatingSystem {
     Windows,
 }
 
+impl OperatingSystem {
+    fn as_str(&self) -> Option<&'static str> {
+        use OperatingSystem::*;
+
+        Some(match *self {
+            Unknown => "unknown",
+            Aix => "aix",
+            AmdHsa => "amdhsa",
+            Bitrig => "bitrig",
+            Cloudabi => "cloudabi",
+            Cuda => "cuda",
+            Darwin => "darwin",
+            Dragonfly => "dragonfly",
+            Emscripten => "emscripten",
+            Espidf => "espidf",
+            Freebsd => "freebsd",
+            Fuchsia => "fuchsia",
+            Haiku => "haiku",
+            Hermit => "hermit",
+            Horizon => "horizon",
+            Illumos => "illumos",
+            Ios => "ios",
+            L4re => "l4re",
+            Linux => "linux",
+            MacOSX { .. } => {
+                return None;
+            }
+            Nebulet => "nebulet",
+            Netbsd => "netbsd",
+            None_ => "none",
+            Openbsd => "openbsd",
+            Psp => "psp",
+            Redox => "redox",
+            Solaris => "solaris",
+            SolidAsp3 => "solid_asp3",
+            Tvos => "tvos",
+            Uefi => "uefi",
+            VxWorks => "vxworks",
+            Wasi => "wasi",
+            Watchos => "watchos",
+            Windows => "windows",
+        })
+    }
+
+    /// Format [`OperatingSystem`] into a string.
+    pub fn into_string(self) -> Cow<'static, str> {
+        self.as_str()
+            .map(Cow::Borrowed)
+            .unwrap_or_else(|| Cow::Owned(self.to_string()))
+    }
+}
+
 /// The "environment" field, which specifies an ABI environment on top of the
 /// operating system. In many configurations, this field is omitted, and the
 /// environment is implied by the operating system.
 #[cfg_attr(feature = "rust_1_40", non_exhaustive)]
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(IntoStaticStr, Copy, Clone, Debug, Display, EnumString, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
+#[strum(serialize_all = "lowercase")]
 pub enum Environment {
     Unknown,
     AmdGiz,
@@ -500,6 +650,7 @@ pub enum Environment {
     Gnueabihf,
     Gnuspe,
     Gnux32,
+    #[strum(serialize = "gnu_ilp32")]
     GnuIlp32,
     GnuLlvm,
     HermitKernel,
@@ -524,8 +675,9 @@ pub enum Environment {
 /// The "binary format" field, which is usually omitted, and the binary format
 /// is implied by the other fields.
 #[cfg_attr(feature = "rust_1_40", non_exhaustive)]
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(IntoStaticStr, Copy, Clone, Debug, Display, EnumString, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
+#[strum(serialize_all = "lowercase")]
 pub enum BinaryFormat {
     Unknown,
     Elf,
@@ -656,233 +808,9 @@ pub(crate) fn default_binary_format(triple: &Triple) -> BinaryFormat {
     }
 }
 
-impl fmt::Display for ArmArchitecture {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use ArmArchitecture::*;
-
-        let s = match *self {
-            Arm => "arm",
-            Armeb => "armeb",
-            Armv4 => "armv4",
-            Armv4t => "armv4t",
-            Armv5t => "armv5t",
-            Armv5te => "armv5te",
-            Armv5tej => "armv5tej",
-            Armv6 => "armv6",
-            Armv6j => "armv6j",
-            Armv6k => "armv6k",
-            Armv6z => "armv6z",
-            Armv6kz => "armv6kz",
-            Armv6t2 => "armv6t2",
-            Armv6m => "armv6m",
-            Armv7 => "armv7",
-            Armv7a => "armv7a",
-            Armv7k => "armv7k",
-            Armv7ve => "armv7ve",
-            Armv7m => "armv7m",
-            Armv7r => "armv7r",
-            Armv7s => "armv7s",
-            Armv8 => "armv8",
-            Armv8a => "armv8a",
-            Armv8_1a => "armv8.1a",
-            Armv8_2a => "armv8.2a",
-            Armv8_3a => "armv8.3a",
-            Armv8_4a => "armv8.4a",
-            Armv8_5a => "armv8.5a",
-            Armv8mBase => "armv8m.base",
-            Armv8mMain => "armv8m.main",
-            Armv8r => "armv8r",
-            Thumbeb => "thumbeb",
-            Thumbv4t => "thumbv4t",
-            Thumbv5te => "thumbv5te",
-            Thumbv6m => "thumbv6m",
-            Thumbv7a => "thumbv7a",
-            Thumbv7em => "thumbv7em",
-            Thumbv7m => "thumbv7m",
-            Thumbv7neon => "thumbv7neon",
-            Thumbv8mBase => "thumbv8m.base",
-            Thumbv8mMain => "thumbv8m.main",
-            Armebv7r => "armebv7r",
-        };
-        f.write_str(s)
-    }
-}
-
-impl fmt::Display for Aarch64Architecture {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let s = match *self {
-            Aarch64Architecture::Aarch64 => "aarch64",
-            Aarch64Architecture::Aarch64be => "aarch64_be",
-        };
-        f.write_str(s)
-    }
-}
-
-impl fmt::Display for CleverArchitecture {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            CleverArchitecture::Clever => f.write_str("clever"),
-            CleverArchitecture::Clever1_0 => f.write_str("clever1.0"),
-        }
-    }
-}
-
-impl fmt::Display for Riscv32Architecture {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use Riscv32Architecture::*;
-
-        let s = match *self {
-            Riscv32 => "riscv32",
-            Riscv32gc => "riscv32gc",
-            Riscv32i => "riscv32i",
-            Riscv32im => "riscv32im",
-            Riscv32imac => "riscv32imac",
-            Riscv32imc => "riscv32imc",
-        };
-        f.write_str(s)
-    }
-}
-
-impl fmt::Display for Riscv64Architecture {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let s = match *self {
-            Riscv64Architecture::Riscv64 => "riscv64",
-            Riscv64Architecture::Riscv64gc => "riscv64gc",
-            Riscv64Architecture::Riscv64imac => "riscv64imac",
-        };
-        f.write_str(s)
-    }
-}
-
-impl fmt::Display for X86_32Architecture {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let s = match *self {
-            X86_32Architecture::I386 => "i386",
-            X86_32Architecture::I586 => "i586",
-            X86_32Architecture::I686 => "i686",
-        };
-        f.write_str(s)
-    }
-}
-
-impl fmt::Display for Mips32Architecture {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use Mips32Architecture::*;
-
-        let s = match *self {
-            Mips => "mips",
-            Mipsel => "mipsel",
-            Mipsisa32r6 => "mipsisa32r6",
-            Mipsisa32r6el => "mipsisa32r6el",
-        };
-        f.write_str(s)
-    }
-}
-
-impl fmt::Display for Mips64Architecture {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use Mips64Architecture::*;
-
-        let s = match *self {
-            Mips64 => "mips64",
-            Mips64el => "mips64el",
-            Mipsisa64r6 => "mipsisa64r6",
-            Mipsisa64r6el => "mipsisa64r6el",
-        };
-        f.write_str(s)
-    }
-}
-
 impl fmt::Display for Architecture {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use Architecture::*;
-
-        match *self {
-            Arm(arm) => arm.fmt(f),
-            Aarch64(aarch) => aarch.fmt(f),
-            Unknown => f.write_str("unknown"),
-            AmdGcn => f.write_str("amdgcn"),
-            Asmjs => f.write_str("asmjs"),
-            Avr => f.write_str("avr"),
-            Bpfeb => f.write_str("bpfeb"),
-            Bpfel => f.write_str("bpfel"),
-            Hexagon => f.write_str("hexagon"),
-            X86_32(x86_32) => x86_32.fmt(f),
-            LoongArch64 => f.write_str("loongarch64"),
-            M68k => f.write_str("m68k"),
-            Mips32(mips32) => mips32.fmt(f),
-            Mips64(mips64) => mips64.fmt(f),
-            Msp430 => f.write_str("msp430"),
-            Nvptx64 => f.write_str("nvptx64"),
-            Powerpc => f.write_str("powerpc"),
-            Powerpc64 => f.write_str("powerpc64"),
-            Powerpc64le => f.write_str("powerpc64le"),
-            Riscv32(riscv32) => riscv32.fmt(f),
-            Riscv64(riscv64) => riscv64.fmt(f),
-            S390x => f.write_str("s390x"),
-            Sparc => f.write_str("sparc"),
-            Sparc64 => f.write_str("sparc64"),
-            Sparcv9 => f.write_str("sparcv9"),
-            Wasm32 => f.write_str("wasm32"),
-            Wasm64 => f.write_str("wasm64"),
-            X86_64 => f.write_str("x86_64"),
-            XTensa => f.write_str("xtensa"),
-            Clever(ver) => ver.fmt(f),
-        }
-    }
-}
-
-impl FromStr for ArmArchitecture {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, ()> {
-        use ArmArchitecture::*;
-
-        Ok(match s {
-            "arm" => Arm,
-            "armeb" => Armeb,
-            "armv4" => Armv4,
-            "armv4t" => Armv4t,
-            "armv5t" => Armv5t,
-            "armv5te" => Armv5te,
-            "armv5tej" => Armv5tej,
-            "armv6" => Armv6,
-            "armv6j" => Armv6j,
-            "armv6k" => Armv6k,
-            "armv6z" => Armv6z,
-            "armv6kz" => Armv6kz,
-            "armv6t2" => Armv6t2,
-            "armv6m" => Armv6m,
-            "armv7" => Armv7,
-            "armv7a" => Armv7a,
-            "armv7k" => Armv7k,
-            "armv7ve" => Armv7ve,
-            "armv7m" => Armv7m,
-            "armv7r" => Armv7r,
-            "armv7s" => Armv7s,
-            "armv8" => Armv8,
-            "armv8a" => Armv8a,
-            "armv8.1a" => Armv8_1a,
-            "armv8.2a" => Armv8_2a,
-            "armv8.3a" => Armv8_3a,
-            "armv8.4a" => Armv8_4a,
-            "armv8.5a" => Armv8_5a,
-            "armv8m.base" => Armv8mBase,
-            "armv8m.main" => Armv8mMain,
-            "armv8r" => Armv8r,
-            "thumbeb" => Thumbeb,
-            "thumbv4t" => Thumbv4t,
-            "thumbv5te" => Thumbv5te,
-            "thumbv6m" => Thumbv6m,
-            "thumbv7a" => Thumbv7a,
-            "thumbv7em" => Thumbv7em,
-            "thumbv7m" => Thumbv7m,
-            "thumbv7neon" => Thumbv7neon,
-            "thumbv8m.base" => Thumbv8mBase,
-            "thumbv8m.main" => Thumbv8mMain,
-            "armebv7r" => Armebv7r,
-            _ => return Err(()),
-        })
+        f.write_str(self.into())
     }
 }
 
@@ -896,97 +824,6 @@ impl FromStr for Aarch64Architecture {
             "aarch64" => Aarch64,
             "arm64" => Aarch64,
             "aarch64_be" => Aarch64be,
-            _ => return Err(()),
-        })
-    }
-}
-
-impl FromStr for CleverArchitecture {
-    type Err = ();
-    fn from_str(s: &str) -> Result<Self, ()> {
-        match s {
-            "clever" => Ok(CleverArchitecture::Clever),
-            "clever1.0" => Ok(CleverArchitecture::Clever1_0),
-            _ => Err(()),
-        }
-    }
-}
-
-impl FromStr for Riscv32Architecture {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, ()> {
-        use Riscv32Architecture::*;
-
-        Ok(match s {
-            "riscv32" => Riscv32,
-            "riscv32gc" => Riscv32gc,
-            "riscv32i" => Riscv32i,
-            "riscv32im" => Riscv32im,
-            "riscv32imac" => Riscv32imac,
-            "riscv32imc" => Riscv32imc,
-            _ => return Err(()),
-        })
-    }
-}
-
-impl FromStr for Riscv64Architecture {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, ()> {
-        use Riscv64Architecture::*;
-
-        Ok(match s {
-            "riscv64" => Riscv64,
-            "riscv64gc" => Riscv64gc,
-            "riscv64imac" => Riscv64imac,
-            _ => return Err(()),
-        })
-    }
-}
-
-impl FromStr for X86_32Architecture {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, ()> {
-        use X86_32Architecture::*;
-
-        Ok(match s {
-            "i386" => I386,
-            "i586" => I586,
-            "i686" => I686,
-            _ => return Err(()),
-        })
-    }
-}
-
-impl FromStr for Mips32Architecture {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, ()> {
-        use Mips32Architecture::*;
-
-        Ok(match s {
-            "mips" => Mips,
-            "mipsel" => Mipsel,
-            "mipsisa32r6" => Mipsisa32r6,
-            "mipsisa32r6el" => Mipsisa32r6el,
-            _ => return Err(()),
-        })
-    }
-}
-
-impl FromStr for Mips64Architecture {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, ()> {
-        use Mips64Architecture::*;
-
-        Ok(match s {
-            "mips64" => Mips64,
-            "mips64el" => Mips64el,
-            "mipsisa64r6" => Mipsisa64r6,
-            "mipsisa64r6el" => Mipsisa64r6el,
             _ => return Err(()),
         })
     }
@@ -1048,27 +885,7 @@ impl FromStr for Architecture {
 
 impl fmt::Display for Vendor {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use Vendor::*;
-
-        let s = match *self {
-            Unknown => "unknown",
-            Amd => "amd",
-            Apple => "apple",
-            Espressif => "espressif",
-            Experimental => "experimental",
-            Fortanix => "fortanix",
-            Ibm => "ibm",
-            Kmc => "kmc",
-            Nintendo => "nintendo",
-            Nvidia => "nvidia",
-            Pc => "pc",
-            Rumprun => "rumprun",
-            Sun => "sun",
-            Uwp => "uwp",
-            Wrs => "wrs",
-            Custom(ref name) => name.as_str(),
-        };
-        f.write_str(s)
+        f.write_str(self.as_ref())
     }
 }
 
@@ -1140,51 +957,20 @@ impl FromStr for Vendor {
 
 impl fmt::Display for OperatingSystem {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use OperatingSystem::*;
-
-        let s = match *self {
-            Unknown => "unknown",
-            Aix => "aix",
-            AmdHsa => "amdhsa",
-            Bitrig => "bitrig",
-            Cloudabi => "cloudabi",
-            Cuda => "cuda",
-            Darwin => "darwin",
-            Dragonfly => "dragonfly",
-            Emscripten => "emscripten",
-            Espidf => "espidf",
-            Freebsd => "freebsd",
-            Fuchsia => "fuchsia",
-            Haiku => "haiku",
-            Hermit => "hermit",
-            Horizon => "horizon",
-            Illumos => "illumos",
-            Ios => "ios",
-            L4re => "l4re",
-            Linux => "linux",
-            MacOSX {
-                major,
-                minor,
-                patch,
-            } => {
-                return write!(f, "macosx{}.{}.{}", major, minor, patch);
+        if let Some(s) = self.as_str() {
+            f.write_str(s)
+        } else {
+            match *self {
+                OperatingSystem::MacOSX {
+                    major,
+                    minor,
+                    patch,
+                } => {
+                    write!(f, "macosx{}.{}.{}", major, minor, patch)
+                }
+                _ => unreachable!(),
             }
-            Nebulet => "nebulet",
-            Netbsd => "netbsd",
-            None_ => "none",
-            Openbsd => "openbsd",
-            Psp => "psp",
-            Redox => "redox",
-            Solaris => "solaris",
-            SolidAsp3 => "solid_asp3",
-            Tvos => "tvos",
-            Uefi => "uefi",
-            VxWorks => "vxworks",
-            Wasi => "wasi",
-            Watchos => "watchos",
-            Windows => "windows",
-        };
-        f.write_str(s)
+        }
     }
 }
 
@@ -1259,124 +1045,6 @@ impl FromStr for OperatingSystem {
             "watchos" => Watchos,
             "windows" => Windows,
             "espidf" => Espidf,
-            _ => return Err(()),
-        })
-    }
-}
-
-impl fmt::Display for Environment {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use Environment::*;
-
-        let s = match *self {
-            Unknown => "unknown",
-            AmdGiz => "amdgiz",
-            Android => "android",
-            Androideabi => "androideabi",
-            Eabi => "eabi",
-            Eabihf => "eabihf",
-            Gnu => "gnu",
-            Gnuabi64 => "gnuabi64",
-            Gnueabi => "gnueabi",
-            Gnueabihf => "gnueabihf",
-            Gnuspe => "gnuspe",
-            Gnux32 => "gnux32",
-            GnuIlp32 => "gnu_ilp32",
-            GnuLlvm => "gnullvm",
-            HermitKernel => "hermitkernel",
-            LinuxKernel => "linuxkernel",
-            Macabi => "macabi",
-            Musl => "musl",
-            Musleabi => "musleabi",
-            Musleabihf => "musleabihf",
-            Muslabi64 => "muslabi64",
-            Msvc => "msvc",
-            Newlib => "newlib",
-            Kernel => "kernel",
-            Uclibc => "uclibc",
-            Uclibceabi => "uclibceabi",
-            Uclibceabihf => "uclibceabihf",
-            Sgx => "sgx",
-            Sim => "sim",
-            Softfloat => "softfloat",
-            Spe => "spe",
-        };
-        f.write_str(s)
-    }
-}
-
-impl FromStr for Environment {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, ()> {
-        use Environment::*;
-
-        Ok(match s {
-            "unknown" => Unknown,
-            "amdgiz" => AmdGiz,
-            "android" => Android,
-            "androideabi" => Androideabi,
-            "eabi" => Eabi,
-            "eabihf" => Eabihf,
-            "gnu" => Gnu,
-            "gnuabi64" => Gnuabi64,
-            "gnueabi" => Gnueabi,
-            "gnueabihf" => Gnueabihf,
-            "gnuspe" => Gnuspe,
-            "gnux32" => Gnux32,
-            "gnu_ilp32" => GnuIlp32,
-            "gnullvm" => GnuLlvm,
-            "hermitkernel" => HermitKernel,
-            "linuxkernel" => LinuxKernel,
-            "macabi" => Macabi,
-            "musl" => Musl,
-            "musleabi" => Musleabi,
-            "musleabihf" => Musleabihf,
-            "muslabi64" => Muslabi64,
-            "msvc" => Msvc,
-            "newlib" => Newlib,
-            "kernel" => Kernel,
-            "uclibc" => Uclibc,
-            "uclibceabi" => Uclibceabi,
-            "uclibceabihf" => Uclibceabihf,
-            "sgx" => Sgx,
-            "sim" => Sim,
-            "softfloat" => Softfloat,
-            "spe" => Spe,
-            _ => return Err(()),
-        })
-    }
-}
-
-impl fmt::Display for BinaryFormat {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use BinaryFormat::*;
-
-        let s = match *self {
-            Unknown => "unknown",
-            Elf => "elf",
-            Coff => "coff",
-            Macho => "macho",
-            Wasm => "wasm",
-            Xcoff => "xcoff",
-        };
-        f.write_str(s)
-    }
-}
-
-impl FromStr for BinaryFormat {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, ()> {
-        use BinaryFormat::*;
-
-        Ok(match s {
-            "unknown" => Unknown,
-            "elf" => Elf,
-            "coff" => Coff,
-            "macho" => Macho,
-            "wasm" => Wasm,
-            "xcoff" => Xcoff,
             _ => return Err(()),
         })
     }
