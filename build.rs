@@ -44,8 +44,9 @@ use self::targets::Vendor;
 use self::triple::Triple;
 
 fn main() {
-    let out_dir =
-        PathBuf::from(env::var("OUT_DIR").expect("The OUT_DIR environment variable must be set"));
+    let out_dir = PathBuf::from(
+        env::var_os("OUT_DIR").expect("The OUT_DIR environment variable must be set"),
+    );
     let target = env::var("TARGET").expect("The TARGET environment variable must be set");
     let triple =
         Triple::from_str(&target).unwrap_or_else(|_| panic!("Invalid target name: '{}'", target));
@@ -58,15 +59,12 @@ fn main() {
 
 fn using_1_40() -> bool {
     match (|| {
-        let stdout = match Command::new("rustc").arg("--version").output() {
-            Ok(output) => {
-                if output.status.success() {
-                    output.stdout
-                } else {
-                    return None;
-                }
-            }
-            _ => return None,
+        let rustc = env::var_os("RUSTC").unwrap();
+        let output = Command::new(rustc).arg("--version").output().ok()?;
+        let stdout = if output.status.success() {
+            output.stdout
+        } else {
+            return None;
         };
         std::str::from_utf8(&stdout)
             .ok()?
@@ -87,135 +85,88 @@ fn write_host_rs(mut out: File, triple: Triple) -> io::Result<()> {
     // doesn't print the enum name qualifier, so import them here. There
     // shouldn't be any conflicts because these enums all share a namespace
     // in the triple string format.
-    writeln!(out, "#[allow(unused_imports)]")?;
-    writeln!(out, "use crate::Aarch64Architecture::*;")?;
-    writeln!(out, "#[allow(unused_imports)]")?;
-    writeln!(out, "use crate::ArmArchitecture::*;")?;
-    writeln!(out, "#[allow(unused_imports)]")?;
-    writeln!(out, "use crate::CustomVendor;")?;
-    writeln!(out, "#[allow(unused_imports)]")?;
-    writeln!(out, "use crate::Mips32Architecture::*;")?;
-    writeln!(out, "#[allow(unused_imports)]")?;
-    writeln!(out, "use crate::Mips64Architecture::*;")?;
-    writeln!(out, "#[allow(unused_imports)]")?;
-    writeln!(out, "use crate::Riscv32Architecture::*;")?;
-    writeln!(out, "#[allow(unused_imports)]")?;
-    writeln!(out, "use crate::Riscv64Architecture::*;")?;
-    writeln!(out, "#[allow(unused_imports)]")?;
-    writeln!(out, "use crate::X86_32Architecture::*;")?;
-    writeln!(out)?;
-    writeln!(out, "/// The `Triple` of the current host.")?;
-    writeln!(out, "pub const HOST: Triple = Triple {{")?;
     writeln!(
         out,
-        "    architecture: Architecture::{:?},",
-        triple.architecture
-    )?;
-    writeln!(
-        out,
-        "    vendor: Vendor::{},",
-        vendor_display(&triple.vendor)
-    )?;
-    writeln!(
-        out,
-        "    operating_system: OperatingSystem::{:?},",
-        triple.operating_system
-    )?;
-    writeln!(
-        out,
-        "    environment: Environment::{:?},",
-        triple.environment
-    )?;
-    writeln!(
-        out,
-        "    binary_format: BinaryFormat::{:?},",
-        triple.binary_format
-    )?;
-    writeln!(out, "}};")?;
-    writeln!(out)?;
+        r#"
+#[allow(unused_imports)]
+use crate::Aarch64Architecture::*;
+#[allow(unused_imports)]
+use crate::ArmArchitecture::*;
+#[allow(unused_imports)]
+use crate::CustomVendor;
+#[allow(unused_imports)]
+use crate::Mips32Architecture::*;
+#[allow(unused_imports)]
+use crate::Mips64Architecture::*;
+#[allow(unused_imports)]
+use crate::Riscv32Architecture::*;
+#[allow(unused_imports)]
+use crate::Riscv64Architecture::*;
+#[allow(unused_imports)]
+use crate::X86_32Architecture::*;
 
-    writeln!(out, "impl Architecture {{")?;
-    writeln!(out, "    /// Return the architecture for the current host.")?;
-    writeln!(out, "    pub const fn host() -> Self {{")?;
-    writeln!(out, "        Architecture::{:?}", triple.architecture)?;
-    writeln!(out, "    }}")?;
-    writeln!(out, "}}")?;
-    writeln!(out)?;
+/// The `Triple` of the current host.
+pub const HOST: Triple = Triple {{
+    architecture: Architecture::{architecture:?},
+    vendor: Vendor::{vendor},
+    operating_system: OperatingSystem::{operating_system:?},
+    environment: Environment::{environment:?},
+    binary_format: BinaryFormat::{binary_format:?},
+}};
 
-    writeln!(out, "impl Vendor {{")?;
-    writeln!(out, "    /// Return the vendor for the current host.")?;
-    writeln!(out, "    pub const fn host() -> Self {{")?;
-    writeln!(out, "        Vendor::{}", vendor_display(&triple.vendor))?;
-    writeln!(out, "    }}")?;
-    writeln!(out, "}}")?;
-    writeln!(out)?;
+impl Architecture {{
+    /// Return the architecture for the current host.
+    pub const fn host() -> Self {{
+        Architecture::{architecture:?}
+    }}
+}}
 
-    writeln!(out, "impl OperatingSystem {{")?;
-    writeln!(
-        out,
-        "    /// Return the operating system for the current host."
-    )?;
-    writeln!(out, "    pub const fn host() -> Self {{")?;
-    writeln!(
-        out,
-        "        OperatingSystem::{:?}",
-        triple.operating_system
-    )?;
-    writeln!(out, "    }}")?;
-    writeln!(out, "}}")?;
-    writeln!(out)?;
+impl Vendor {{
+    /// Return the vendor for the current host.
+    pub const fn host() -> Self {{
+        Vendor::{vendor}
+    }}
+}}
 
-    writeln!(out, "impl Environment {{")?;
-    writeln!(out, "    /// Return the environment for the current host.")?;
-    writeln!(out, "    pub const fn host() -> Self {{")?;
-    writeln!(out, "        Environment::{:?}", triple.environment)?;
-    writeln!(out, "    }}")?;
-    writeln!(out, "}}")?;
-    writeln!(out)?;
+impl OperatingSystem {{
+    /// Return the operating system for the current host.
+    pub const fn host() -> Self {{
+        OperatingSystem::{operating_system:?}
+    }}
+}}
 
-    writeln!(out, "impl BinaryFormat {{")?;
-    writeln!(
-        out,
-        "    /// Return the binary format for the current host."
-    )?;
-    writeln!(out, "    pub const fn host() -> Self {{")?;
-    writeln!(out, "        BinaryFormat::{:?}", triple.binary_format)?;
-    writeln!(out, "    }}")?;
-    writeln!(out, "}}")?;
-    writeln!(out)?;
+impl Environment {{
+    /// Return the environment for the current host.
+    pub const fn host() -> Self {{
+        Environment::{environment:?}
+    }}
+}}
 
-    writeln!(out, "impl Triple {{")?;
-    writeln!(out, "    /// Return the triple for the current host.")?;
-    writeln!(out, "    pub const fn host() -> Self {{")?;
-    writeln!(out, "        Self {{")?;
-    writeln!(
-        out,
-        "            architecture: Architecture::{:?},",
-        triple.architecture
+impl BinaryFormat {{
+    /// Return the binary format for the current host.
+    pub const fn host() -> Self {{
+        BinaryFormat::{binary_format:?}
+    }}
+}}
+
+impl Triple {{
+    /// Return the triple for the current host.
+    pub const fn host() -> Self {{
+        Self {{
+            architecture: Architecture::{architecture:?},
+            vendor: Vendor::{vendor},
+            operating_system: OperatingSystem::{operating_system:?},
+            environment: Environment::{environment:?},
+            binary_format: BinaryFormat::{binary_format:?},
+        }}
+    }}
+}}"#,
+        architecture = triple.architecture,
+        vendor = vendor_display(&triple.vendor),
+        operating_system = triple.operating_system,
+        environment = triple.environment,
+        binary_format = triple.binary_format,
     )?;
-    writeln!(
-        out,
-        "            vendor: Vendor::{},",
-        vendor_display(&triple.vendor)
-    )?;
-    writeln!(
-        out,
-        "            operating_system: OperatingSystem::{:?},",
-        triple.operating_system
-    )?;
-    writeln!(
-        out,
-        "            environment: Environment::{:?},",
-        triple.environment
-    )?;
-    writeln!(
-        out,
-        "            binary_format: BinaryFormat::{:?},",
-        triple.binary_format
-    )?;
-    writeln!(out, "        }}")?;
-    writeln!(out, "    }}")?;
-    writeln!(out, "}}")?;
 
     Ok(())
 }
