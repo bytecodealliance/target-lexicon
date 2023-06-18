@@ -1,7 +1,9 @@
 // This file defines all the identifier enums and target-aware logic.
 
 use crate::triple::{Endianness, PointerWidth, Triple};
+use alloc::borrow::Cow;
 use alloc::boxed::Box;
+use alloc::format;
 use alloc::string::String;
 use core::fmt;
 use core::hash::{Hash, Hasher};
@@ -281,6 +283,56 @@ impl ArmArchitecture {
             Armeb | Armebv7r | Thumbeb => Endianness::Big,
         }
     }
+
+    /// Convert into a string
+    pub fn into_str(self) -> Cow<'static, str> {
+        use ArmArchitecture::*;
+
+        match self {
+            Arm => Cow::Borrowed("arm"),
+            Armeb => Cow::Borrowed("armeb"),
+            Armv4 => Cow::Borrowed("armv4"),
+            Armv4t => Cow::Borrowed("armv4t"),
+            Armv5t => Cow::Borrowed("armv5t"),
+            Armv5te => Cow::Borrowed("armv5te"),
+            Armv5tej => Cow::Borrowed("armv5tej"),
+            Armv6 => Cow::Borrowed("armv6"),
+            Armv6j => Cow::Borrowed("armv6j"),
+            Armv6k => Cow::Borrowed("armv6k"),
+            Armv6z => Cow::Borrowed("armv6z"),
+            Armv6kz => Cow::Borrowed("armv6kz"),
+            Armv6t2 => Cow::Borrowed("armv6t2"),
+            Armv6m => Cow::Borrowed("armv6m"),
+            Armv7 => Cow::Borrowed("armv7"),
+            Armv7a => Cow::Borrowed("armv7a"),
+            Armv7k => Cow::Borrowed("armv7k"),
+            Armv7ve => Cow::Borrowed("armv7ve"),
+            Armv7m => Cow::Borrowed("armv7m"),
+            Armv7r => Cow::Borrowed("armv7r"),
+            Armv7s => Cow::Borrowed("armv7s"),
+            Armv8 => Cow::Borrowed("armv8"),
+            Armv8a => Cow::Borrowed("armv8a"),
+            Armv8_1a => Cow::Borrowed("armv8.1a"),
+            Armv8_2a => Cow::Borrowed("armv8.2a"),
+            Armv8_3a => Cow::Borrowed("armv8.3a"),
+            Armv8_4a => Cow::Borrowed("armv8.4a"),
+            Armv8_5a => Cow::Borrowed("armv8.5a"),
+            Armv8mBase => Cow::Borrowed("armv8m.base"),
+            Armv8mMain => Cow::Borrowed("armv8m.main"),
+            Armv8r => Cow::Borrowed("armv8r"),
+            Thumbeb => Cow::Borrowed("thumbeb"),
+            Thumbv4t => Cow::Borrowed("thumbv4t"),
+            Thumbv5te => Cow::Borrowed("thumbv5te"),
+            Thumbv6m => Cow::Borrowed("thumbv6m"),
+            Thumbv7a => Cow::Borrowed("thumbv7a"),
+            Thumbv7em => Cow::Borrowed("thumbv7em"),
+            Thumbv7m => Cow::Borrowed("thumbv7m"),
+            Thumbv7neon => Cow::Borrowed("thumbv7neon"),
+            Thumbv8mBase => Cow::Borrowed("thumbv8m.base"),
+            Thumbv8mMain => Cow::Borrowed("thumbv8m.main"),
+            Armebv7r => Cow::Borrowed("armebv7r"),
+        }
+    }
 }
 
 impl Aarch64Architecture {
@@ -309,6 +361,16 @@ impl Aarch64Architecture {
             Aarch64Architecture::Aarch64be => Endianness::Big,
         }
     }
+
+    /// Convert into a string
+    pub fn into_str(self) -> Cow<'static, str> {
+        use Aarch64Architecture::*;
+
+        match self {
+            Aarch64 => Cow::Borrowed("aarch64"),
+            Aarch64be => Cow::Borrowed("aarch64_be"),
+        }
+    }
 }
 
 #[cfg_attr(feature = "rust_1_40", non_exhaustive)]
@@ -317,6 +379,18 @@ impl Aarch64Architecture {
 pub enum CleverArchitecture {
     Clever,
     Clever1_0,
+}
+
+impl CleverArchitecture {
+    /// Convert into a string
+    pub fn into_str(self) -> Cow<'static, str> {
+        use CleverArchitecture::*;
+
+        match self {
+            Clever => Cow::Borrowed("clever"),
+            Clever1_0 => Cow::Borrowed("clever1.0"),
+        }
+    }
 }
 
 /// An enum for all 32-bit RISC-V architectures.
@@ -332,6 +406,22 @@ pub enum Riscv32Architecture {
     Riscv32imc,
 }
 
+impl Riscv32Architecture {
+    /// Convert into a string
+    pub fn into_str(self) -> Cow<'static, str> {
+        use Riscv32Architecture::*;
+
+        match self {
+            Riscv32 => Cow::Borrowed("riscv32"),
+            Riscv32gc => Cow::Borrowed("riscv32gc"),
+            Riscv32i => Cow::Borrowed("riscv32i"),
+            Riscv32im => Cow::Borrowed("riscv32im"),
+            Riscv32imac => Cow::Borrowed("riscv32imac"),
+            Riscv32imc => Cow::Borrowed("riscv32imc"),
+        }
+    }
+}
+
 /// An enum for all 64-bit RISC-V architectures.
 #[cfg_attr(feature = "rust_1_40", non_exhaustive)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
@@ -342,6 +432,19 @@ pub enum Riscv64Architecture {
     Riscv64imac,
 }
 
+impl Riscv64Architecture {
+    /// Convert into a string
+    pub fn into_str(self) -> Cow<'static, str> {
+        use Riscv64Architecture::*;
+
+        match self {
+            Riscv64 => Cow::Borrowed("riscv64"),
+            Riscv64gc => Cow::Borrowed("riscv64gc"),
+            Riscv64imac => Cow::Borrowed("riscv64imac"),
+        }
+    }
+}
+
 /// An enum for all 32-bit x86 architectures.
 #[cfg_attr(feature = "rust_1_40", non_exhaustive)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
@@ -350,6 +453,19 @@ pub enum X86_32Architecture {
     I386,
     I586,
     I686,
+}
+
+impl X86_32Architecture {
+    /// Convert into a string
+    pub fn into_str(self) -> Cow<'static, str> {
+        use X86_32Architecture::*;
+
+        match self {
+            I386 => Cow::Borrowed("i386"),
+            I586 => Cow::Borrowed("i586"),
+            I686 => Cow::Borrowed("i686"),
+        }
+    }
 }
 
 /// An enum for all 32-bit MIPS architectures (not just "MIPS32").
@@ -363,6 +479,20 @@ pub enum Mips32Architecture {
     Mipsisa32r6el,
 }
 
+impl Mips32Architecture {
+    /// Convert into a string
+    pub fn into_str(self) -> Cow<'static, str> {
+        use Mips32Architecture::*;
+
+        match self {
+            Mips => Cow::Borrowed("mips"),
+            Mipsel => Cow::Borrowed("mipsel"),
+            Mipsisa32r6 => Cow::Borrowed("mipsisa32r6"),
+            Mipsisa32r6el => Cow::Borrowed("mipsisa32r6el"),
+        }
+    }
+}
+
 /// An enum for all 64-bit MIPS architectures (not just "MIPS64").
 #[cfg_attr(feature = "rust_1_40", non_exhaustive)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
@@ -372,6 +502,20 @@ pub enum Mips64Architecture {
     Mips64el,
     Mipsisa64r6,
     Mipsisa64r6el,
+}
+
+impl Mips64Architecture {
+    /// Convert into a string
+    pub fn into_str(self) -> Cow<'static, str> {
+        use Mips64Architecture::*;
+
+        match self {
+            Mips64 => Cow::Borrowed("mips64"),
+            Mips64el => Cow::Borrowed("mips64el"),
+            Mipsisa64r6 => Cow::Borrowed("mipsisa64r6"),
+            Mipsisa64r6el => Cow::Borrowed("mipsisa64r6el"),
+        }
+    }
 }
 
 /// A string for a `Vendor::Custom` that can either be used in `const`
@@ -439,6 +583,32 @@ pub enum Vendor {
     Custom(CustomVendor),
 }
 
+impl Vendor {
+    /// Extracts a string slice.
+    pub fn as_str(&self) -> &str {
+        use Vendor::*;
+
+        match self {
+            Unknown => "unknown",
+            Amd => "amd",
+            Apple => "apple",
+            Espressif => "espressif",
+            Experimental => "experimental",
+            Fortanix => "fortanix",
+            Ibm => "ibm",
+            Kmc => "kmc",
+            Nintendo => "nintendo",
+            Nvidia => "nvidia",
+            Pc => "pc",
+            Rumprun => "rumprun",
+            Sun => "sun",
+            Uwp => "uwp",
+            Wrs => "wrs",
+            Custom(name) => name.as_str(),
+        }
+    }
+}
+
 /// The "operating system" field, which sometimes implies an environment, and
 /// sometimes isn't an actual operating system.
 #[cfg_attr(feature = "rust_1_40", non_exhaustive)]
@@ -481,6 +651,54 @@ pub enum OperatingSystem {
     Windows,
 }
 
+impl OperatingSystem {
+    /// Convert into a string
+    pub fn into_str(self) -> Cow<'static, str> {
+        use OperatingSystem::*;
+
+        match self {
+            Unknown => Cow::Borrowed("unknown"),
+            Aix => Cow::Borrowed("aix"),
+            AmdHsa => Cow::Borrowed("amdhsa"),
+            Bitrig => Cow::Borrowed("bitrig"),
+            Cloudabi => Cow::Borrowed("cloudabi"),
+            Cuda => Cow::Borrowed("cuda"),
+            Darwin => Cow::Borrowed("darwin"),
+            Dragonfly => Cow::Borrowed("dragonfly"),
+            Emscripten => Cow::Borrowed("emscripten"),
+            Espidf => Cow::Borrowed("espidf"),
+            Freebsd => Cow::Borrowed("freebsd"),
+            Fuchsia => Cow::Borrowed("fuchsia"),
+            Haiku => Cow::Borrowed("haiku"),
+            Hermit => Cow::Borrowed("hermit"),
+            Horizon => Cow::Borrowed("horizon"),
+            Illumos => Cow::Borrowed("illumos"),
+            Ios => Cow::Borrowed("ios"),
+            L4re => Cow::Borrowed("l4re"),
+            Linux => Cow::Borrowed("linux"),
+            MacOSX {
+                major,
+                minor,
+                patch,
+            } => Cow::Owned(format!("macosx{}.{}.{}", major, minor, patch)),
+            Nebulet => Cow::Borrowed("nebulet"),
+            Netbsd => Cow::Borrowed("netbsd"),
+            None_ => Cow::Borrowed("none"),
+            Openbsd => Cow::Borrowed("openbsd"),
+            Psp => Cow::Borrowed("psp"),
+            Redox => Cow::Borrowed("redox"),
+            Solaris => Cow::Borrowed("solaris"),
+            SolidAsp3 => Cow::Borrowed("solid_asp3"),
+            Tvos => Cow::Borrowed("tvos"),
+            Uefi => Cow::Borrowed("uefi"),
+            VxWorks => Cow::Borrowed("vxworks"),
+            Wasi => Cow::Borrowed("wasi"),
+            Watchos => Cow::Borrowed("watchos"),
+            Windows => Cow::Borrowed("windows"),
+        }
+    }
+}
+
 /// The "environment" field, which specifies an ABI environment on top of the
 /// operating system. In many configurations, this field is omitted, and the
 /// environment is implied by the operating system.
@@ -521,6 +739,47 @@ pub enum Environment {
     Spe,
 }
 
+impl Environment {
+    /// Convert into a string
+    pub fn into_str(self) -> Cow<'static, str> {
+        use Environment::*;
+
+        match self {
+            Unknown => Cow::Borrowed("unknown"),
+            AmdGiz => Cow::Borrowed("amdgiz"),
+            Android => Cow::Borrowed("android"),
+            Androideabi => Cow::Borrowed("androideabi"),
+            Eabi => Cow::Borrowed("eabi"),
+            Eabihf => Cow::Borrowed("eabihf"),
+            Gnu => Cow::Borrowed("gnu"),
+            Gnuabi64 => Cow::Borrowed("gnuabi64"),
+            Gnueabi => Cow::Borrowed("gnueabi"),
+            Gnueabihf => Cow::Borrowed("gnueabihf"),
+            Gnuspe => Cow::Borrowed("gnuspe"),
+            Gnux32 => Cow::Borrowed("gnux32"),
+            GnuIlp32 => Cow::Borrowed("gnu_ilp32"),
+            GnuLlvm => Cow::Borrowed("gnullvm"),
+            HermitKernel => Cow::Borrowed("hermitkernel"),
+            LinuxKernel => Cow::Borrowed("linuxkernel"),
+            Macabi => Cow::Borrowed("macabi"),
+            Musl => Cow::Borrowed("musl"),
+            Musleabi => Cow::Borrowed("musleabi"),
+            Musleabihf => Cow::Borrowed("musleabihf"),
+            Muslabi64 => Cow::Borrowed("muslabi64"),
+            Msvc => Cow::Borrowed("msvc"),
+            Newlib => Cow::Borrowed("newlib"),
+            Kernel => Cow::Borrowed("kernel"),
+            Uclibc => Cow::Borrowed("uclibc"),
+            Uclibceabi => Cow::Borrowed("uclibceabi"),
+            Uclibceabihf => Cow::Borrowed("uclibceabihf"),
+            Sgx => Cow::Borrowed("sgx"),
+            Sim => Cow::Borrowed("sim"),
+            Softfloat => Cow::Borrowed("softfloat"),
+            Spe => Cow::Borrowed("spe"),
+        }
+    }
+}
+
 /// The "binary format" field, which is usually omitted, and the binary format
 /// is implied by the other fields.
 #[cfg_attr(feature = "rust_1_40", non_exhaustive)]
@@ -533,6 +792,22 @@ pub enum BinaryFormat {
     Macho,
     Wasm,
     Xcoff,
+}
+
+impl BinaryFormat {
+    /// Convert into a string
+    pub fn into_str(self) -> Cow<'static, str> {
+        use BinaryFormat::*;
+
+        match self {
+            Unknown => Cow::Borrowed("unknown"),
+            Elf => Cow::Borrowed("elf"),
+            Coff => Cow::Borrowed("coff"),
+            Macho => Cow::Borrowed("macho"),
+            Wasm => Cow::Borrowed("wasm"),
+            Xcoff => Cow::Borrowed("xcoff"),
+        }
+    }
 }
 
 impl Architecture {
@@ -627,6 +902,44 @@ impl Architecture {
             _ => false,
         }
     }
+
+    /// Convert into a string
+    pub fn into_str(self) -> Cow<'static, str> {
+        use Architecture::*;
+
+        match self {
+            Arm(arm) => arm.into_str(),
+            Aarch64(aarch) => aarch.into_str(),
+            Unknown => Cow::Borrowed("unknown"),
+            AmdGcn => Cow::Borrowed("amdgcn"),
+            Asmjs => Cow::Borrowed("asmjs"),
+            Avr => Cow::Borrowed("avr"),
+            Bpfeb => Cow::Borrowed("bpfeb"),
+            Bpfel => Cow::Borrowed("bpfel"),
+            Hexagon => Cow::Borrowed("hexagon"),
+            X86_32(x86_32) => x86_32.into_str(),
+            LoongArch64 => Cow::Borrowed("loongarch64"),
+            M68k => Cow::Borrowed("m68k"),
+            Mips32(mips32) => mips32.into_str(),
+            Mips64(mips64) => mips64.into_str(),
+            Msp430 => Cow::Borrowed("msp430"),
+            Nvptx64 => Cow::Borrowed("nvptx64"),
+            Powerpc => Cow::Borrowed("powerpc"),
+            Powerpc64 => Cow::Borrowed("powerpc64"),
+            Powerpc64le => Cow::Borrowed("powerpc64le"),
+            Riscv32(riscv32) => riscv32.into_str(),
+            Riscv64(riscv64) => riscv64.into_str(),
+            S390x => Cow::Borrowed("s390x"),
+            Sparc => Cow::Borrowed("sparc"),
+            Sparc64 => Cow::Borrowed("sparc64"),
+            Sparcv9 => Cow::Borrowed("sparcv9"),
+            Wasm32 => Cow::Borrowed("wasm32"),
+            Wasm64 => Cow::Borrowed("wasm64"),
+            X86_64 => Cow::Borrowed("x86_64"),
+            XTensa => Cow::Borrowed("xtensa"),
+            Clever(ver) => ver.into_str(),
+        }
+    }
 }
 
 /// Return the binary format implied by this target triple, ignoring its
@@ -658,177 +971,55 @@ pub(crate) fn default_binary_format(triple: &Triple) -> BinaryFormat {
 
 impl fmt::Display for ArmArchitecture {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use ArmArchitecture::*;
-
-        let s = match *self {
-            Arm => "arm",
-            Armeb => "armeb",
-            Armv4 => "armv4",
-            Armv4t => "armv4t",
-            Armv5t => "armv5t",
-            Armv5te => "armv5te",
-            Armv5tej => "armv5tej",
-            Armv6 => "armv6",
-            Armv6j => "armv6j",
-            Armv6k => "armv6k",
-            Armv6z => "armv6z",
-            Armv6kz => "armv6kz",
-            Armv6t2 => "armv6t2",
-            Armv6m => "armv6m",
-            Armv7 => "armv7",
-            Armv7a => "armv7a",
-            Armv7k => "armv7k",
-            Armv7ve => "armv7ve",
-            Armv7m => "armv7m",
-            Armv7r => "armv7r",
-            Armv7s => "armv7s",
-            Armv8 => "armv8",
-            Armv8a => "armv8a",
-            Armv8_1a => "armv8.1a",
-            Armv8_2a => "armv8.2a",
-            Armv8_3a => "armv8.3a",
-            Armv8_4a => "armv8.4a",
-            Armv8_5a => "armv8.5a",
-            Armv8mBase => "armv8m.base",
-            Armv8mMain => "armv8m.main",
-            Armv8r => "armv8r",
-            Thumbeb => "thumbeb",
-            Thumbv4t => "thumbv4t",
-            Thumbv5te => "thumbv5te",
-            Thumbv6m => "thumbv6m",
-            Thumbv7a => "thumbv7a",
-            Thumbv7em => "thumbv7em",
-            Thumbv7m => "thumbv7m",
-            Thumbv7neon => "thumbv7neon",
-            Thumbv8mBase => "thumbv8m.base",
-            Thumbv8mMain => "thumbv8m.main",
-            Armebv7r => "armebv7r",
-        };
-        f.write_str(s)
+        f.write_str(&self.into_str())
     }
 }
 
 impl fmt::Display for Aarch64Architecture {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let s = match *self {
-            Aarch64Architecture::Aarch64 => "aarch64",
-            Aarch64Architecture::Aarch64be => "aarch64_be",
-        };
-        f.write_str(s)
+        f.write_str(&self.into_str())
     }
 }
 
 impl fmt::Display for CleverArchitecture {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            CleverArchitecture::Clever => f.write_str("clever"),
-            CleverArchitecture::Clever1_0 => f.write_str("clever1.0"),
-        }
+        f.write_str(&self.into_str())
     }
 }
 
 impl fmt::Display for Riscv32Architecture {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use Riscv32Architecture::*;
-
-        let s = match *self {
-            Riscv32 => "riscv32",
-            Riscv32gc => "riscv32gc",
-            Riscv32i => "riscv32i",
-            Riscv32im => "riscv32im",
-            Riscv32imac => "riscv32imac",
-            Riscv32imc => "riscv32imc",
-        };
-        f.write_str(s)
+        f.write_str(&self.into_str())
     }
 }
 
 impl fmt::Display for Riscv64Architecture {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let s = match *self {
-            Riscv64Architecture::Riscv64 => "riscv64",
-            Riscv64Architecture::Riscv64gc => "riscv64gc",
-            Riscv64Architecture::Riscv64imac => "riscv64imac",
-        };
-        f.write_str(s)
+        f.write_str(&self.into_str())
     }
 }
 
 impl fmt::Display for X86_32Architecture {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let s = match *self {
-            X86_32Architecture::I386 => "i386",
-            X86_32Architecture::I586 => "i586",
-            X86_32Architecture::I686 => "i686",
-        };
-        f.write_str(s)
+        f.write_str(&self.into_str())
     }
 }
 
 impl fmt::Display for Mips32Architecture {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use Mips32Architecture::*;
-
-        let s = match *self {
-            Mips => "mips",
-            Mipsel => "mipsel",
-            Mipsisa32r6 => "mipsisa32r6",
-            Mipsisa32r6el => "mipsisa32r6el",
-        };
-        f.write_str(s)
+        f.write_str(&self.into_str())
     }
 }
 
 impl fmt::Display for Mips64Architecture {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use Mips64Architecture::*;
-
-        let s = match *self {
-            Mips64 => "mips64",
-            Mips64el => "mips64el",
-            Mipsisa64r6 => "mipsisa64r6",
-            Mipsisa64r6el => "mipsisa64r6el",
-        };
-        f.write_str(s)
+        f.write_str(&self.into_str())
     }
 }
 
 impl fmt::Display for Architecture {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use Architecture::*;
-
-        match *self {
-            Arm(arm) => arm.fmt(f),
-            Aarch64(aarch) => aarch.fmt(f),
-            Unknown => f.write_str("unknown"),
-            AmdGcn => f.write_str("amdgcn"),
-            Asmjs => f.write_str("asmjs"),
-            Avr => f.write_str("avr"),
-            Bpfeb => f.write_str("bpfeb"),
-            Bpfel => f.write_str("bpfel"),
-            Hexagon => f.write_str("hexagon"),
-            X86_32(x86_32) => x86_32.fmt(f),
-            LoongArch64 => f.write_str("loongarch64"),
-            M68k => f.write_str("m68k"),
-            Mips32(mips32) => mips32.fmt(f),
-            Mips64(mips64) => mips64.fmt(f),
-            Msp430 => f.write_str("msp430"),
-            Nvptx64 => f.write_str("nvptx64"),
-            Powerpc => f.write_str("powerpc"),
-            Powerpc64 => f.write_str("powerpc64"),
-            Powerpc64le => f.write_str("powerpc64le"),
-            Riscv32(riscv32) => riscv32.fmt(f),
-            Riscv64(riscv64) => riscv64.fmt(f),
-            S390x => f.write_str("s390x"),
-            Sparc => f.write_str("sparc"),
-            Sparc64 => f.write_str("sparc64"),
-            Sparcv9 => f.write_str("sparcv9"),
-            Wasm32 => f.write_str("wasm32"),
-            Wasm64 => f.write_str("wasm64"),
-            X86_64 => f.write_str("x86_64"),
-            XTensa => f.write_str("xtensa"),
-            Clever(ver) => ver.fmt(f),
-        }
+        f.write_str(&self.into_str())
     }
 }
 
@@ -1048,27 +1239,7 @@ impl FromStr for Architecture {
 
 impl fmt::Display for Vendor {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use Vendor::*;
-
-        let s = match *self {
-            Unknown => "unknown",
-            Amd => "amd",
-            Apple => "apple",
-            Espressif => "espressif",
-            Experimental => "experimental",
-            Fortanix => "fortanix",
-            Ibm => "ibm",
-            Kmc => "kmc",
-            Nintendo => "nintendo",
-            Nvidia => "nvidia",
-            Pc => "pc",
-            Rumprun => "rumprun",
-            Sun => "sun",
-            Uwp => "uwp",
-            Wrs => "wrs",
-            Custom(ref name) => name.as_str(),
-        };
-        f.write_str(s)
+        f.write_str(self.as_str())
     }
 }
 
@@ -1142,49 +1313,14 @@ impl fmt::Display for OperatingSystem {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         use OperatingSystem::*;
 
-        let s = match *self {
-            Unknown => "unknown",
-            Aix => "aix",
-            AmdHsa => "amdhsa",
-            Bitrig => "bitrig",
-            Cloudabi => "cloudabi",
-            Cuda => "cuda",
-            Darwin => "darwin",
-            Dragonfly => "dragonfly",
-            Emscripten => "emscripten",
-            Espidf => "espidf",
-            Freebsd => "freebsd",
-            Fuchsia => "fuchsia",
-            Haiku => "haiku",
-            Hermit => "hermit",
-            Horizon => "horizon",
-            Illumos => "illumos",
-            Ios => "ios",
-            L4re => "l4re",
-            Linux => "linux",
+        match *self {
             MacOSX {
                 major,
                 minor,
                 patch,
-            } => {
-                return write!(f, "macosx{}.{}.{}", major, minor, patch);
-            }
-            Nebulet => "nebulet",
-            Netbsd => "netbsd",
-            None_ => "none",
-            Openbsd => "openbsd",
-            Psp => "psp",
-            Redox => "redox",
-            Solaris => "solaris",
-            SolidAsp3 => "solid_asp3",
-            Tvos => "tvos",
-            Uefi => "uefi",
-            VxWorks => "vxworks",
-            Wasi => "wasi",
-            Watchos => "watchos",
-            Windows => "windows",
-        };
-        f.write_str(s)
+            } => write!(f, "macosx{}.{}.{}", major, minor, patch),
+            os => f.write_str(&os.into_str()),
+        }
     }
 }
 
@@ -1266,42 +1402,7 @@ impl FromStr for OperatingSystem {
 
 impl fmt::Display for Environment {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use Environment::*;
-
-        let s = match *self {
-            Unknown => "unknown",
-            AmdGiz => "amdgiz",
-            Android => "android",
-            Androideabi => "androideabi",
-            Eabi => "eabi",
-            Eabihf => "eabihf",
-            Gnu => "gnu",
-            Gnuabi64 => "gnuabi64",
-            Gnueabi => "gnueabi",
-            Gnueabihf => "gnueabihf",
-            Gnuspe => "gnuspe",
-            Gnux32 => "gnux32",
-            GnuIlp32 => "gnu_ilp32",
-            GnuLlvm => "gnullvm",
-            HermitKernel => "hermitkernel",
-            LinuxKernel => "linuxkernel",
-            Macabi => "macabi",
-            Musl => "musl",
-            Musleabi => "musleabi",
-            Musleabihf => "musleabihf",
-            Muslabi64 => "muslabi64",
-            Msvc => "msvc",
-            Newlib => "newlib",
-            Kernel => "kernel",
-            Uclibc => "uclibc",
-            Uclibceabi => "uclibceabi",
-            Uclibceabihf => "uclibceabihf",
-            Sgx => "sgx",
-            Sim => "sim",
-            Softfloat => "softfloat",
-            Spe => "spe",
-        };
-        f.write_str(s)
+        f.write_str(&self.into_str())
     }
 }
 
@@ -1350,17 +1451,7 @@ impl FromStr for Environment {
 
 impl fmt::Display for BinaryFormat {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use BinaryFormat::*;
-
-        let s = match *self {
-            Unknown => "unknown",
-            Elf => "elf",
-            Coff => "coff",
-            Macho => "macho",
-            Wasm => "wasm",
-            Xcoff => "xcoff",
-        };
-        f.write_str(s)
+        f.write_str(&self.into_str())
     }
 }
 
