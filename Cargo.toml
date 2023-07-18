@@ -1,6 +1,6 @@
 [package]
 name = "target-lexicon"
-version = "0.12.9"
+version = "0.12.10"
 authors = ["Dan Gohman <sunfish@mozilla.com>"]
 description = "Targeting utilities for compilers and related tools"
 documentation = "https://docs.rs/target-lexicon/"
