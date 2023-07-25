@@ -43,6 +43,8 @@ pub enum Architecture {
     Wasm32,
     Wasm64,
     X86_64,
+    /// x86_64 target that only supports Haswell-compatible Intel chips.
+    X86_64h,
     XTensa,
     Clever(CleverArchitecture),
 }
@@ -839,6 +841,7 @@ impl Architecture {
             | Wasm32
             | Wasm64
             | X86_64
+            | X86_64h
             | XTensa
             | Clever(_) => Ok(Endianness::Little),
             Bpfeb
@@ -883,6 +886,7 @@ impl Architecture {
             | Powerpc64le
             | Riscv64(_)
             | X86_64
+            | X86_64h
             | Mips64(_)
             | Nvptx64
             | Powerpc64
@@ -936,6 +940,7 @@ impl Architecture {
             Wasm32 => Cow::Borrowed("wasm32"),
             Wasm64 => Cow::Borrowed("wasm64"),
             X86_64 => Cow::Borrowed("x86_64"),
+            X86_64h => Cow::Borrowed("x86_64h"),
             XTensa => Cow::Borrowed("xtensa"),
             Clever(ver) => ver.into_str(),
         }
@@ -1211,6 +1216,7 @@ impl FromStr for Architecture {
             "wasm32" => Wasm32,
             "wasm64" => Wasm64,
             "x86_64" => X86_64,
+            "x86_64h" => X86_64h,
             "xtensa" => XTensa,
             _ => {
                 if let Ok(arm) = ArmArchitecture::from_str(s) {
@@ -1663,6 +1669,7 @@ mod tests {
             "wasm64-unknown-unknown",
             "wasm64-wasi",
             "x86_64-apple-darwin",
+            "x86_64h-apple-darwin",
             "x86_64-apple-ios",
             "x86_64-apple-ios-macabi",
             "x86_64-apple-tvos",
