@@ -47,6 +47,11 @@ pub enum Architecture {
     X86_64h,
     XTensa,
     Clever(CleverArchitecture),
+    /// A software machine that produces zero-knowledge proofs of the execution.
+    ///
+    /// See https://wiki.polygon.technology/docs/category/zk-assembly/
+    #[cfg(feature = "arch_zkasm")]
+    ZkAsm,
 }
 
 #[cfg_attr(feature = "rust_1_40", non_exhaustive)]
@@ -856,6 +861,8 @@ impl Architecture {
             | Sparc
             | Sparc64
             | Sparcv9 => Ok(Endianness::Big),
+            #[cfg(feature="arch_zkasm")]
+            ZkAsm => Ok(Endianness::Big),
         }
 
     }
@@ -896,6 +903,8 @@ impl Architecture {
             | LoongArch64
             | Wasm64
             | Clever(_) => Ok(PointerWidth::U64),
+            #[cfg(feature="arch_zkasm")]
+            ZkAsm => Ok(PointerWidth::U64),
         }
     }
 
@@ -943,6 +952,8 @@ impl Architecture {
             X86_64h => Cow::Borrowed("x86_64h"),
             XTensa => Cow::Borrowed("xtensa"),
             Clever(ver) => ver.into_str(),
+            #[cfg(feature = "arch_zkasm")]
+            ZkAsm => Cow::Borrowed("zkasm"),
         }
     }
 }
@@ -1218,6 +1229,8 @@ impl FromStr for Architecture {
             "x86_64" => X86_64,
             "x86_64h" => X86_64h,
             "xtensa" => XTensa,
+            #[cfg(feature = "arch_zkasm")]
+            "zkasm" => ZkAsm,
             _ => {
                 if let Ok(arm) = ArmArchitecture::from_str(s) {
                     Arm(arm)
@@ -1709,6 +1722,8 @@ mod tests {
             "x86_64-wrs-vxworks",
             "xtensa-esp32-espidf",
             "clever-unknown-elf",
+            #[cfg(feature = "arch_zkasm")]
+            "zkasm-unknown-unknown",
         ];
 
         for target in targets.iter() {
