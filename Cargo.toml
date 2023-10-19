@@ -21,6 +21,8 @@ serde_json = "1.0"
 default = []
 serde_support = ["serde", "std"]
 std = []
+# Enable (unstable) support for the zkasm architecture.
+arch_zkasm = []
 
 [badges]
 maintenance = { status = "passively-maintained" }
