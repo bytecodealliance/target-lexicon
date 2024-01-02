@@ -106,7 +106,15 @@ impl Triple {
     }
 
     /// Return the pointer width of this target's architecture.
+    ///
+    /// This function is aware of x32 and ilp32 ABIs on 64-bit architectures.
     pub fn pointer_width(&self) -> Result<PointerWidth, ()> {
+        // Some ABIs have a different pointer width than the CPU architecture.
+        match self.environment {
+            Environment::Gnux32 | Environment::GnuIlp32 => return Ok(PointerWidth::U32),
+            _ => {}
+        }
+
         self.architecture.pointer_width()
     }
 
@@ -485,6 +493,34 @@ mod tests {
                     .default_calling_convention()
                     .unwrap(),
                 CallingConvention::SystemV
+            );
+        }
+    }
+
+    #[test]
+    fn p32_abi() {
+        // Test that special 32-bit pointer ABIs on 64-bit architectures are
+        // reported as having 32-bit pointers.
+        for triple in &[
+            "x86_64-unknown-linux-gnux32",
+            "aarch64_be-unknown-linux-gnu_ilp32",
+            "aarch64-unknown-linux-gnu_ilp32",
+        ] {
+            assert_eq!(
+                Triple::from_str(triple).unwrap().pointer_width().unwrap(),
+                PointerWidth::U32
+            );
+        }
+
+        // Test that the corresponding ABIs have 64-bit pointers.
+        for triple in &[
+            "x86_64-unknown-linux-gnu",
+            "aarch64_be-unknown-linux-gnu",
+            "aarch64-unknown-linux-gnu",
+        ] {
+            assert_eq!(
+                Triple::from_str(triple).unwrap().pointer_width().unwrap(),
+                PointerWidth::U64
             );
         }
     }
