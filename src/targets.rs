@@ -657,6 +657,8 @@ pub enum OperatingSystem {
     Uefi,
     VxWorks,
     Wasi,
+    WasiP1,
+    WasiP2,
     Watchos,
     Windows,
 }
@@ -703,6 +705,8 @@ impl OperatingSystem {
             Uefi => Cow::Borrowed("uefi"),
             VxWorks => Cow::Borrowed("vxworks"),
             Wasi => Cow::Borrowed("wasi"),
+            WasiP1 => Cow::Borrowed("wasip1"),
+            WasiP2 => Cow::Borrowed("wasip2"),
             Watchos => Cow::Borrowed("watchos"),
             Windows => Cow::Borrowed("windows"),
         }
@@ -747,6 +751,7 @@ pub enum Environment {
     Sim,
     Softfloat,
     Spe,
+    Threads,
 }
 
 impl Environment {
@@ -786,6 +791,7 @@ impl Environment {
             Sim => Cow::Borrowed("sim"),
             Softfloat => Cow::Borrowed("softfloat"),
             Spe => Cow::Borrowed("spe"),
+            Threads => Cow::Borrowed("threads"),
         }
     }
 }
@@ -1417,6 +1423,8 @@ impl FromStr for OperatingSystem {
             "uefi" => Uefi,
             "vxworks" => VxWorks,
             "wasi" => Wasi,
+            "wasip1" => WasiP1,
+            "wasip2" => WasiP2,
             "watchos" => Watchos,
             "windows" => Windows,
             "espidf" => Espidf,
@@ -1469,6 +1477,7 @@ impl FromStr for Environment {
             "sim" => Sim,
             "softfloat" => Softfloat,
             "spe" => Spe,
+            "threads" => Threads,
             _ => return Err(()),
         })
     }
@@ -1685,6 +1694,9 @@ mod tests {
             "wasm32-unknown-emscripten",
             "wasm32-unknown-unknown",
             "wasm32-wasi",
+            "wasm32-wasip1-threads",
+            "wasm32-wasip1",
+            "wasm32-wasip2",
             "wasm64-unknown-unknown",
             "wasm64-wasi",
             "x86_64-apple-darwin",
