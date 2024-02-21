@@ -217,6 +217,8 @@ impl fmt::Display for Triple {
                     || self.environment == Environment::Kernel))
                 || self.operating_system == OperatingSystem::Fuchsia
                 || self.operating_system == OperatingSystem::Wasi
+                || self.operating_system == OperatingSystem::WasiP1
+                || self.operating_system == OperatingSystem::WasiP2
                 || (self.operating_system == OperatingSystem::None_
                     && (self.architecture == Architecture::Arm(ArmArchitecture::Armv4t)
                         || self.architecture == Architecture::Arm(ArmArchitecture::Armv5te)
