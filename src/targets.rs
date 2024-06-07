@@ -752,6 +752,7 @@ pub enum Environment {
     Softfloat,
     Spe,
     Threads,
+    Ohos,
 }
 
 impl Environment {
@@ -792,6 +793,7 @@ impl Environment {
             Softfloat => Cow::Borrowed("softfloat"),
             Spe => Cow::Borrowed("spe"),
             Threads => Cow::Borrowed("threads"),
+            Ohos => Cow::Borrowed("ohos"),
         }
     }
 }
@@ -1478,6 +1480,7 @@ impl FromStr for Environment {
             "softfloat" => Softfloat,
             "spe" => Spe,
             "threads" => Threads,
+            "ohos" => Ohos,
             _ => return Err(()),
         })
     }
@@ -1540,6 +1543,7 @@ mod tests {
             "aarch64-unknown-linux-gnu",
             "aarch64-unknown-linux-gnu_ilp32",
             "aarch64-unknown-linux-musl",
+            "aarch64-unknown-linux-ohos",
             "aarch64-unknown-netbsd",
             "aarch64-unknown-none",
             "aarch64-unknown-none-softfloat",
@@ -1584,6 +1588,7 @@ mod tests {
             "armv7-unknown-linux-gnueabihf",
             "armv7-unknown-linux-musleabi",
             "armv7-unknown-linux-musleabihf",
+            "armv7-unknown-linux-ohos",
             "armv7-unknown-linux-uclibceabi",
             "armv7-unknown-linux-uclibceabihf",
             "armv7-unknown-netbsd-eabihf",
@@ -1730,6 +1735,7 @@ mod tests {
             "x86_64-unknown-linux-musl",
             "x86_64-unknown-netbsd",
             "x86_64-unknown-none",
+            "x86_64-unknown-linux-ohos",
             "x86_64-unknown-none-hermitkernel",
             "x86_64-unknown-none-linuxkernel",
             "x86_64-unknown-openbsd",
