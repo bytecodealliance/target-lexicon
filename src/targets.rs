@@ -412,7 +412,9 @@ pub enum Riscv32Architecture {
     Riscv32gc,
     Riscv32i,
     Riscv32im,
+    Riscv32ima,
     Riscv32imac,
+    Riscv32imafc,
     Riscv32imc,
 }
 
@@ -426,7 +428,9 @@ impl Riscv32Architecture {
             Riscv32gc => Cow::Borrowed("riscv32gc"),
             Riscv32i => Cow::Borrowed("riscv32i"),
             Riscv32im => Cow::Borrowed("riscv32im"),
+            Riscv32ima => Cow::Borrowed("riscv32ima"),
             Riscv32imac => Cow::Borrowed("riscv32imac"),
+            Riscv32imafc => Cow::Borrowed("riscv32imafc"),
             Riscv32imc => Cow::Borrowed("riscv32imc"),
         }
     }
@@ -656,6 +660,7 @@ pub enum OperatingSystem {
     SolidAsp3,
     Tvos,
     Uefi,
+    Visionos,
     VxWorks,
     Wasi,
     WasiP1,
@@ -706,6 +711,7 @@ impl OperatingSystem {
             Tvos => Cow::Borrowed("tvos"),
             Uefi => Cow::Borrowed("uefi"),
             VxWorks => Cow::Borrowed("vxworks"),
+            Visionos => Cow::Borrowed("visionos"),
             Wasi => Cow::Borrowed("wasi"),
             WasiP1 => Cow::Borrowed("wasip1"),
             WasiP2 => Cow::Borrowed("wasip2"),
@@ -746,6 +752,7 @@ pub enum Environment {
     Muslabi64,
     Msvc,
     Newlib,
+    None,
     Kernel,
     Uclibc,
     Uclibceabi,
@@ -788,6 +795,7 @@ impl Environment {
             Muslabi64 => Cow::Borrowed("muslabi64"),
             Msvc => Cow::Borrowed("msvc"),
             Newlib => Cow::Borrowed("newlib"),
+            None => Cow::Borrowed("none"),
             Kernel => Cow::Borrowed("kernel"),
             Uclibc => Cow::Borrowed("uclibc"),
             Uclibceabi => Cow::Borrowed("uclibceabi"),
@@ -988,6 +996,7 @@ pub(crate) fn default_binary_format(triple: &Triple) -> BinaryFormat {
         OperatingSystem::Darwin
         | OperatingSystem::Ios
         | OperatingSystem::MacOSX { .. }
+        | OperatingSystem::Visionos
         | OperatingSystem::Watchos
         | OperatingSystem::Tvos => BinaryFormat::Macho,
         OperatingSystem::Windows => BinaryFormat::Coff,
@@ -1148,7 +1157,9 @@ impl FromStr for Riscv32Architecture {
             "riscv32gc" => Riscv32gc,
             "riscv32i" => Riscv32i,
             "riscv32im" => Riscv32im,
+            "riscv32ima" => Riscv32ima,
             "riscv32imac" => Riscv32imac,
+            "riscv32imafc" => Riscv32imafc,
             "riscv32imc" => Riscv32imc,
             _ => return Err(()),
         })
@@ -1428,6 +1439,7 @@ impl FromStr for OperatingSystem {
             "solid_asp3" => SolidAsp3,
             "tvos" => Tvos,
             "uefi" => Uefi,
+            "visionos" => Visionos,
             "vxworks" => VxWorks,
             "wasi" => Wasi,
             "wasip1" => WasiP1,
@@ -1477,6 +1489,7 @@ impl FromStr for Environment {
             "muslabi64" => Muslabi64,
             "msvc" => Msvc,
             "newlib" => Newlib,
+            "none" => None,
             "kernel" => Kernel,
             "uclibc" => Uclibc,
             "uclibceabi" => Uclibceabi,
@@ -1533,11 +1546,14 @@ mod tests {
             "aarch64-apple-ios-macabi",
             "aarch64-apple-ios-sim",
             "aarch64-apple-tvos",
+            "aarch64-apple-tvos-sim",
+            "aarch64-apple-visionos",
+            "aarch64-apple-visionos-sim",
+            "aarch64-apple-watchos",
             "aarch64-apple-watchos-sim",
             "aarch64_be-unknown-linux-gnu",
             "aarch64_be-unknown-linux-gnu_ilp32",
             "aarch64_be-unknown-netbsd",
-            "aarch64-fuchsia",
             "aarch64-kmc-solid_asp3",
             "aarch64-linux-android",
             //"aarch64-nintendo-switch-freestanding", // TODO
@@ -1545,7 +1561,9 @@ mod tests {
             "aarch64-pc-windows-msvc",
             "aarch64-unknown-cloudabi",
             "aarch64-unknown-freebsd",
+            "aarch64-unknown-fuchsia",
             "aarch64-unknown-hermit",
+            "aarch64-unknown-illumos",
             "aarch64-unknown-linux-gnu",
             "aarch64-unknown-linux-gnu_ilp32",
             "aarch64-unknown-linux-musl",
@@ -1553,15 +1571,20 @@ mod tests {
             "aarch64-unknown-netbsd",
             "aarch64-unknown-none",
             "aarch64-unknown-none-softfloat",
+            //"aarch64-unknown-nto-qnx710", // TODO
             "aarch64-unknown-openbsd",
             "aarch64-unknown-redox",
+            //"aarch64-unknown-teeos", // TODO
             "aarch64-unknown-uefi",
             "aarch64-uwp-windows-msvc",
             "aarch64-wrs-vxworks",
             //"arm64_32-apple-watchos", // TODO
-            "armeb-unknown-linux-gnueabi",
+            //"arm64e-apple-darwin", // TODO
             "amdgcn-amd-amdhsa",
             "amdgcn-amd-amdhsa-amdgiz",
+            //"arm64e-apple-ios", // TODO
+            //"arm64ec-pc-windows-msvc", // TODO
+            "armeb-unknown-linux-gnueabi",
             "armebv7r-none-eabi",
             "armebv7r-none-eabihf",
             "arm-linux-androideabi",
@@ -1589,6 +1612,7 @@ mod tests {
             "armv7r-none-eabihf",
             "armv7s-apple-ios",
             "armv7-unknown-cloudabi-eabihf",
+            //"armv7-sony-vita-newlibeabihf", // TODO
             "armv7-unknown-freebsd",
             "armv7-unknown-linux-gnueabi",
             "armv7-unknown-linux-gnueabihf",
@@ -1600,19 +1624,26 @@ mod tests {
             "armv7-unknown-netbsd-eabihf",
             "armv7-wrs-vxworks-eabihf",
             "asmjs-unknown-emscripten",
+            "armv8r-none-eabihf",
             //"avr-unknown-gnu-atmega328", // TODO
             "avr-unknown-unknown",
             "bpfeb-unknown-none",
             "bpfel-unknown-none",
+            //"csky-unknown-linux-gnuabiv2", // TODO
+            //"csky-unknown-linux-gnuabiv2hf", // TODO
             "hexagon-unknown-linux-musl",
+            "hexagon-unknown-none-elf",
             "i386-apple-ios",
+            //"i586-pc-nto-qnx700", // TODO
             "i586-pc-windows-msvc",
             "i586-unknown-linux-gnu",
             "i586-unknown-linux-musl",
+            "i586-unknown-netbsd",
             "i686-apple-darwin",
             "i686-linux-android",
             "i686-apple-macosx10.7.0",
             "i686-pc-windows-gnu",
+            "i686-pc-windows-gnullvm",
             "i686-pc-windows-msvc",
             "i686-unknown-cloudabi",
             "i686-unknown-dragonfly",
@@ -1623,11 +1654,16 @@ mod tests {
             "i686-unknown-linux-musl",
             "i686-unknown-netbsd",
             "i686-unknown-openbsd",
+            "i686-unknown-redox",
             "i686-unknown-uefi",
             "i686-uwp-windows-gnu",
             "i686-uwp-windows-msvc",
+            "i686-win7-windows-msvc",
             "i686-wrs-vxworks",
             "loongarch64-unknown-linux-gnu",
+            "loongarch64-unknown-linux-musl",
+            "loongarch64-unknown-none",
+            "loongarch64-unknown-none-softfloat",
             "m68k-unknown-linux-gnu",
             "mips64el-unknown-linux-gnuabi64",
             "mips64el-unknown-linux-muslabi64",
@@ -1635,9 +1671,11 @@ mod tests {
             "mips64-unknown-linux-gnuabi64",
             "mips64-unknown-linux-muslabi64",
             "mipsel-sony-psp",
+            //"mipsel-sony-psx", // TODO
             "mipsel-unknown-linux-gnu",
             "mipsel-unknown-linux-musl",
             "mipsel-unknown-linux-uclibc",
+            "mipsel-unknown-netbsd",
             "mipsel-unknown-none",
             "mipsisa32r6el-unknown-linux-gnu",
             "mipsisa32r6-unknown-linux-gnu",
@@ -1648,10 +1686,10 @@ mod tests {
             "mips-unknown-linux-uclibc",
             "msp430-none-elf",
             "nvptx64-nvidia-cuda",
+            "powerpc64-ibm-aix",
             "powerpc64le-unknown-freebsd",
             "powerpc64le-unknown-linux-gnu",
             "powerpc64le-unknown-linux-musl",
-            "powerpc64-ibm-aix",
             "powerpc64-unknown-freebsd",
             "powerpc64-unknown-linux-gnu",
             "powerpc64-unknown-linux-musl",
@@ -1668,25 +1706,34 @@ mod tests {
             "powerpc-wrs-vxworks-spe",
             "riscv32gc-unknown-linux-gnu",
             "riscv32gc-unknown-linux-musl",
+            "riscv32imac-esp-espidf",
             "riscv32imac-unknown-none-elf",
             //"riscv32imac-unknown-xous-elf", // TODO
+            "riscv32imafc-esp-espidf",
+            "riscv32imafc-unknown-none-elf",
+            "riscv32ima-unknown-none-elf",
             "riscv32imc-esp-espidf",
             "riscv32imc-unknown-none-elf",
+            //"riscv32im-risc0-zkvm-elf", // TODO
             "riscv32im-unknown-none-elf",
             "riscv32i-unknown-none-elf",
             "riscv64gc-unknown-freebsd",
+            "riscv64gc-unknown-fuchsia",
+            "riscv64gc-unknown-hermit",
             "riscv64gc-unknown-linux-gnu",
             "riscv64gc-unknown-linux-musl",
             "riscv64gc-unknown-netbsd",
             "riscv64gc-unknown-none-elf",
             "riscv64gc-unknown-openbsd",
             "riscv64imac-unknown-none-elf",
+            "riscv64-linux-android",
             "s390x-unknown-linux-gnu",
             "s390x-unknown-linux-musl",
             "sparc64-unknown-linux-gnu",
             "sparc64-unknown-netbsd",
             "sparc64-unknown-openbsd",
             "sparc-unknown-linux-gnu",
+            "sparc-unknown-none-elf",
             "sparcv9-sun-solaris",
             "thumbv4t-none-eabi",
             "thumbv5te-none-eabi",
@@ -1706,20 +1753,20 @@ mod tests {
             "wasm32-unknown-emscripten",
             "wasm32-unknown-unknown",
             "wasm32-wasi",
-            "wasm32-wasip1-threads",
             "wasm32-wasip1",
+            "wasm32-wasip1-threads",
             "wasm32-wasip2",
             "wasm64-unknown-unknown",
             "wasm64-wasi",
             "x86_64-apple-darwin",
-            "x86_64h-apple-darwin",
             "x86_64-apple-ios",
             "x86_64-apple-ios-macabi",
             "x86_64-apple-tvos",
             "x86_64-apple-watchos-sim",
             "x86_64-fortanix-unknown-sgx",
-            "x86_64-fuchsia",
+            "x86_64h-apple-darwin",
             "x86_64-linux-android",
+            //"x86_64-pc-nto-qnx710", // TODO
             "x86_64-linux-kernel", // Changed to x86_64-unknown-none-linuxkernel in 1.53.0
             "x86_64-apple-macosx10.7.0",
             "x86_64-pc-solaris",
@@ -1730,19 +1777,22 @@ mod tests {
             "x86_64-sun-solaris",
             "x86_64-unknown-bitrig",
             "x86_64-unknown-cloudabi",
+            "x86_64-unikraft-linux-musl",
             "x86_64-unknown-dragonfly",
             "x86_64-unknown-freebsd",
+            "x86_64-unknown-fuchsia",
             "x86_64-unknown-haiku",
-            "x86_64-unknown-hermit",
             "x86_64-unknown-hermit-kernel", // Changed to x86_64-unknown-none-hermitkernel in 1.53.0
+            "x86_64-unknown-hermit",
             "x86_64-unknown-illumos",
             "x86_64-unknown-l4re-uclibc",
             "x86_64-unknown-linux-gnu",
             "x86_64-unknown-linux-gnux32",
             "x86_64-unknown-linux-musl",
+            "x86_64-unknown-linux-none",
+            "x86_64-unknown-linux-ohos",
             "x86_64-unknown-netbsd",
             "x86_64-unknown-none",
-            "x86_64-unknown-linux-ohos",
             "x86_64-unknown-none-hermitkernel",
             "x86_64-unknown-none-linuxkernel",
             "x86_64-unknown-openbsd",
@@ -1750,9 +1800,15 @@ mod tests {
             "x86_64-unknown-uefi",
             "x86_64-uwp-windows-gnu",
             "x86_64-uwp-windows-msvc",
+            "x86_64-win7-windows-msvc",
             "x86_64-wrs-vxworks",
             "xtensa-esp32-espidf",
             "clever-unknown-elf",
+            "xtensa-esp32-none-elf",
+            "xtensa-esp32s2-espidf",
+            "xtensa-esp32s2-none-elf",
+            "xtensa-esp32s3-espidf",
+            "xtensa-esp32s3-none-elf",
             #[cfg(feature = "arch_zkasm")]
             "zkasm-unknown-unknown",
         ];
@@ -1775,6 +1831,19 @@ mod tests {
         assert_eq!(t.operating_system, OperatingSystem::None_);
         assert_eq!(t.environment, Environment::Eabihf);
         assert_eq!(t.binary_format, BinaryFormat::Elf);
+    }
+
+    #[test]
+    fn fuchsia_rename() {
+        // Fuchsia targets were renamed to add the `unknown`.
+        assert_eq!(
+            Triple::from_str("aarch64-fuchsia"),
+            Triple::from_str("aarch64-unknown-fuchsia")
+        );
+        assert_eq!(
+            Triple::from_str("x86_64-fuchsia"),
+            Triple::from_str("x86_64-unknown-fuchsia")
+        );
     }
 
     #[test]
