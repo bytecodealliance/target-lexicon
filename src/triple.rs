@@ -260,7 +260,19 @@ impl fmt::Display for Triple {
             }
         }
 
-        if self.binary_format != implied_binary_format {
+        if self.binary_format != implied_binary_format
+            || (self.binary_format != BinaryFormat::Unknown
+                && self.environment != Environment::Eabi
+                && self.environment != Environment::Eabihf
+                && self.environment != Environment::Sgx
+                && self.architecture != Architecture::Avr
+                && self.architecture != Architecture::Wasm32
+                && self.architecture != Architecture::Wasm64
+                && (self.operating_system == OperatingSystem::None_
+                    || self.operating_system == OperatingSystem::Unknown))
+        {
+            // As a special case, omit a non-default binary format for some
+            // targets which happen to exclude it.
             write!(f, "-{}", self.binary_format)?;
         }
         Ok(())
