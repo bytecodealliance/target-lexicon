@@ -260,23 +260,33 @@ impl fmt::Display for Triple {
             }
         }
 
-        if self.binary_format != implied_binary_format
-            || (self.binary_format != BinaryFormat::Unknown
-                && self.environment != Environment::Eabi
-                && self.environment != Environment::Eabihf
-                && self.environment != Environment::Sgx
-                && self.architecture != Architecture::Avr
-                && self.architecture != Architecture::Wasm32
-                && self.architecture != Architecture::Wasm64
-                && (self.operating_system == OperatingSystem::None_
-                    || self.operating_system == OperatingSystem::Unknown))
-        {
+        if self.binary_format != implied_binary_format || show_binary_format_with_no_os(self) {
             // As a special case, omit a non-default binary format for some
             // targets which happen to exclude it.
             write!(f, "-{}", self.binary_format)?;
         }
         Ok(())
     }
+}
+
+fn show_binary_format_with_no_os(triple: &Triple) -> bool {
+    if triple.binary_format == BinaryFormat::Unknown {
+        return false;
+    }
+
+    #[cfg(feature = "arch_zkasm")]
+    if triple.architecture == Architecture::ZkAsm {
+        return false;
+    }
+
+    triple.environment != Environment::Eabi
+        && triple.environment != Environment::Eabihf
+        && triple.environment != Environment::Sgx
+        && triple.architecture != Architecture::Avr
+        && triple.architecture != Architecture::Wasm32
+        && triple.architecture != Architecture::Wasm64
+        && (triple.operating_system == OperatingSystem::None_
+            || triple.operating_system == OperatingSystem::Unknown)
 }
 
 impl FromStr for Triple {
