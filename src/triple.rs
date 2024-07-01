@@ -164,6 +164,7 @@ impl Triple {
                     Ok(CDataModel::LLP64)
                 } else if self.default_calling_convention() == Ok(CallingConvention::SystemV)
                     || self.architecture == Architecture::Wasm64
+                    || self.default_calling_convention() == Ok(CallingConvention::AppleAarch64)
                 {
                     Ok(CDataModel::LP64)
                 } else {
@@ -480,13 +481,12 @@ mod tests {
             "aarch64-apple-tvos",
             "aarch64-apple-watchos",
         ] {
+            let triple = Triple::from_str(triple).unwrap();
             assert_eq!(
-                Triple::from_str(triple)
-                    .unwrap()
-                    .default_calling_convention()
-                    .unwrap(),
+                triple.default_calling_convention().unwrap(),
                 CallingConvention::AppleAarch64
             );
+            assert_eq!(triple.data_model().unwrap(), CDataModel::LP64);
         }
 
         for triple in &["aarch64-linux-android", "x86_64-apple-ios"] {
