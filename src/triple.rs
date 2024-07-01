@@ -275,8 +275,10 @@ fn show_binary_format_with_no_os(triple: &Triple) -> bool {
     }
 
     #[cfg(feature = "arch_zkasm")]
-    if triple.architecture == Architecture::ZkAsm {
-        return false;
+    {
+        if triple.architecture == Architecture::ZkAsm {
+            return false;
+        }
     }
 
     triple.environment != Environment::Eabi
