@@ -1006,7 +1006,9 @@ pub(crate) fn default_binary_format(triple: &Triple) -> BinaryFormat {
         | OperatingSystem::Wasi
         | OperatingSystem::Unknown => match triple.architecture {
             Architecture::Wasm32 | Architecture::Wasm64 => BinaryFormat::Wasm,
-            _ => BinaryFormat::Unknown,
+            Architecture::Unknown => BinaryFormat::Unknown,
+            // Default to ELF, following `getDefaultFormat` in LLVM.
+            _ => BinaryFormat::Elf,
         },
         _ => BinaryFormat::Elf,
     }
@@ -1821,6 +1823,19 @@ mod tests {
     }
 
     #[test]
+    fn default_format_to_elf() {
+        let t = Triple::from_str("riscv64").expect("can't parse target");
+        assert_eq!(
+            t.architecture,
+            Architecture::Riscv64(Riscv64Architecture::Riscv64),
+        );
+        assert_eq!(t.vendor, Vendor::Unknown);
+        assert_eq!(t.operating_system, OperatingSystem::Unknown);
+        assert_eq!(t.environment, Environment::Unknown);
+        assert_eq!(t.binary_format, BinaryFormat::Elf);
+    }
+
+    #[test]
     fn thumbv7em_none_eabihf() {
         let t = Triple::from_str("thumbv7em-none-eabihf").expect("can't parse target");
         assert_eq!(
@@ -1915,7 +1930,7 @@ mod tests {
         );
         assert_eq!(t.operating_system, OperatingSystem::Unknown);
         assert_eq!(t.environment, Environment::Unknown);
-        assert_eq!(t.binary_format, BinaryFormat::Unknown);
+        assert_eq!(t.binary_format, BinaryFormat::Elf);
 
         assert_eq!(
             Triple::from_str("unknown-foo"),
