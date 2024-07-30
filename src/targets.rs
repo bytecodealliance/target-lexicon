@@ -31,8 +31,8 @@ pub enum Architecture {
     Mips64(Mips64Architecture),
     Msp430,
     Nvptx64,
-    Pbc32,
-    Pbc64,
+    Pulley32,
+    Pulley64,
     Powerpc,
     Powerpc64,
     Powerpc64le,
@@ -865,8 +865,8 @@ impl Architecture {
             | Mips64(Mips64Architecture::Mipsisa64r6el)
             | Msp430
             | Nvptx64
-            | Pbc32
-            | Pbc64
+            | Pulley32
+            | Pulley64
             | Powerpc64le
             | Riscv32(_)
             | Riscv64(_)
@@ -914,7 +914,7 @@ impl Architecture {
             | Wasm32
             | M68k
             | Mips32(_)
-            | Pbc32
+            | Pulley32
             | Powerpc
             | XTensa => Ok(PointerWidth::U32),
             AmdGcn
@@ -926,7 +926,7 @@ impl Architecture {
             | X86_64h
             | Mips64(_)
             | Nvptx64
-            | Pbc64
+            | Pulley64
             | Powerpc64
             | S390x
             | Sparc64
@@ -968,8 +968,8 @@ impl Architecture {
             Mips64(mips64) => mips64.into_str(),
             Msp430 => Cow::Borrowed("msp430"),
             Nvptx64 => Cow::Borrowed("nvptx64"),
-            Pbc32 => Cow::Borrowed("pbc32"),
-            Pbc64 => Cow::Borrowed("pbc64"),
+            Pulley32 => Cow::Borrowed("pulley32"),
+            Pulley64 => Cow::Borrowed("pulley64"),
             Powerpc => Cow::Borrowed("powerpc"),
             Powerpc64 => Cow::Borrowed("powerpc64"),
             Powerpc64le => Cow::Borrowed("powerpc64le"),
@@ -1255,8 +1255,8 @@ impl FromStr for Architecture {
             "m68k" => M68k,
             "msp430" => Msp430,
             "nvptx64" => Nvptx64,
-            "pbc32" => Pbc32,
-            "pbc64" => Pbc64,
+            "pulley32" => Pulley32,
+            "pulley64" => Pulley64,
             "powerpc" => Powerpc,
             "powerpc64" => Powerpc64,
             "powerpc64le" => Powerpc64le,
