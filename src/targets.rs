@@ -669,6 +669,7 @@ pub enum OperatingSystem {
     WasiP2,
     Watchos,
     Windows,
+    Zkvm,
 }
 
 impl OperatingSystem {
@@ -719,6 +720,7 @@ impl OperatingSystem {
             WasiP2 => Cow::Borrowed("wasip2"),
             Watchos => Cow::Borrowed("watchos"),
             Windows => Cow::Borrowed("windows"),
+            Zkvm => Cow::Borrowed("zkvm"),
         }
     }
 }
@@ -1458,6 +1460,7 @@ impl FromStr for OperatingSystem {
             "watchos" => Watchos,
             "windows" => Windows,
             "espidf" => Espidf,
+            "zkvm" => Zkvm,
             _ => return Err(()),
         })
     }
@@ -1727,6 +1730,7 @@ mod tests {
             "riscv32imc-unknown-none-elf",
             //"riscv32im-risc0-zkvm-elf", // TODO
             "riscv32im-unknown-none-elf",
+            "riscv32im-risc0-zkvm",
             "riscv32i-unknown-none-elf",
             "riscv64gc-unknown-freebsd",
             "riscv64gc-unknown-fuchsia",
