@@ -24,7 +24,7 @@ mod tests {
     #[test]
     fn test_macos() {
         use super::*;
-        assert_eq!(OperatingSystem::host(), OperatingSystem::Darwin);
+        assert_eq!(OperatingSystem::host(), OperatingSystem::Darwin(None));
     }
 
     #[cfg(windows)]

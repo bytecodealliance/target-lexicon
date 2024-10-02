@@ -121,11 +121,13 @@ impl Triple {
     /// Return the default calling convention for the given target triple.
     pub fn default_calling_convention(&self) -> Result<CallingConvention, ()> {
         Ok(match self.operating_system {
-            OperatingSystem::Darwin
-            | OperatingSystem::Ios
-            | OperatingSystem::Tvos
-            | OperatingSystem::MacOSX { .. }
-            | OperatingSystem::Watchos => match self.architecture {
+            OperatingSystem::Darwin(_)
+            | OperatingSystem::IOS(_)
+            | OperatingSystem::TvOS(_)
+            | OperatingSystem::MacOSX(_)
+            | OperatingSystem::WatchOS(_)
+            | OperatingSystem::VisionOS(_)
+            | OperatingSystem::XROS(_) => match self.architecture {
                 Architecture::Aarch64(_) => CallingConvention::AppleAarch64,
                 _ => CallingConvention::SystemV,
             },
