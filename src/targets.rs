@@ -764,6 +764,25 @@ impl OperatingSystem {
             XROS(deployment_target) => darwin_version("xros", deployment_target),
         }
     }
+
+    /// Whether the OS is similar to Darwin.
+    ///
+    /// This matches on any of:
+    /// - [Darwin](Self::Darwin)
+    /// - [iOS](Self::IOS)
+    /// - [macOS](Self::MacOSX)
+    /// - [tvOS](Self::TvOS)
+    /// - [visionOS](Self::VisionOS)
+    /// - [watchOS](Self::WatchOS)
+    /// - [xrOS](Self::XROS)
+    pub fn is_like_darwin(&self) -> bool {
+        use OperatingSystem::*;
+
+        match self {
+            Darwin(_) | IOS(_) | MacOSX(_) | TvOS(_) | VisionOS(_) | WatchOS(_) | XROS(_) => true,
+            _ => false,
+        }
+    }
 }
 
 /// The "environment" field, which specifies an ABI environment on top of the
@@ -1043,13 +1062,7 @@ pub(crate) fn default_binary_format(triple: &Triple) -> BinaryFormat {
             _ => BinaryFormat::Unknown,
         },
         OperatingSystem::Aix => BinaryFormat::Xcoff,
-        OperatingSystem::Darwin(_)
-        | OperatingSystem::IOS(_)
-        | OperatingSystem::MacOSX(_)
-        | OperatingSystem::VisionOS(_)
-        | OperatingSystem::WatchOS(_)
-        | OperatingSystem::TvOS(_)
-        | OperatingSystem::XROS(_) => BinaryFormat::Macho,
+        os if os.is_like_darwin() => BinaryFormat::Macho,
         OperatingSystem::Windows => BinaryFormat::Coff,
         OperatingSystem::Nebulet
         | OperatingSystem::Emscripten
