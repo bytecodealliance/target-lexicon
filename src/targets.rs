@@ -630,7 +630,7 @@ impl Vendor {
 /// This is formatted as `"major.minor.patch"`.
 ///
 /// The size of the parts here are limited by Mach-O's `LC_BUILD_VERSION`.
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
 #[allow(missing_docs)]
 pub struct DeploymentTarget {
     pub major: u16,
