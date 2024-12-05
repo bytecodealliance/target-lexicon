@@ -33,6 +33,8 @@ pub enum Architecture {
     Nvptx64,
     Pulley32,
     Pulley64,
+    Pulley32be,
+    Pulley64be,
     Powerpc,
     Powerpc64,
     Powerpc64le,
@@ -946,6 +948,8 @@ impl Architecture {
             | Mips64(Mips64Architecture::Mipsisa64r6)
             | Powerpc
             | Powerpc64
+            | Pulley32be
+            | Pulley64be
             | S390x
             | Sparc
             | Sparc64
@@ -977,6 +981,7 @@ impl Architecture {
             | M68k
             | Mips32(_)
             | Pulley32
+            | Pulley32be
             | Powerpc
             | XTensa => Ok(PointerWidth::U32),
             AmdGcn
@@ -989,6 +994,7 @@ impl Architecture {
             | Mips64(_)
             | Nvptx64
             | Pulley64
+            | Pulley64be
             | Powerpc64
             | S390x
             | Sparc64
@@ -1032,6 +1038,8 @@ impl Architecture {
             Nvptx64 => Cow::Borrowed("nvptx64"),
             Pulley32 => Cow::Borrowed("pulley32"),
             Pulley64 => Cow::Borrowed("pulley64"),
+            Pulley32be => Cow::Borrowed("pulley32be"),
+            Pulley64be => Cow::Borrowed("pulley64be"),
             Powerpc => Cow::Borrowed("powerpc"),
             Powerpc64 => Cow::Borrowed("powerpc64"),
             Powerpc64le => Cow::Borrowed("powerpc64le"),
@@ -1314,6 +1322,8 @@ impl FromStr for Architecture {
             "nvptx64" => Nvptx64,
             "pulley32" => Pulley32,
             "pulley64" => Pulley64,
+            "pulley32be" => Pulley32be,
+            "pulley64be" => Pulley64be,
             "powerpc" => Powerpc,
             "powerpc64" => Powerpc64,
             "powerpc64le" => Powerpc64le,
