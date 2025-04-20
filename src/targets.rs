@@ -23,6 +23,7 @@ pub enum Architecture {
     Avr,
     Bpfeb,
     Bpfel,
+    E2k(E2kArchitecture),
     Hexagon,
     X86_32(X86_32Architecture),
     M68k,
@@ -536,6 +537,82 @@ impl Mips64Architecture {
     }
 }
 
+/// An enum for all 64-bit E2K architectures.
+#[cfg_attr(feature = "rust_1_40", non_exhaustive)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
+#[allow(missing_docs)]
+pub enum E2kArchitecture {
+    E2k,
+    E2kv1,
+    E2kv2,
+    E2kv3,
+    E2kv4,
+    E2kv5,
+    E2kv6,
+    E2kv7,
+    E4c,
+    E8c,
+    E1cplus,
+    E8c2,
+    E16c,
+    E12c,
+    E2c3,
+    E48c,
+    E8v7,
+}
+
+impl E2kArchitecture {
+    /// Convert into a string.
+    pub fn into_str(self) -> Cow<'static, str> {
+        use E2kArchitecture::*;
+
+        Cow::Borrowed(match self {
+            E2k => "e2k",
+            E2kv1 => "e2kv1",
+            E2kv2 => "e2kv2",
+            E2kv3 => "e2kv3",
+            E2kv4 => "e2kv4",
+            E2kv5 => "e2kv5",
+            E2kv6 => "e2kv6",
+            E2kv7 => "e2kv7",
+            E4c => "e4c",
+            E8c => "e8c",
+            E1cplus => "e1cplus",
+            E8c2 => "e8c2",
+            E16c => "e16c",
+            E12c => "e12c",
+            E2c3 => "e2c3",
+            E48c => "e48c",
+            E8v7 => "e8v7",
+        })
+    }
+
+    // Returns E2K ISA version.
+    pub fn version(&self) -> u32 {
+        use E2kArchitecture::*;
+
+        match self {
+            E2k => 2,
+            E2kv1 => 1,
+            E2kv2 => 2,
+            E2kv3 => 3,
+            E2kv4 => 4,
+            E2kv5 => 5,
+            E2kv6 => 6,
+            E2kv7 => 7,
+            E4c => 3,
+            E8c => 4,
+            E1cplus => 4,
+            E8c2 => 5,
+            E16c => 6,
+            E12c => 6,
+            E2c3 => 6,
+            E48c => 7,
+            E8v7 => 7,
+        }
+    }
+}
+
 /// A string for a `Vendor::Custom` that can either be used in `const`
 /// contexts or hold dynamic strings.
 #[derive(Clone, Debug, Eq)]
@@ -920,6 +997,7 @@ impl Architecture {
             | Asmjs
             | Avr
             | Bpfel
+            | E2k(_)
             | Hexagon
             | X86_32(_)
             | LoongArch64
@@ -987,6 +1065,7 @@ impl Architecture {
             AmdGcn
             | Bpfeb
             | Bpfel
+            | E2k(_)
             | Powerpc64le
             | Riscv64(_)
             | X86_64
@@ -1028,6 +1107,7 @@ impl Architecture {
             Avr => Cow::Borrowed("avr"),
             Bpfeb => Cow::Borrowed("bpfeb"),
             Bpfel => Cow::Borrowed("bpfel"),
+            E2k(e2k) => e2k.into_str(),
             Hexagon => Cow::Borrowed("hexagon"),
             X86_32(x86_32) => x86_32.into_str(),
             LoongArch64 => Cow::Borrowed("loongarch64"),
@@ -1129,6 +1209,12 @@ impl fmt::Display for Mips32Architecture {
 }
 
 impl fmt::Display for Mips64Architecture {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        f.write_str(&self.into_str())
+    }
+}
+
+impl fmt::Display for E2kArchitecture {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str(&self.into_str())
     }
@@ -1302,6 +1388,35 @@ impl FromStr for Mips64Architecture {
     }
 }
 
+impl FromStr for E2kArchitecture {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, ()> {
+        use E2kArchitecture::*;
+
+        Ok(match s {
+            "e2k" => E2k,
+            "e2kv1" => E2kv1,
+            "e2kv2" => E2kv2,
+            "e2kv3" => E2kv3,
+            "e2kv4" => E2kv4,
+            "e2kv5" => E2kv5,
+            "e2kv6" => E2kv6,
+            "e2kv7" => E2kv7,
+            "e4c" => E4c,
+            "e8c" => E8c,
+            "e1cplus" => E1cplus,
+            "e8c2" => E8c2,
+            "e16c" => E16c,
+            "e12c" => E12c,
+            "e2c3" => E2c3,
+            "e48c" => E48c,
+            "e8v7" => E8v7,
+            _ => return Err(()),
+        })
+    }
+}
+
 impl FromStr for Architecture {
     type Err = ();
 
@@ -1355,6 +1470,8 @@ impl FromStr for Architecture {
                     Mips64(mips64)
                 } else if let Ok(clever) = CleverArchitecture::from_str(s) {
                     Clever(clever)
+                } else if let Ok(e2k) = E2kArchitecture::from_str(s) {
+                    E2k(e2k)
                 } else {
                     return Err(());
                 }
@@ -1750,6 +1867,23 @@ mod tests {
             "avr-unknown-unknown",
             "bpfeb-unknown-none",
             "bpfel-unknown-none",
+            "e2k-unknown-linux-gnu",
+            "e2kv1-unknown-linux-gnu",
+            "e2kv2-unknown-linux-gnu",
+            "e2kv3-unknown-linux-gnu",
+            "e2kv4-unknown-linux-gnu",
+            "e2kv5-unknown-linux-gnu",
+            "e2kv6-unknown-linux-gnu",
+            "e2kv7-unknown-linux-gnu",
+            "e4c-unknown-linux-gnu",
+            "e8c-unknown-linux-gnu",
+            "e1cplus-unknown-linux-gnu",
+            "e8c2-unknown-linux-gnu",
+            "e16c-unknown-linux-gnu",
+            "e12c-unknown-linux-gnu",
+            "e2c3-unknown-linux-gnu",
+            "e48c-unknown-linux-gnu",
+            "e8v7-unknown-linux-gnu",
             //"csky-unknown-linux-gnuabiv2", // TODO
             //"csky-unknown-linux-gnuabiv2hf", // TODO
             "hexagon-unknown-linux-musl",
