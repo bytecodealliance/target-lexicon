@@ -1432,8 +1432,10 @@ impl FromStr for Architecture {
                     Clever(clever)
                 } else {
                     #[cfg(feature = "arch_z80")]
-                    if let Ok(z80) = Z80Architecture::from_str(s) {
-                        return Ok(Architecture::Z80(z80));
+                    {
+                        if let Ok(z80) = Z80Architecture::from_str(s) {
+                            return Ok(Architecture::Z80(z80));
+                        }
                     }
                     return Err(());
                 }
