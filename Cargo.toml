@@ -23,6 +23,8 @@ serde_support = ["serde", "std"]
 std = []
 # Enable (unstable) support for the zkasm architecture.
 arch_zkasm = []
+# Enable (unstable) support for the z80 architecture.
+arch_z80 = []
 
 [badges]
 maintenance = { status = "passively-maintained" }
