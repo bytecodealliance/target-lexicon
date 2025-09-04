@@ -450,6 +450,7 @@ pub enum Riscv64Architecture {
     Riscv64,
     Riscv64gc,
     Riscv64imac,
+    Riscv64a23,
 }
 
 impl Riscv64Architecture {
@@ -461,6 +462,7 @@ impl Riscv64Architecture {
             Riscv64 => Cow::Borrowed("riscv64"),
             Riscv64gc => Cow::Borrowed("riscv64gc"),
             Riscv64imac => Cow::Borrowed("riscv64imac"),
+            Riscv64a23 => Cow::Borrowed("riscv64a23"),
         }
     }
 }
@@ -1302,6 +1304,7 @@ impl FromStr for Riscv64Architecture {
             "riscv64" => Riscv64,
             "riscv64gc" => Riscv64gc,
             "riscv64imac" => Riscv64imac,
+            "riscv64a23" => Riscv64a23,
             _ => return Err(()),
         })
     }
@@ -1923,6 +1926,7 @@ mod tests {
             "riscv64gc-unknown-fuchsia",
             "riscv64gc-unknown-hermit",
             "riscv64gc-unknown-linux-gnu",
+            "riscv64a23-unknown-linux-gnu",
             "riscv64gc-unknown-linux-musl",
             "riscv64gc-unknown-netbsd",
             "riscv64gc-unknown-none-elf",
