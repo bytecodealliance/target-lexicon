@@ -697,6 +697,7 @@ pub enum OperatingSystem {
     Bitrig,
     Cloudabi,
     Cuda,
+    Cygwin,
     /// The general [Darwin][darwin-wiki] core OS.
     ///
     /// Generally, `-mmacosx-version-min=...` or similar flags are required by
@@ -772,6 +773,7 @@ impl OperatingSystem {
             Bitrig => Cow::Borrowed("bitrig"),
             Cloudabi => Cow::Borrowed("cloudabi"),
             Cuda => Cow::Borrowed("cuda"),
+            Cygwin => Cow::Borrowed("cygwin"),
             Darwin(deployment_target) => darwin_version("darwin", deployment_target),
             Dragonfly => Cow::Borrowed("dragonfly"),
             Emscripten => Cow::Borrowed("emscripten"),
@@ -1626,6 +1628,7 @@ impl FromStr for OperatingSystem {
             "bitrig" => Bitrig,
             "cloudabi" => Cloudabi,
             "cuda" => Cuda,
+            "cygwin" => Cygwin,
             "dragonfly" => Dragonfly,
             "emscripten" => Emscripten,
             "freebsd" => Freebsd,
@@ -1977,6 +1980,7 @@ mod tests {
             "x86_64-linux-kernel", // Changed to x86_64-unknown-none-linuxkernel in 1.53.0
             "x86_64-apple-macosx",
             "x86_64-apple-macosx10.7.0",
+            "x86_64-pc-cygwin",
             "x86_64-pc-solaris",
             "x86_64-pc-windows-gnu",
             "x86_64-pc-windows-gnullvm",
