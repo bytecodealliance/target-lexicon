@@ -872,6 +872,7 @@ pub enum Environment {
     Spe,
     Threads,
     Ohos,
+    Ohoseabi
 }
 
 impl Environment {
@@ -915,6 +916,7 @@ impl Environment {
             Spe => Cow::Borrowed("spe"),
             Threads => Cow::Borrowed("threads"),
             Ohos => Cow::Borrowed("ohos"),
+            Ohoseabi => Cow::Borrowed("ohoseabi"),
         }
     }
 }
@@ -1708,6 +1710,7 @@ impl FromStr for Environment {
             "spe" => Spe,
             "threads" => Threads,
             "ohos" => Ohos,
+            "ohoseabi" => Ohoseabi,
             _ => return Err(()),
         })
     }
