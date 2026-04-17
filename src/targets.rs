@@ -867,7 +867,10 @@ pub enum Environment {
     Uclibceabi,
     Uclibceabihf,
     Sgx,
+    /// The name Rust triples use for the iOS simulator environment.
     Sim,
+    /// The name Clang/LLVM triples use for the iOS simulator environment.
+    Simulator,
     Softfloat,
     Spe,
     Threads,
@@ -911,6 +914,7 @@ impl Environment {
             Uclibceabihf => Cow::Borrowed("uclibceabihf"),
             Sgx => Cow::Borrowed("sgx"),
             Sim => Cow::Borrowed("sim"),
+            Simulator => Cow::Borrowed("simulator"),
             Softfloat => Cow::Borrowed("softfloat"),
             Spe => Cow::Borrowed("spe"),
             Threads => Cow::Borrowed("threads"),
@@ -1704,6 +1708,7 @@ impl FromStr for Environment {
             "uclibceabihf" => Uclibceabihf,
             "sgx" => Sgx,
             "sim" => Sim,
+            "simulator" => Simulator,
             "softfloat" => Softfloat,
             "spe" => Spe,
             "threads" => Threads,
@@ -2211,5 +2216,23 @@ mod tests {
 
         assert!(Triple::from_str("x86_64-apple-darwin.").is_err());
         assert!(Triple::from_str("x86_64-apple-darwin23.0.0.0").is_err());
+    }
+
+    #[test]
+    fn simulators() {
+        let s = "aarch64-apple-ios16.1.0-simulator";
+        let expected = Triple {
+            architecture: Architecture::Aarch64(Aarch64Architecture::Aarch64),
+            vendor: Vendor::Apple,
+            operating_system: OperatingSystem::IOS(Some(DeploymentTarget {
+                major: 16,
+                minor: 1,
+                patch: 0,
+            })),
+            environment: Environment::Simulator,
+            binary_format: BinaryFormat::Macho,
+        };
+        assert_eq!(Triple::from_str(s), Ok(expected));
+        assert_eq!(Triple::from_str(s).unwrap().to_string(), s);
     }
 }
