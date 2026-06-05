@@ -462,6 +462,7 @@ pub enum Riscv64Architecture {
     Riscv64,
     Riscv64gc,
     Riscv64imac,
+    Riscv64im,
     Riscv64a23,
 }
 
@@ -474,6 +475,7 @@ impl Riscv64Architecture {
             Riscv64 => Cow::Borrowed("riscv64"),
             Riscv64gc => Cow::Borrowed("riscv64gc"),
             Riscv64imac => Cow::Borrowed("riscv64imac"),
+            Riscv64im => Cow::Borrowed("riscv64im"),
             Riscv64a23 => Cow::Borrowed("riscv64a23"),
         }
     }
@@ -758,6 +760,7 @@ pub enum OperatingSystem {
     Windows,
     /// An alternate name for [visionOS][Self::VisionOS].
     XROS(Option<DeploymentTarget>),
+    Zkvm,
 }
 
 impl OperatingSystem {
@@ -819,6 +822,7 @@ impl OperatingSystem {
             WatchOS(deployment_target) => darwin_version("watchos", deployment_target),
             Windows => Cow::Borrowed("windows"),
             XROS(deployment_target) => darwin_version("xros", deployment_target),
+            Zkvm => Cow::Borrowed("zkvm"),
         }
     }
 
@@ -1319,6 +1323,7 @@ impl FromStr for Riscv64Architecture {
             "riscv64" => Riscv64,
             "riscv64gc" => Riscv64gc,
             "riscv64imac" => Riscv64imac,
+            "riscv64im" => Riscv64im,
             "riscv64a23" => Riscv64a23,
             _ => return Err(()),
         })
@@ -1668,6 +1673,7 @@ impl FromStr for OperatingSystem {
             "wasip2" => WasiP2,
             "windows" => Windows,
             "espidf" => Espidf,
+            "zkvm" => Zkvm,
             _ => return Err(()),
         })
     }
