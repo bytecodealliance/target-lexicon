@@ -11,7 +11,7 @@ use core::str::FromStr;
 
 /// The "architecture" field, which in some cases also specifies a specific
 /// subarchitecture.
-#[cfg_attr(feature = "rust_1_40", non_exhaustive)]
+#[non_exhaustive]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum Architecture {
@@ -60,7 +60,7 @@ pub enum Architecture {
     Z80(Z80Architecture),
 }
 
-#[cfg_attr(feature = "rust_1_40", non_exhaustive)]
+#[non_exhaustive]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum ArmArchitecture {
@@ -110,7 +110,7 @@ pub enum ArmArchitecture {
     Thumbv8mMain,
 }
 
-#[cfg_attr(feature = "rust_1_40", non_exhaustive)]
+#[non_exhaustive]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum Aarch64Architecture {
@@ -123,7 +123,7 @@ pub enum Aarch64Architecture {
     Arm64_32,
 }
 
-// #[cfg_attr(feature = "rust_1_40", non_exhaustive)]
+// #[non_exhaustive]
 // #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 // #[allow(missing_docs)]
 // pub enum ArmFpu {
@@ -401,7 +401,7 @@ impl Aarch64Architecture {
     }
 }
 
-#[cfg_attr(feature = "rust_1_40", non_exhaustive)]
+#[non_exhaustive]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum CleverArchitecture {
@@ -422,7 +422,7 @@ impl CleverArchitecture {
 }
 
 /// An enum for all 32-bit RISC-V architectures.
-#[cfg_attr(feature = "rust_1_40", non_exhaustive)]
+#[non_exhaustive]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum Riscv32Architecture {
@@ -455,7 +455,7 @@ impl Riscv32Architecture {
 }
 
 /// An enum for all 64-bit RISC-V architectures.
-#[cfg_attr(feature = "rust_1_40", non_exhaustive)]
+#[non_exhaustive]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum Riscv64Architecture {
@@ -480,7 +480,7 @@ impl Riscv64Architecture {
 }
 
 /// An enum for all 32-bit x86 architectures.
-#[cfg_attr(feature = "rust_1_40", non_exhaustive)]
+#[non_exhaustive]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum X86_32Architecture {
@@ -503,7 +503,7 @@ impl X86_32Architecture {
 }
 
 /// An enum for all 32-bit MIPS architectures (not just "MIPS32").
-#[cfg_attr(feature = "rust_1_40", non_exhaustive)]
+#[non_exhaustive]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum Mips32Architecture {
@@ -528,7 +528,7 @@ impl Mips32Architecture {
 }
 
 /// An enum for all 64-bit MIPS architectures (not just "MIPS64").
-#[cfg_attr(feature = "rust_1_40", non_exhaustive)]
+#[non_exhaustive]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum Mips64Architecture {
@@ -553,7 +553,7 @@ impl Mips64Architecture {
 }
 
 #[cfg(feature = "arch_z80")]
-#[cfg_attr(feature = "rust_1_40", non_exhaustive)]
+#[non_exhaustive]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum Z80Architecture {
@@ -624,7 +624,7 @@ impl Hash for CustomVendor {
 
 /// The "vendor" field, which in practice is little more than an arbitrary
 /// modifier.
-#[cfg_attr(feature = "rust_1_40", non_exhaustive)]
+#[non_exhaustive]
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum Vendor {
@@ -699,7 +699,7 @@ pub struct DeploymentTarget {
 /// LLVM's Apple triples may optionally include the [deployment target].
 ///
 /// [deployment target]: DeploymentTarget
-#[cfg_attr(feature = "rust_1_40", non_exhaustive)]
+#[non_exhaustive]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum OperatingSystem {
@@ -845,7 +845,7 @@ impl OperatingSystem {
 /// The "environment" field, which specifies an ABI environment on top of the
 /// operating system. In many configurations, this field is omitted, and the
 /// environment is implied by the operating system.
-#[cfg_attr(feature = "rust_1_40", non_exhaustive)]
+#[non_exhaustive]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum Environment {
@@ -933,7 +933,7 @@ impl Environment {
 
 /// The "binary format" field, which is usually omitted, and the binary format
 /// is implied by the other fields.
-#[cfg_attr(feature = "rust_1_40", non_exhaustive)]
+#[non_exhaustive]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs)]
 pub enum BinaryFormat {
