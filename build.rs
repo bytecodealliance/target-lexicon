@@ -52,12 +52,12 @@ fn main() {
         Triple::from_str(&target).unwrap_or_else(|_| panic!("Invalid target name: '{}'", target));
     let out = File::create(out_dir.join("host.rs")).expect("error creating host.rs");
     write_host_rs(out, triple).expect("error writing host.rs");
-    if using_1_40() {
-        println!("cargo:rustc-cfg=feature=\"rust_1_40\"");
+    if using_1_81() {
+        println!("cargo:rustc-cfg=feature=\"rust_1_81\"");
     }
 }
 
-fn using_1_40() -> bool {
+fn using_1_81() -> bool {
     match (|| {
         let rustc = env::var_os("RUSTC").unwrap();
         let output = Command::new(rustc).arg("--version").output().ok()?;
@@ -75,7 +75,7 @@ fn using_1_40() -> bool {
             .parse::<i32>()
             .ok()
     })() {
-        Some(version) => version >= 40,
+        Some(version) => version >= 81,
         None => true, // assume we're using an up-to-date compiler
     }
 }
