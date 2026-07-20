@@ -76,6 +76,10 @@ pub enum CallingConvention {
     ///
     /// <https://developer.apple.com/documentation/xcode/writing_arm64_code_for_apple_platforms>
     AppleAarch64,
+
+    /// IBM z/OS XPLINK CALL linkage conventions for AMODE 64 applications
+    /// https://www.ibm.com/docs/en/zos/3.1.0?topic=applications-xplink-call-linkage-conventions-amode-64
+    ZosXplink64,
 }
 
 /// An LLVM target "triple". Historically such things had three fields, though
@@ -141,6 +145,7 @@ impl Triple {
             | OperatingSystem::Redox
             | OperatingSystem::Solaris => CallingConvention::SystemV,
             OperatingSystem::Windows => CallingConvention::WindowsFastcall,
+            OperatingSystem::Zos => CallingConvention::ZosXplink64,
             OperatingSystem::Nebulet
             | OperatingSystem::Emscripten
             | OperatingSystem::Wasi

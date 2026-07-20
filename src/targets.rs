@@ -758,6 +758,7 @@ pub enum OperatingSystem {
     Windows,
     /// An alternate name for [visionOS][Self::VisionOS].
     XROS(Option<DeploymentTarget>),
+    Zos,
 }
 
 impl OperatingSystem {
@@ -819,6 +820,7 @@ impl OperatingSystem {
             WatchOS(deployment_target) => darwin_version("watchos", deployment_target),
             Windows => Cow::Borrowed("windows"),
             XROS(deployment_target) => darwin_version("xros", deployment_target),
+            Zos => Cow::Borrowed("zos"),
         }
     }
 
@@ -943,6 +945,7 @@ pub enum BinaryFormat {
     Macho,
     Wasm,
     Xcoff,
+    Goff,
 }
 
 impl BinaryFormat {
@@ -957,6 +960,7 @@ impl BinaryFormat {
             Macho => Cow::Borrowed("macho"),
             Wasm => Cow::Borrowed("wasm"),
             Xcoff => Cow::Borrowed("xcoff"),
+            Goff => Cow::Borrowed("goff"),
         }
     }
 }
@@ -1133,6 +1137,7 @@ pub(crate) fn default_binary_format(triple: &Triple) -> BinaryFormat {
         OperatingSystem::Aix => BinaryFormat::Xcoff,
         os if os.is_like_darwin() => BinaryFormat::Macho,
         OperatingSystem::Windows => BinaryFormat::Coff,
+        OperatingSystem::Zos => BinaryFormat::Goff,
         OperatingSystem::Nebulet
         | OperatingSystem::Emscripten
         | OperatingSystem::VxWorks
@@ -1667,6 +1672,7 @@ impl FromStr for OperatingSystem {
             "wasip1" => WasiP1,
             "wasip2" => WasiP2,
             "windows" => Windows,
+            "zos" => Zos,
             "espidf" => Espidf,
             _ => return Err(()),
         })
@@ -1745,6 +1751,7 @@ impl FromStr for BinaryFormat {
             "macho" => Macho,
             "wasm" => Wasm,
             "xcoff" => Xcoff,
+            "goff" => Goff,
             _ => return Err(()),
         })
     }
@@ -1949,6 +1956,7 @@ mod tests {
             "riscv64gc-unknown-openbsd",
             "riscv64imac-unknown-none-elf",
             "riscv64-linux-android",
+            "s390x-ibm-zos",
             "s390x-unknown-linux-gnu",
             "s390x-unknown-linux-musl",
             "sparc64-unknown-linux-gnu",

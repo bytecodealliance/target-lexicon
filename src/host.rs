@@ -41,6 +41,13 @@ mod tests {
         assert_eq!(OperatingSystem::host(), OperatingSystem::Windows);
     }
 
+    #[cfg(target_os = "zos")]
+    #[test]
+    fn test_zos() {
+        use super::*;
+        assert_eq!(OperatingSystem::host(), OperatingSystem::Zos);
+    }
+
     #[cfg(target_pointer_width = "16")]
     #[test]
     fn test_ptr16() {
