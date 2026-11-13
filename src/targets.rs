@@ -743,8 +743,13 @@ pub enum OperatingSystem {
     Nebulet,
     Netbsd,
     None_,
+    /// QNX Neutrino, as spelled by the `*-nto-qnx*` triples (QNX 7.0, 7.1 and the QNX SDP 8.0
+    /// toolchain).
+    Nto,
     Openbsd,
     Psp,
+    /// QNX 8.0, as spelled by the `x86_64-pc-qnx` and `aarch64-unknown-qnx` triples.
+    Qnx,
     Redox,
     Solaris,
     SolidAsp3,
@@ -806,9 +811,11 @@ impl OperatingSystem {
             MacOSX(deployment_target) => darwin_version("macosx", deployment_target),
             Nebulet => Cow::Borrowed("nebulet"),
             Netbsd => Cow::Borrowed("netbsd"),
+            Nto => Cow::Borrowed("nto"),
             None_ => Cow::Borrowed("none"),
             Openbsd => Cow::Borrowed("openbsd"),
             Psp => Cow::Borrowed("psp"),
+            Qnx => Cow::Borrowed("qnx"),
             Redox => Cow::Borrowed("redox"),
             Solaris => Cow::Borrowed("solaris"),
             SolidAsp3 => Cow::Borrowed("solid_asp3"),
@@ -888,6 +895,14 @@ pub enum Environment {
     Spe,
     Threads,
     Ohos,
+    /// QNX 7.0
+    Qnx700,
+    /// QNX 7.1 with the io-pkt network stack
+    Qnx710,
+    /// QNX 7.1 with the io-sock network stack
+    Qnx710Iosock,
+    /// QNX 8.0 (the `*-nto-qnx800` triples)
+    Qnx800,
 }
 
 impl Environment {
@@ -931,6 +946,10 @@ impl Environment {
             Spe => Cow::Borrowed("spe"),
             Threads => Cow::Borrowed("threads"),
             Ohos => Cow::Borrowed("ohos"),
+            Qnx700 => Cow::Borrowed("qnx700"),
+            Qnx710 => Cow::Borrowed("qnx710"),
+            Qnx710Iosock => Cow::Borrowed("qnx710_iosock"),
+            Qnx800 => Cow::Borrowed("qnx800"),
         }
     }
 }
@@ -1663,9 +1682,11 @@ impl FromStr for OperatingSystem {
             "linux" => Linux,
             "nebulet" => Nebulet,
             "netbsd" => Netbsd,
+            "nto" => Nto,
             "none" => None_,
             "openbsd" => Openbsd,
             "psp" => Psp,
+            "qnx" => Qnx,
             "redox" => Redox,
             "solaris" => Solaris,
             "solid_asp3" => SolidAsp3,
@@ -1730,6 +1751,10 @@ impl FromStr for Environment {
             "spe" => Spe,
             "threads" => Threads,
             "ohos" => Ohos,
+            "qnx700" => Qnx700,
+            "qnx710" => Qnx710,
+            "qnx710_iosock" => Qnx710Iosock,
+            "qnx800" => Qnx800,
             _ => return Err(()),
         })
     }
@@ -1803,7 +1828,11 @@ mod tests {
             "aarch64-unknown-netbsd",
             "aarch64-unknown-none",
             "aarch64-unknown-none-softfloat",
-            //"aarch64-unknown-nto-qnx710", // TODO
+            "aarch64-unknown-nto-qnx700",
+            "aarch64-unknown-nto-qnx710",
+            "aarch64-unknown-nto-qnx710_iosock",
+            "aarch64-unknown-nto-qnx800",
+            "aarch64-unknown-qnx",
             "aarch64-unknown-openbsd",
             "aarch64-unknown-redox",
             //"aarch64-unknown-teeos", // TODO
@@ -1866,7 +1895,8 @@ mod tests {
             "hexagon-unknown-linux-musl",
             "hexagon-unknown-none-elf",
             "i386-apple-ios",
-            //"i586-pc-nto-qnx700", // TODO
+            "i586-pc-nto-qnx700",
+            "i686-pc-nto-qnx700",
             "i586-pc-windows-msvc",
             "i586-unknown-linux-gnu",
             "i586-unknown-linux-musl",
@@ -2001,7 +2031,10 @@ mod tests {
             "x86_64-fortanix-unknown-sgx",
             "x86_64h-apple-darwin",
             "x86_64-linux-android",
-            //"x86_64-pc-nto-qnx710", // TODO
+            "x86_64-pc-nto-qnx710",
+            "x86_64-pc-nto-qnx710_iosock",
+            "x86_64-pc-nto-qnx800",
+            "x86_64-pc-qnx",
             "x86_64-linux-kernel", // Changed to x86_64-unknown-none-linuxkernel in 1.53.0
             "x86_64-apple-macosx",
             "x86_64-apple-macosx10.7.0",

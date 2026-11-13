@@ -141,7 +141,9 @@ impl Triple {
             | OperatingSystem::L4re
             | OperatingSystem::Linux
             | OperatingSystem::Netbsd
+            | OperatingSystem::Nto
             | OperatingSystem::Openbsd
+            | OperatingSystem::Qnx
             | OperatingSystem::Redox
             | OperatingSystem::Solaris => CallingConvention::SystemV,
             OperatingSystem::Windows => CallingConvention::WindowsFastcall,
