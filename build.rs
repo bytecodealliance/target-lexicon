@@ -52,32 +52,6 @@ fn main() {
         Triple::from_str(&target).unwrap_or_else(|_| panic!("Invalid target name: '{}'", target));
     let out = File::create(out_dir.join("host.rs")).expect("error creating host.rs");
     write_host_rs(out, triple).expect("error writing host.rs");
-    if using_1_40() {
-        println!("cargo:rustc-cfg=feature=\"rust_1_40\"");
-    }
-}
-
-fn using_1_40() -> bool {
-    match (|| {
-        let rustc = env::var_os("RUSTC").unwrap();
-        let output = Command::new(rustc).arg("--version").output().ok()?;
-        let stdout = if output.status.success() {
-            output.stdout
-        } else {
-            return None;
-        };
-        std::str::from_utf8(&stdout)
-            .ok()?
-            .split(' ')
-            .nth(1)?
-            .split('.')
-            .nth(1)?
-            .parse::<i32>()
-            .ok()
-    })() {
-        Some(version) => version >= 40,
-        None => true, // assume we're using an up-to-date compiler
-    }
 }
 
 fn write_host_rs(mut out: File, triple: Triple) -> io::Result<()> {
