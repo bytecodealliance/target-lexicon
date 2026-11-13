@@ -140,6 +140,7 @@ impl Triple {
             | OperatingSystem::Hurd
             | OperatingSystem::L4re
             | OperatingSystem::Linux
+            | OperatingSystem::Motor
             | OperatingSystem::Netbsd
             | OperatingSystem::Openbsd
             | OperatingSystem::Redox
@@ -527,6 +528,20 @@ mod tests {
                 CallingConvention::SystemV
             );
         }
+    }
+
+    #[test]
+    fn motor_abi() {
+        use alloc::string::ToString;
+        let triple = Triple::from_str("x86_64-unknown-motor").unwrap();
+        assert_eq!(triple.to_string(), "x86_64-unknown-motor");
+        assert_eq!(triple.operating_system, OperatingSystem::Motor);
+        assert_eq!(triple.pointer_width().unwrap(), PointerWidth::U64);
+        assert_eq!(
+            triple.default_calling_convention().unwrap(),
+            CallingConvention::SystemV
+        );
+        assert_eq!(triple.data_model().unwrap(), CDataModel::LP64);
     }
 
     #[test]

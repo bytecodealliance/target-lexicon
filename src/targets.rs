@@ -704,6 +704,7 @@ pub struct DeploymentTarget {
 #[allow(missing_docs)]
 pub enum OperatingSystem {
     Unknown,
+    Motor,
     Aix,
     AmdHsa,
     Bitrig,
@@ -803,6 +804,7 @@ impl OperatingSystem {
             IOS(deployment_target) => darwin_version("ios", deployment_target),
             L4re => Cow::Borrowed("l4re"),
             Linux => Cow::Borrowed("linux"),
+            Motor => Cow::Borrowed("motor"),
             MacOSX(deployment_target) => darwin_version("macosx", deployment_target),
             Nebulet => Cow::Borrowed("nebulet"),
             Netbsd => Cow::Borrowed("netbsd"),
@@ -1661,6 +1663,7 @@ impl FromStr for OperatingSystem {
             "illumos" => Illumos,
             "l4re" => L4re,
             "linux" => Linux,
+            "motor" => Motor,
             "nebulet" => Nebulet,
             "netbsd" => Netbsd,
             "none" => None_,
