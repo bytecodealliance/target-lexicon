@@ -143,7 +143,8 @@ impl Triple {
             | OperatingSystem::Netbsd
             | OperatingSystem::Openbsd
             | OperatingSystem::Redox
-            | OperatingSystem::Solaris => CallingConvention::SystemV,
+            | OperatingSystem::Solaris
+            | OperatingSystem::Toyos => CallingConvention::SystemV,
             OperatingSystem::Windows => CallingConvention::WindowsFastcall,
             OperatingSystem::Zos => CallingConvention::ZosXplink64,
             OperatingSystem::Nebulet
